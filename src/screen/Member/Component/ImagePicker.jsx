@@ -17,14 +17,8 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
-import * as FileSystem from "expo-file-system";
 
-const ImagePickerExample = ({
-  image,
-  setImage,
-  imageToShow,
-  setImageToShow,
-}) => {
+const ImagePickers = ({ image, setImage }) => {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -37,33 +31,18 @@ const ImagePickerExample = ({
     })();
   }, []);
 
-  const convertToBase64 = async (imageUri) => {
-    let base64data = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    setImage(base64data);
-  };
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-      base64: true,
     });
 
     console.log(result);
 
     if (!result.cancelled) {
-      // const fileInfo = await FileSystem.getInfoAsync(result.uri);
-      // const file = {
-      //   uri: fileInfo.uri,
-      //   name: fileInfo.uri.split("/").pop(),
-      //   type: "image/jpeg", // Adjust the type according to the file type
-      // };
-      setImageToShow(result.uri);
-      setImage(result.base64);
+      setImage(result.uri);
     }
   };
 
@@ -71,7 +50,7 @@ const ImagePickerExample = ({
     <View>
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
-          {imageToShow == null ? (
+          {image == null ? (
             <Text style={{ color: "white", fontWeight: "700" }}>
               Pilih Gambar
             </Text>
@@ -101,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImagePickerExample;
+export default ImagePickers;

@@ -13,13 +13,13 @@ import {
 } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import React, { useState, useEffect, useRef } from "react";
-import { HelperText, TextInput } from "react-native-paper";
+import { HelperText, TextInput, Divider } from "react-native-paper";
 import useNavigation from "@react-navigation/core";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
 import { COLORS, FONTS } from "../../assets/theme";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import { Divider } from "react-native-paper";
+
 import constants from "../../assets/constants";
 import { URL } from "../../utils/apiURL";
 import {
@@ -156,29 +156,24 @@ const LoginPage = ({ navigation }) => {
       {/* <StatusBar backgroundColor="#0E9C4A" translucent={true} /> */}
 
       <View style={styles.mainContainer}>
-        <ImageBackground
-          resizeMode="cover"
-          blurRadius={13}
-          style={styles.image}
-          source={require("../../assets/images/bg-login.png")}
-        >
-          <View style={[styles.container, { flexDirection: "column" }]}>
-            <Text style={[styles.welcomeText, { fontWeight: "bold" }]}>
-              Welcome Back !{" "}
+        <View style={[styles.container, { flexDirection: "column" }]}>
+          <View style={{ marginTop: moderateScale(64) }}>
+            <Text
+              style={{
+                color: COLORS.PRIMARY_DARK,
+                alignSelf: "center",
+                fontSize: moderateScale(18),
+                color: COLORS.GRAY_HARD,
+              }}
+            >
+              LOGIN
             </Text>
-            <View>
-              <Text style={{ color: COLORS.WHITE }}>
-                Please enter your email and password, to know the rest of your
-                diet progress{" "}
-              </Text>
-              {/* <Image
+            {/* <Image
                 style={styles.logo}
                 source={require("../../Assets/Images/Login.png")}
               /> */}
-            </View>
           </View>
-
-          <View>
+          <View style={{ marginTop: moderateScale(32) }}>
             <Text style={styles.text}>Email</Text>
 
             <GeneralTextInput
@@ -220,18 +215,41 @@ const LoginPage = ({ navigation }) => {
             >
               <Text style={styles.textBtn}>Sign In</Text>
             </TouchableOpacity> */}
-            <View style={styles.txtRegister}>
-              <Text style={styles.textWhite}>Didn’t Have Account?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-                <Text
-                  style={[styles.textWhite, { color: COLORS.PRIMARY_MEDIUM }]}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginVertical: 10,
+              }}
+            >
+              <View
+                style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
+              />
+              <View style={styles.txtRegister}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Register")}
                 >
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={[styles.textWhite, { color: COLORS.PRIMARY_DARK }]}
+                  >
+                    Daftar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
+              />
             </View>
+
+            {/* <TouchableOpacity onPress={() => navigation.navigate("PilihPaket")}>
+              <Text
+                style={[styles.textWhite, { color: COLORS.PRIMARY_MEDIUM }]}
+              >
+                Submit Pembayaran
+              </Text>
+            </TouchableOpacity> */}
           </View>
-        </ImageBackground>
+        </View>
 
         {isLoading ? (
           <PopUpLoader visible={true} />
@@ -250,17 +268,18 @@ const styles = StyleSheet.create({
   scroll: {
     // flex: 1,
     backgroundColor: "white",
-    flexGrow: 1,
+    // flexGrow: 1,
+    height: "100%",
   },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: moderateScale(24),
-    backgroundColor: "rgba(0, 0, 0, 0.1)",
-  },
+  // image: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   paddingHorizontal: moderateScale(24),
+  //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+  // },
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     padding: 10,
   },
   welcomeText: {
@@ -274,6 +293,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+    paddingHorizontal: moderateScale(22),
     // paddingHorizontal: moderateScale(10),
   },
   input: {
@@ -298,7 +318,7 @@ const styles = StyleSheet.create({
 
     marginBottom: moderateScale(5),
     marginTop: moderateScale(2),
-    color: "#000000",
+    color: COLORS.PRIMARY_DARK,
     fontSize: moderateScale(15),
     fontWeight: "bold",
   },
@@ -325,7 +345,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP(7),
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.PRIMARY_MEDIUM,
+    backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "center",
     marginBottom: moderateScale(5),
     marginTop: moderateScale(10),
@@ -347,7 +367,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
 
     marginTop: moderateScale(10),
-    marginBottom: moderateScale(72),
+    marginBottom: moderateScale(12),
   },
   textWhite: {
     fontSize: moderateScale(15),
@@ -367,6 +387,6 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(-24),
     borderWidth: moderateScale(0.2),
   },
-  inputUserName: { backgroundColor: COLORS.GRAY_SOFT },
-  inputUserPassword: { backgroundColor: COLORS.GRAY_SOFT },
+  inputUserName: { backgroundColor: COLORS.WHITE },
+  inputUserPassword: { backgroundColor: COLORS.WHITE },
 });

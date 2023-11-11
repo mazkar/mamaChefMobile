@@ -9,7 +9,6 @@ import {
   Image,
 } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
-import { useFocusEffect } from "@react-navigation/native";
 import RootContainer from "../../component/RootContainer/index";
 import { useNavigation } from "@react-navigation/core";
 import ColorBgContainer from "../../component/ColorBgContainer";
@@ -44,20 +43,22 @@ import API from "../../utils/apiService";
 import axios from "axios";
 import { setUser } from "../../store/models/auth/actions";
 import { baseUrl } from "../../utils/apiURL";
-import CardMenu from "./components/CardMenu";
+import CardMenu from "./Component/CardMenu";
+import moment from "moment";
+import { useFocusEffect } from "@react-navigation/native";
 
-export default function KelolaMenu({ navigation }) {
+export default function KelolaMember({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
-  const [dataMenu, setDataMenu] = useState([]);
+  const [dataMember, setDataMember] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  async function getMenu(userId) {
+  async function getMember(userId) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Menu/menubyuserid/${userId}`,
+        url: `${baseUrl.URL}api/Member/getmemberbyuserid/${uid}`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -65,10 +66,10 @@ export default function KelolaMenu({ navigation }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (res.status == 200) {
+      if (res.data.code == "200") {
         // test for status you want, etc
-        console.log(res.data, "meeeeeeeee");
-        setDataMenu(res.data.data);
+        console.log(res.data.data, "<===res");
+        setDataMember(res.data.data);
         setIsLoadingGet(false);
         // console.log(res.data, "transit");
       }
@@ -83,14 +84,14 @@ export default function KelolaMenu({ navigation }) {
   const onChangeSearch = (query) => setSearchQuery(query);
 
   useEffect(() => {
-    getMenu(uid);
+    getMember(uid);
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
       console.log("Screen is focused");
-      getMenu(uid);
+      getMember(uid);
       // Add your logic here to update the component or fetch new data
 
       // Example: Refresh data or update components
@@ -100,9 +101,9 @@ export default function KelolaMenu({ navigation }) {
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Menu" dataTaskPending={[]} />
+        <AppBar title="Kelola Member" dataTaskPending={[]} />
 
-        <View style={styles.mainContainer}>
+        <ScrollView style={styles.mainContainer}>
           <View style={{ marginBottom: ms(16) }}>
             <Text
               style={{
@@ -111,7 +112,7 @@ export default function KelolaMenu({ navigation }) {
                 color: COLORS.PRIMARY_DARK,
               }}
             >
-              Menu Kamu
+              Daftar Member
             </Text>
 
             <View
@@ -122,53 +123,38 @@ export default function KelolaMenu({ navigation }) {
                 width: 24,
               }}
             ></View>
-          </View>
-          <View>
-            <View style={styles.continerSearch}>
-              <Searchbar
-                placeholder="Cari Menu"
-                onChangeText={onChangeSearch}
-                value={searchQuery}
-              />
-            </View>
-          </View>
-          <View>
-            <TouchableOpacity
-              style={styles.btnAdd}
-              onPress={() => navigation.navigate("TambahMenu")}
-            >
-              <Text style={{ color: "white", fontWeight: "700" }}>
-                Tambah Menu
-              </Text>
-            </TouchableOpacity>
-          </View>
 
-          {/* <View
-                style={{
-                  backgroundColor: "black",
-                  borderBottomColor: COLORS.PRIMARY_DARK,
-                  borderBottomWidth: 4,
-                  width: 24,
-                }}
-              />
-            </View> */}
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listData} // center emptyData component
-            // data={surveyOpen}
-            data={dataMenu}
-            // horizontal={true}
-            keyExtractor={(item) => item.menuId}
-            renderItem={({ item, index }) => (
-              <CardMenu
-                photoUrl={item?.photoURL}
-                namaMenu={item.menuName}
-                notes={item?.note}
-                desc={item?.description}
-              />
-            )}
-          />
-        </View>
+            <View>
+              <TouchableOpacity
+                style={styles.btnAdd}
+                onPress={() => navigation.navigate("TambahMembers")}
+              >
+                <Text style={{ color: "white", fontWeight: "700" }}>
+                  Tambah Member
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listData} // center emptyData component
+              // data={surveyOpen}
+              data={dataMember}
+              // horizontal={true}
+              keyExtractor={(item) => item.memberId}
+              renderItem={({ item, index }) => (
+                <CardMenu
+                  photoUrl={item?.photoBase64}
+                  namaMember={item.name}
+                  noHp={item.phoneNumber}
+                  notes={item?.note}
+                  tglLahir={moment(item?.birthDate).format("YYYY-MMM-DD")}
+                  address={item.address}
+                />
+              )}
+            />
+          </View>
+        </ScrollView>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />
     </ColorBgContainer>

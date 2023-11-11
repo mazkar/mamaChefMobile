@@ -18,3 +18,10 @@ export const resetReducer = (payload) => {
     payload,
   };
 };
+
+export const setUserId = (payload) => {
+  return {
+    type: "SET_USER_ID",
+    payload,
+  };
+};

@@ -1,67 +1,40 @@
-// components/ImagePickerExample.js
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Button,
-  Image,
-  Platform,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { moderateScale, ms } from "react-native-size-matters";
-import { GeneralButton } from "../../../component";
+import { ms, moderateScale } from "react-native-size-matters";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
-import * as FileSystem from "expo-file-system";
 
-const ImagePickerExample = ({
+export default function PhotoTake({
   image,
   setImage,
   imageToShow,
   setImageToShow,
-}) => {
+}) {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
+          alert("Sorry, we need camera permissions to make this work!");
         }
       }
     })();
   }, []);
 
-  const convertToBase64 = async (imageUri) => {
-    let base64data = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    setImage(base64data);
-  };
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+  const takePhoto = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
       base64: true,
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
-      // const fileInfo = await FileSystem.getInfoAsync(result.uri);
-      // const file = {
-      //   uri: fileInfo.uri,
-      //   name: fileInfo.uri.split("/").pop(),
-      //   type: "image/jpeg", // Adjust the type according to the file type
-      // };
       setImageToShow(result.uri);
       setImage(result.base64);
     }
@@ -70,21 +43,21 @@ const ImagePickerExample = ({
   return (
     <View>
       <View>
-        <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
+        <TouchableOpacity style={styles.btnAdd} onPress={takePhoto}>
           {imageToShow == null ? (
             <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Gambar
+              Ambil Foto
             </Text>
           ) : (
             <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Ulang Gambar
+              Ambil Ulang Foto
             </Text>
           )}
         </TouchableOpacity>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   btnAdd: {
@@ -100,5 +73,3 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(10),
   },
 });
-
-export default ImagePickerExample;

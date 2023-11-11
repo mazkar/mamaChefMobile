@@ -99,7 +99,7 @@ export default function Dashboard({ navigation }) {
         {/* <TouchableOpacity onPress={handleLogut}>
           <Text>Log Out</Text>
         </TouchableOpacity> */}
-        <View style={styles.mainContainer}>
+        <ScrollView style={styles.mainContainer}>
           <View style={styles.continerSearch}>
             <Searchbar
               placeholder="Cari Menu"
@@ -120,10 +120,10 @@ export default function Dashboard({ navigation }) {
                 style={{
                   fontSize: 18,
                   fontWeight: "700",
-                  color: COLORS.PRIMARY_DARK,
+                  color: COLORS.GRAY_HARD,
                 }}
               >
-                Menu Kamu
+                Menu Baru
               </Text>
               <View
                 style={{
@@ -138,19 +138,131 @@ export default function Dashboard({ navigation }) {
               <TouchableOpacity
                 onPress={() => navigation.navigate("KelolaMenu")}
               >
-                <Text style={{ color: COLORS.PRIMARY_MEDIUM }}>
-                  Lihat Semua (10)
+                <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                  Lihat Semua ({dataMenu?.length})
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <View style={{ padding: 16 }}>
+          <View style={{ padding: 16, paddingVertical: 32 }}>
             <FlatList
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.listData} // center emptyData component
               // data={surveyOpen}
               data={dataMenu}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              keyExtractor={(item) => item.menuId}
+              renderItem={({ item, index }) => (
+                <Card
+                  style={{
+                    borderRadius: 8,
+                    width: ms(206),
+                    height: ms(196),
+                    marginLeft: ms(12),
+                    borderTopStartRadius: 24,
+                    borderTopEndRadius: 24,
+                    backgroundColor: COLORS.WHITE,
+                    paddingBottom: ms(32),
+                  }}
+                >
+                  <Card.Cover
+                    style={{
+                      width: "auto",
+                      height: "60%",
+                      borderTopStartRadius: 24,
+                      borderTopEndRadius: 24,
+                    }}
+                    source={{
+                      uri: `data:image/jpeg;base64,${item?.photoURL}`,
+                    }}
+                  />
+                  <Card.Content style={{ marginTop: ms(4), width: "100%" }}>
+                    <View
+                      style={{
+                        backgroundColor: COLORS.PRIMARY_DARK,
+                        borderRadius: ms(10),
+                        alignContent: "center",
+                        // justifyContent: "center",
+                        // flex: 1,
+                        paddingHorizontal: ms(6),
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          alignSelf: "center",
+                          fontWeight: "700",
+                          color: COLORS.WHITE,
+                        }}
+                      >
+                        {item?.menuName}
+                      </Text>
+                    </View>
+
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "500",
+                        color: COLORS.PRIMARY_DARK,
+                      }}
+                    >
+                      Deskripsi
+                    </Text>
+                    <Paragraph>{item?.description}</Paragraph>
+                  </Card.Content>
+                </Card>
+              )}
+            />
+          </View>
+
+          <Divider style={{ height: 3, color: "#EEEEEE" }} />
+
+          {/* Komponen Tips & Trik */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingHorizontal: ms(12),
+              marginTop: ms(20),
+            }}
+          >
+            <View>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "700",
+                  color: COLORS.GRAY_HARD,
+                }}
+              >
+                Tips & Trick
+              </Text>
+              <View
+                style={{
+                  backgroundColor: "black",
+                  borderBottomColor: COLORS.PRIMARY_DARK,
+                  borderBottomWidth: 4,
+                  width: 24,
+                }}
+              />
+            </View>
+            <View>
+              <TouchableOpacity onPress={() => navigation.navigate("Tips")}>
+                <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                  Lihat Semua ({dataMenu?.length})
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={{ padding: 16, paddingVertical: 32 }}>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listData} // center emptyData component
+              // data={surveyOpen}
+              data={dataMenu}
+              showsHorizontalScrollIndicator={false}
               horizontal={true}
               keyExtractor={(item) => item.menuId}
               renderItem={({ item, index }) => (
@@ -190,10 +302,10 @@ export default function Dashboard({ navigation }) {
               )}
             />
           </View>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleLogut}>
-          <Text style={{ color: COLORS.WHITE }}>Sign Out</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleLogut}>
+            <Text style={{ color: COLORS.WHITE }}>Sign Out</Text>
+          </TouchableOpacity>
+        </ScrollView>
 
         <PopUpLoader visible={isLoadingGet} />
       </RootContainer>
@@ -265,7 +377,7 @@ const styles = StyleSheet.create({
     // paddingVertical: 4,
     paddingHorizontal: 18,
     marginTop: ms(16),
-    paddingVertical: 12,
+    paddingVertical: 32,
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",

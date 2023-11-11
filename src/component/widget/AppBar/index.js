@@ -94,7 +94,7 @@ const AppBar = (props) => {
             fontWeight: "800",
           }}
         >
-          Kelola Menu
+          {props.title}
         </Text>
 
         <View style={styles.logoWrapper}></View>

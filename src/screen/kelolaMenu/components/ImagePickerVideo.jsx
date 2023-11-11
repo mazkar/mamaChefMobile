@@ -19,12 +19,7 @@ import {
 import { COLORS, FONTS } from "../../../assets/theme";
 import * as FileSystem from "expo-file-system";
 
-const ImagePickerExample = ({
-  image,
-  setImage,
-  imageToShow,
-  setImageToShow,
-}) => {
+const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -41,13 +36,13 @@ const ImagePickerExample = ({
     let base64data = await FileSystem.readAsStringAsync(imageUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
-    setImage(base64data);
+    setVideo(base64data);
   };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+      allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
       base64: true,
@@ -56,14 +51,8 @@ const ImagePickerExample = ({
     console.log(result);
 
     if (!result.cancelled) {
-      // const fileInfo = await FileSystem.getInfoAsync(result.uri);
-      // const file = {
-      //   uri: fileInfo.uri,
-      //   name: fileInfo.uri.split("/").pop(),
-      //   type: "image/jpeg", // Adjust the type according to the file type
-      // };
-      setImageToShow(result.uri);
-      setImage(result.base64);
+      convertToBase64(result.uri);
+      setVideoToShow(result.uri);
     }
   };
 
@@ -71,13 +60,13 @@ const ImagePickerExample = ({
     <View>
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
-          {imageToShow == null ? (
+          {video == null ? (
             <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Gambar
+              Pilih Video
             </Text>
           ) : (
             <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Ulang Gambar
+              Pilih Ulang Video
             </Text>
           )}
         </TouchableOpacity>
@@ -101,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ImagePickerExample;
+export default ImagePickerVideo;

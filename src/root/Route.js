@@ -13,6 +13,12 @@ import { useSelector } from "react-redux";
 import Register from "../screen/Register";
 import KelolaMenu from "../screen/kelolaMenu";
 import TambahMenu from "../screen/kelolaMenu/tambahMenu";
+import submitPembayaran from "../screen/submitPembayaran";
+import PilihPaketPeriod from "../screen/submitPembayaran/PilihPaketPeriod";
+import KelolaMember from "../screen/Member/KelolaMember";
+import TambahMember from "../screen/Member/TambahMember";
+import TambahMenuMain from "../screen/kelolaMenu/TambahMenuMain";
+import tipsAndTrick from "../screen/tipsTrick";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,15 +55,34 @@ export default function Route() {
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
+
       <Tab.Screen
-        name="KelolaMenu"
-        component={KelolaMenu}
+        name="TambahMenu"
+        component={TambahMenuMain}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="TambahMenu"
-        component={TambahMenu}
+        name="SubmitPembayaran"
+        component={submitPembayaran}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="PilihPaket"
+        component={PilihPaketPeriod}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="TambahMembers"
+        component={TambahMember}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Tips"
+        component={tipsAndTrick}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
@@ -102,15 +127,15 @@ export function BottomNav() {
             iconName = focused
               ? require("../assets/images/homeActive.png")
               : require("../assets/images/home.png");
-          } else if (route.name === "Task") {
+          } else if (route.name === "KelolaMenu") {
             iconName = focused
               ? require("../assets/images/message.png")
               : require("../assets/images/message0.png");
-          } else if (route.name === "Employee") {
+          } else if (route.name === "KelolaMenu") {
             iconName = focused
               ? require("../assets/images/employeeActive.png")
               : require("../assets/images/employee.png");
-          } else if (route.name === "Profile2") {
+          } else if (route.name === "Member") {
             iconName = focused
               ? require("../assets/images/userActive.png")
               : require("../assets/images/user.png");
@@ -146,8 +171,8 @@ export function BottomNav() {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Task"
-        component={Dashboard}
+        name="Member"
+        component={KelolaMember}
         options={{ headerShown: false }}
       />
       {/* <Tab.Screen
@@ -163,8 +188,8 @@ export function BottomNav() {
       /> */}
 
       <Tab.Screen
-        name="Profile2"
-        component={Dashboard}
+        name="KelolaMenu"
+        component={KelolaMenu}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

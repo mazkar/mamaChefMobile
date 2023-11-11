@@ -42,33 +42,33 @@ import bgProfile from "../images/svg/bgProfile.svg";
 const fontConfig = {
   ios: {
     medium: {
-      fontFamily: "Barlow-Medium",
+      fontFamily: "Sen",
       fontWeight: "500",
     },
     regular: {
-      fontFamily: "Barlow-Regular",
+      fontFamily: "Sen",
       fontWeight: "400",
     },
     light: {
-      fontFamily: "Barlow-Light",
+      fontFamily: "Sen",
       fontWeight: "300",
     },
     thin: {
-      fontFamily: "Barlow-Thin",
+      fontFamily: "Sen",
       fontWeight: "100",
     },
   },
   android: {
     medium: {
-      fontFamily: "Barlow-Medium",
+      fontFamily: "Sen",
       fontWeight: "500",
     },
     regular: {
-      fontFamily: "Barlow-Regular",
+      fontFamily: "Sen",
       fontWeight: "400",
     },
     light: {
-      fontFamily: "Barlow-Light",
+      fontFamily: "Sen",
       fontWeight: "300",
     },
     thin: {
@@ -83,13 +83,13 @@ export const theme = {
   roundness: 2,
   colors: {
     ...DefaultTheme.colors,
-    primary: "#E4AF00",
+    primary: "#E277A2",
     // background: "#F4F7FB",
-    background: "#F4F7FB",
+    background: "#ffff",
     surface: "#FFFFFF",
     accent: "#DC241F",
     error: "#FF6F6F",
-    text: "#2B2F3C",
+    text: "#E277A2",
     disabled: "#848EAA",
     placeholder: "#BCC8E7",
     backdrop: "#2B2F3C50",

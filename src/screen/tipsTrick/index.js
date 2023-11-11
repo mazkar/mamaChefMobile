@@ -46,18 +46,19 @@ import { setUser } from "../../store/models/auth/actions";
 import { baseUrl } from "../../utils/apiURL";
 import CardMenu from "./components/CardMenu";
 
-export default function KelolaMenu({ navigation }) {
+export default function tipsAndTrick({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
-  const [dataMenu, setDataMenu] = useState([]);
+  const [dataTips, setDataTips] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  async function getMenu(userId) {
+  async function getTips(userId) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Menu/menubyuserid/${userId}`,
+        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickall`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -67,15 +68,16 @@ export default function KelolaMenu({ navigation }) {
       });
       if (res.status == 200) {
         // test for status you want, etc
-        console.log(res.data, "meeeeeeeee");
-        setDataMenu(res.data.data);
+        console.log(res, "meeeeeeeee");
+        setDataTips(res.data.data);
         setIsLoadingGet(false);
         // console.log(res.data, "transit");
       }
       // Don't forget to return something
       return res.data;
     } catch (err) {
-      console.error(err);
+      console.error(err, "error fetch");
+
       setIsLoadingGet(false);
     }
   }
@@ -83,14 +85,14 @@ export default function KelolaMenu({ navigation }) {
   const onChangeSearch = (query) => setSearchQuery(query);
 
   useEffect(() => {
-    getMenu(uid);
+    getTips();
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
-      console.log("Screen is focused");
-      getMenu(uid);
+      // console.log("Screen is focused");
+      getTips();
       // Add your logic here to update the component or fetch new data
 
       // Example: Refresh data or update components
@@ -100,10 +102,10 @@ export default function KelolaMenu({ navigation }) {
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Menu" dataTaskPending={[]} />
+        <AppBar title="Tips & Trick" dataTaskPending={[]} />
 
         <View style={styles.mainContainer}>
-          <View style={{ marginBottom: ms(16) }}>
+          {/* <View style={{ marginBottom: ms(16) }}>
             <Text
               style={{
                 fontSize: 18,
@@ -122,7 +124,7 @@ export default function KelolaMenu({ navigation }) {
                 width: 24,
               }}
             ></View>
-          </View>
+          </View> */}
           <View>
             <View style={styles.continerSearch}>
               <Searchbar
@@ -138,21 +140,27 @@ export default function KelolaMenu({ navigation }) {
               onPress={() => navigation.navigate("TambahMenu")}
             >
               <Text style={{ color: "white", fontWeight: "700" }}>
-                Tambah Menu
+                Tulis Tips & Trick
               </Text>
             </TouchableOpacity>
           </View>
 
+          <CardMenu
+            // photoUrl={item?.photoURL}
+            namaMenu="test"
+            // notes={item?.note}
+            desc="test"
+          />
           {/* <View
-                style={{
-                  backgroundColor: "black",
-                  borderBottomColor: COLORS.PRIMARY_DARK,
-                  borderBottomWidth: 4,
-                  width: 24,
-                }}
-              />
-            </View> */}
-          <FlatList
+                  style={{
+                    backgroundColor: "black",
+                    borderBottomColor: COLORS.PRIMARY_DARK,
+                    borderBottomWidth: 4,
+                    width: 24,
+                  }}
+                />
+              </View> */}
+          {/* <FlatList
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listData} // center emptyData component
             // data={surveyOpen}
@@ -167,7 +175,7 @@ export default function KelolaMenu({ navigation }) {
                 desc={item?.description}
               />
             )}
-          />
+          /> */}
         </View>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />

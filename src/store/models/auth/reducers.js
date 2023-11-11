@@ -7,6 +7,7 @@ const initialState = {
   tokenExpired: null,
   user: null,
   deviceID: null,
+  userId: null,
 };
 
 const authReducer = (state = initialState, action) => {
@@ -29,6 +30,11 @@ const authReducer = (state = initialState, action) => {
         ...initialState,
       };
 
+    case "SET_USER_ID":
+      return {
+        ...state,
+        userId: action.payload,
+      };
     default:
       return state;
   }
