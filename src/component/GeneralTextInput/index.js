@@ -1,12 +1,12 @@
-import * as React from 'react';
-import {StyleSheet} from 'react-native';
-import {TextInput as TxtInputPaper} from 'react-native-paper';
+import * as React from "react";
+import { StyleSheet } from "react-native";
+import { TextInput as TxtInputPaper } from "react-native-paper";
 
-const TextInput = ({placeholder, left, ...rest}) => {
+const TextInput = ({ placeholder, left, ...rest }) => {
   return (
     <TxtInputPaper
       placeholder={placeholder}
-      theme={{roundness: 10}}
+      theme={{ roundness: 10 }}
       {...rest}
     />
   );

@@ -58,7 +58,7 @@ import ImagePickerExample from "../kelolaMenu/components/ImagePicker";
 import PhotoTake from "../kelolaMenu/components/PhotoTake";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-export default function submitPembayaran({ route, navigation }) {
+export default function SubmitPembayaran({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [openDropDown, setOpenDropDown] = useState(false);
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
@@ -91,6 +91,7 @@ export default function submitPembayaran({ route, navigation }) {
   const [namaBelakang, setNamaBelakang] = useState();
   const [biaya, setBiaya] = useState("");
   const [dataPeriode, setDataPeriode] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
   //   const [date, setDate] = useState("");
   const userId = useSelector((state) => state.auth.userId);
   const [dataBank, setDataBank] = useState([]);
@@ -184,7 +185,7 @@ export default function submitPembayaran({ route, navigation }) {
       // Don't forget to return something
       return res.data;
     } catch (err) {
-      console.error(err);
+      console.error(err, "error message");
       //   setIsLoadingGet(false);
     }
   }
@@ -247,23 +248,33 @@ export default function submitPembayaran({ route, navigation }) {
   }
 
   const handlePress = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
 
-    const formData = new FormData();
-    formData.append("MasterBankAccounts", null);
-    formData.append("email", dataPayment.email);
-    formData.append(
-      "subscriptionPeriodId",
-      route?.params?.subsctriptionPeriodsId
-    );
-    formData.append("transferBy", dataPayment?.email);
-    formData.append("selectedBankId", valueBankId);
-    formData.append("evidenceFile", image);
-    console.log(formData, "console");
+    // const formData = new FormData();
+    // formData.append("MasterBankAccounts", null);
+    // formData.append("email", dataPayment.email);
+    // formData.append(
+    //   "subscriptionPeriodId",
+    //   route?.params?.subsctriptionPeriodsId
+    // );
+    // formData.append("transferBy", dataPayment?.email);
+    // formData.append("selectedBankId", valueBankId);
+    // formData.append("evidenceFile", image);
+    // console.log(formData, "console");
 
+    const body = {
+      masterBankAccounts: null,
+      evidenceFile: image,
+      email: dataPayment?.email,
+      subscriptionPeriodId: route?.params?.subsctriptionPeriodsId,
+      transferBy: dataPayment?.email,
+      selectedBankId: valueBankId,
+    };
+
+    console.log(body);
     const config = {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         // Authorization: `Bearer ${token}`,
       },
     };
@@ -272,12 +283,7 @@ export default function submitPembayaran({ route, navigation }) {
     };
 
     axios
-      .post(
-        `${baseUrl.URL}api/Auth/SubmitPaymentMobile`,
-        formData,
-        config,
-        timeOut
-      )
+      .post(`${baseUrl.URL}api/Auth/SubmitPaymentMobile`, body, config, timeOut)
       .then((response) => {
         console.log(response.data);
         setIsLoading(false);
@@ -287,6 +293,7 @@ export default function submitPembayaran({ route, navigation }) {
         console.error("Error uploading the file", error);
         setIsLoading(false);
         setModalErrorVis(true);
+        setErrorMsg(error.message);
       });
   };
 
@@ -533,6 +540,19 @@ export default function submitPembayaran({ route, navigation }) {
                 justifyContent: "space-between",
               }}
             >
+              <Text>Harga : </Text>
+              <Text style={{ marginLeft: ms(24) }}>
+                {formatRupiah(dataPayment.amount)}
+              </Text>
+            </View>
+            <Divider />
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
               <Text>PPN : </Text>
               <Text style={{ marginLeft: ms(24) }}>
                 {formatRupiah(dataPayment.taxAmount)}
@@ -578,10 +598,10 @@ export default function submitPembayaran({ route, navigation }) {
         {/* <View style={styles.centeredView}> */}
         <View style={styles.containermodalView}>
           <View style={styles.imgSubmit}>
-            <FontAwesome
-              name="close"
+            <Ionicons
+              name="checkmark-circle"
               size={24}
-              style={{ fontSize: 72, color: COLORS.RED_BG }}
+              style={{ fontSize: 72, color: COLORS.SUCCESS }}
             />
           </View>
           <Text style={styles.modalText}>Submit Pembayaran Berhasil</Text>
@@ -611,6 +631,7 @@ export default function submitPembayaran({ route, navigation }) {
             />
           </View>
           <Text style={styles.modalText}>Error</Text>
+          <Text style={styles.modalText}>{errorMsg}</Text>
           <GeneralButton
             style={{ backgroundColor: COLORS.PRIMARY_MEDIUM }}
             mode="contained"

@@ -216,6 +216,14 @@ export default function PilihPaketPeriod({ navigation }) {
     setValuePemilik(val.accountName);
   };
 
+  function formatRupiah(number) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 2,
+    }).format(number);
+  }
+
   return (
     <RootContainer>
       <AppBar title="Pilih Paket" />
@@ -257,7 +265,7 @@ export default function PilihPaketPeriod({ navigation }) {
                 </Text>
                 <Text>Biaya Langganan</Text>
                 <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                  RP. {e.prices}
+                  {formatRupiah(e.prices)}
                 </Text>
               </View>
             </View>

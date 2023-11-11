@@ -3,16 +3,23 @@ import React from "react";
 import { ms } from "react-native-size-matters";
 import { COLORS, FONTS } from "../../../assets/theme";
 
-export default function CardMenu({ photoUrl, namaMenu, desc, notes }) {
+export default function CardMenu({
+  photoUrl,
+  namaMenu,
+  desc,
+  notes,
+  menuId,
+  onPressNav,
+}) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => onPressNav(menuId)}>
       <View
         style={{
           flexDirection: "row",
           //   justifyContent: "space-between",
 
           marginTop: ms(20),
-          backgroundColor: COLORS.PRIMARY_ULTRASOFT,
+          backgroundColor: COLORS.WHITE,
           borderRadius: ms(12),
         }}
       >

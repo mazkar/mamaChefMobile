@@ -41,7 +41,7 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
@@ -51,8 +51,11 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
     console.log(result);
 
     if (!result.cancelled) {
+      const fileInfo = await FileSystem.getInfoAsync(result.uri);
+      const fileNameFromFileSystem = fileInfo.uri.split("/").pop();
+
       convertToBase64(result.uri);
-      setVideoToShow(result.uri);
+      setVideoToShow(fileNameFromFileSystem);
     }
   };
 

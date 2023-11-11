@@ -50,7 +50,7 @@ import ImagePickerVideo from "./components/ImagePickerVideo";
 import moment from "moment";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-export default function TambahMenu({ handleNext }) {
+export default function TambahTips({ navigation }) {
   const [valueNamaMenu, setValueNamaMenu] = useState("");
   const [valueDesc, setValueDesc] = useState("");
   const [valuNote, setValeNote] = useState("");
@@ -65,11 +65,12 @@ export default function TambahMenu({ handleNext }) {
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [menuId, setMenuId] = useState([]);
+  const [messageError, setMessageError] = useState("");
 
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
 
-    handleNext(menuId);
+    navigation.navigate("Tips");
     // getTaskDetail(route.params.assignmentId);
   };
 
@@ -81,28 +82,23 @@ export default function TambahMenu({ handleNext }) {
 
   const handlePress = async () => {
     setIsLoading(true);
-    // const body = {
-    //   MenuName: valueNamaMenu,
-    //   Description: "no nte",
-    //   Note: valuNote,
-    //   PhotoFile: image,
-    //   VideoFile: video,
-    //   LMBY: user.Email,
-    //   IsPublished: 0,
-    //   LMDT: `${moment().format("YYYY-MM-DD")}`,
-    //   CreatedBy: parseInt(user.UserId),
-    // };
+    const body = {
+      name: valueNamaMenu,
+      description: valueDesc,
+      videoFile: video,
+      createdBy: parseInt(user.UserId),
+    };
 
-    const formData = new FormData();
-    formData.append("MenuName", valueNamaMenu);
-    formData.append("Description", valueDesc);
-    formData.append("Note", valuNote);
-    formData.append("PhotoFile", image);
-    formData.append("VideoFile", video);
-    formData.append("LMBY", user.Email);
-    formData.append("IsPublished", false);
-    formData.append("LMDT", `${moment().format("YYYY-MM-DD")}`);
-    formData.append("CreatedBy", parseInt(user.UserId));
+    // const formData = new FormData();
+    // formData.append("MenuName", valueNamaMenu);
+    // formData.append("Description", valueDesc);
+    // formData.append("Note", valuNote);
+    // formData.append("PhotoFile", image);
+    // formData.append("VideoFile", video);
+    // formData.append("LMBY", user.Email);
+    // formData.append("IsPublished", false);
+    // formData.append("LMDT", `${moment().format("YYYY-MM-DD")}`);
+    // formData.append("CreatedBy", parseInt(user.UserId));
 
     // formData.append("myFile", {
     //   uri: `${image}`, // Replace with the actual file path
@@ -121,7 +117,7 @@ export default function TambahMenu({ handleNext }) {
     // });
     const config = {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
@@ -131,8 +127,8 @@ export default function TambahMenu({ handleNext }) {
 
     axios
       .post(
-        `${baseUrl.URL}api/Menu/RegisterMenuMobile`,
-        formData,
+        `${baseUrl.URL}api/TipsTricks/inserttipstrickmobile`,
+        body,
         config,
         timeOut
       )
@@ -140,44 +136,58 @@ export default function TambahMenu({ handleNext }) {
         console.log(response.data);
         setIsLoading(false);
         setModalSuccessVis(true);
-        setMenuId(response.data.data[0]?.menuId);
+        // setMenuId(response.data.data[0]?.menuId);
       })
       .catch((error) => {
         console.error("Error uploading the file", error);
         setIsLoading(false);
         setModalErrorVis(true);
+        setMessageError(error.message);
       });
   };
 
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Menu" dataTaskPending={[]} />
+        <AppBar title="Tips & Trick" dataTaskPending={[]} />
         <ScrollView style={styles.mainContainer}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "700",
-              color: COLORS.PRIMARY_DARK,
-            }}
-          >
-            Tambah Menu
-          </Text>
+          <View style={{ marginBottom: ms(24) }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "700",
+                color: COLORS.PRIMARY_DARK,
+              }}
+            >
+              Tambah Tips & Trick
+            </Text>
+            <View
+              style={{
+                backgroundColor: "black",
+                borderBottomColor: COLORS.PRIMARY_DARK,
+                borderBottomWidth: 4,
+                width: 24,
+              }}
+            ></View>
+          </View>
+
           <Card
             style={{
-              // backgroundColor: COLORS.PRIMARY_ULTRASOFT,
+              backgroundColor: COLORS.PRIMARY_ULTRASOFT,
               paddingHorizontal: ms(24),
-              paddingVertical: ms(18),
+              paddingVertical: ms(32),
               borderRadius: ms(6),
             }}
           >
             <View style={{ marginBottom: ms(16) }}></View>
             <View>
               <View style={styles.inputForm}>
+                {/* <Text style={styles.text}>Nama Menu</Text> */}
+
                 <GeneralTextInput
                   placeholder="Nama Menu"
                   mode="outlined"
-                  label="Nama Menu"
+                  label="Judul"
                   value={valueNamaMenu}
                   // hasErrors={authFailed}
                   messageError="Wrong Username/Password"
@@ -192,8 +202,8 @@ export default function TambahMenu({ handleNext }) {
                   placeholder="Deskripsi"
                   mode="outlined"
                   value={valueDesc}
-                  // hasErrors={authFailed}
                   label="Deskripsi"
+                  // hasErrors={authFailed}
                   multiline
                   numberOfLines={10}
                   messageError="Wrong Username/Password"
@@ -201,63 +211,30 @@ export default function TambahMenu({ handleNext }) {
                   style={styles.inputUserName}
                 />
               </View>
-              <View style={styles.inputForm}>
-                <GeneralTextInput
-                  placeholder="Catatan"
-                  mode="outlined"
-                  label="Catatan"
-                  // multiline
-                  // numberOfLines={5}
-                  value={valuNote}
-                  // hasErrors={authFailed}
-                  messageError="Wrong Username/Password"
-                  onChangeText={(e) => setValeNote(e)}
-                  style={styles.inputUserName}
-                />
-              </View>
 
               <View style={styles.inputForm}>
-                <Text style={styles.text}>Upload Gambar</Text>
-                <ImagePickerExample
-                  image={image}
-                  setImage={setImage}
-                  imagetoShow={imagetoShow}
-                  setImageToShow={setImageToShow}
-                />
-              </View>
-              <View>
-                {imagetoShow && (
-                  <Image
-                    source={{ uri: imagetoShow }}
-                    style={{ width: 200, height: 200 }}
-                  />
-                )}
-              </View>
-              <View style={styles.inputForm}>
-                <Text style={styles.text}>Upload Video</Text>
+                <Text style={styles.text}>Upload Vide</Text>
                 <ImagePickerVideo
                   video={video}
                   setVideo={setVideo}
                   videoToShow={videoToShow}
                   setVideoToShow={setVideoToShow}
                 />
-                <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                  {videoToShow}
-                </Text>
               </View>
+              <Text style={{ color: COLORS.PRIMARY_DARK }}>{videoToShow}</Text>
               <View>
                 <TouchableOpacity style={styles.button} onPress={handlePress}>
                   <Text style={{ color: "white" }}>Tambah Menu</Text>
                 </TouchableOpacity>
               </View>
               {/* <View>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => console.log(image)}
-              >
-                <Text style={{ color: "white" }}>test</Text>
-              </TouchableOpacity>
-            </View> */}
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => console.log(image)}
+                >
+                  <Text style={{ color: "white" }}>test</Text>
+                </TouchableOpacity>
+              </View> */}
             </View>
           </Card>
         </ScrollView>
@@ -304,6 +281,7 @@ export default function TambahMenu({ handleNext }) {
               />
             </View>
             <Text style={styles.modalText}>Error</Text>
+            <Text style={styles.modalText}>{messageError}</Text>
             <GeneralButton
               style={{ backgroundColor: COLORS.PRIMARY_MEDIUM }}
               mode="contained"

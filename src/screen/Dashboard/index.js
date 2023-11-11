@@ -88,6 +88,10 @@ export default function Dashboard({ navigation }) {
     }
   }
 
+  const onPressNav = (id) => {
+    navigation.navigate("MenuDetail", { menuId: id });
+  };
+
   useEffect(() => {
     getMenu(uid);
   }, []);
@@ -166,6 +170,7 @@ export default function Dashboard({ navigation }) {
                     backgroundColor: COLORS.WHITE,
                     paddingBottom: ms(32),
                   }}
+                  onPress={() => onPressNav(item.menuId)}
                 >
                   <Card.Cover
                     style={{
@@ -210,7 +215,9 @@ export default function Dashboard({ navigation }) {
                     >
                       Deskripsi
                     </Text>
-                    <Paragraph>{item?.description}</Paragraph>
+                    <Text numberOfLines={3} ellipsizeMode="tail">
+                      {item?.description}
+                    </Text>
                   </Card.Content>
                 </Card>
               )}
@@ -220,7 +227,7 @@ export default function Dashboard({ navigation }) {
           <Divider style={{ height: 3, color: "#EEEEEE" }} />
 
           {/* Komponen Tips & Trik */}
-          <View
+          {/* <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
@@ -254,9 +261,9 @@ export default function Dashboard({ navigation }) {
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
 
-          <View style={{ padding: 16, paddingVertical: 32 }}>
+          {/* <View style={{ padding: 16, paddingVertical: 32 }}>
             <FlatList
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.listData} // center emptyData component
@@ -301,12 +308,11 @@ export default function Dashboard({ navigation }) {
                 </Card>
               )}
             />
-          </View>
-          <TouchableOpacity style={styles.button} onPress={handleLogut}>
-            <Text style={{ color: COLORS.WHITE }}>Sign Out</Text>
-          </TouchableOpacity>
+          </View> */}
         </ScrollView>
-
+        <TouchableOpacity style={styles.button} onPress={handleLogut}>
+          <Text style={{ color: COLORS.WHITE }}>Sign Out</Text>
+        </TouchableOpacity>
         <PopUpLoader visible={isLoadingGet} />
       </RootContainer>
     </ColorBgContainer>

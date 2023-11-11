@@ -13,12 +13,15 @@ import { useSelector } from "react-redux";
 import Register from "../screen/Register";
 import KelolaMenu from "../screen/kelolaMenu";
 import TambahMenu from "../screen/kelolaMenu/tambahMenu";
-import submitPembayaran from "../screen/submitPembayaran";
+import SubmitPembayaran from "../screen/submitPembayaran";
 import PilihPaketPeriod from "../screen/submitPembayaran/PilihPaketPeriod";
 import KelolaMember from "../screen/Member/KelolaMember";
 import TambahMember from "../screen/Member/TambahMember";
 import TambahMenuMain from "../screen/kelolaMenu/TambahMenuMain";
-import tipsAndTrick from "../screen/tipsTrick";
+import TipsAndTrick from "../screen/tipsTrick";
+import TambahTips from "../screen/tipsTrick/TambahTips";
+import DetailTips from "../screen/tipsTrick/DetailTips";
+import MenuDetail from "../screen/kelolaMenu/MenuDetail";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -64,7 +67,7 @@ export default function Route() {
       />
       <Tab.Screen
         name="SubmitPembayaran"
-        component={submitPembayaran}
+        component={SubmitPembayaran}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
@@ -82,7 +85,25 @@ export default function Route() {
       />
       <Tab.Screen
         name="Tips"
-        component={tipsAndTrick}
+        component={TipsAndTrick}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="TambahTips"
+        component={TambahTips}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="DetailTips"
+        component={DetailTips}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="MenuDetail"
+        component={MenuDetail}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
@@ -139,8 +160,11 @@ export function BottomNav() {
             iconName = focused
               ? require("../assets/images/userActive.png")
               : require("../assets/images/user.png");
+          } else if (route.name === "Tips") {
+            iconName = focused
+              ? require("../assets/images/tipsIconActive.png")
+              : require("../assets/images/tipsIcon.png");
           }
-
           // You can return any component that you like here!
           return (
             <View
@@ -190,6 +214,12 @@ export function BottomNav() {
       <Tab.Screen
         name="KelolaMenu"
         component={KelolaMenu}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Tips"
+        component={TipsAndTrick}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

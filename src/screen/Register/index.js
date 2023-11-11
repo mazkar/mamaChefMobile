@@ -306,15 +306,15 @@ export default function Register({ navigation }) {
                 onChangeText={(e) => setPassword2(e)}
                 style={styles.inputUserName}
               />
-              {password == password2 && password2 != "" ? (
+              {password == password2 && password != "" ? (
                 <Text style={{ color: COLORS.SUCCESS }} t>
                   Kata Sandi Sesuai
                 </Text>
-              ) : (
-                <Text style={{ color: COLORS.RED_BG }} t>
-                  Kata Tidak Sandi Sesuai
+              ) : password2 != "" ? (
+                <Text style={{ color: COLORS.RED_BG }}>
+                  Kata Sandi Tidak Sesuai
                 </Text>
-              )}
+              ) : null}
 
               {/* <Text>Kata Sandi Minimal 8 Karakter</Text> */}
             </View>

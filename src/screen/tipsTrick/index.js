@@ -46,19 +46,20 @@ import { setUser } from "../../store/models/auth/actions";
 import { baseUrl } from "../../utils/apiURL";
 import CardMenu from "./components/CardMenu";
 
-export default function tipsAndTrick({ navigation }) {
+export default function TipsAndTrick({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [dataTips, setDataTips] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
 
   async function getTips(userId) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickall`,
+        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickbystatus/true`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -81,6 +82,14 @@ export default function tipsAndTrick({ navigation }) {
       setIsLoadingGet(false);
     }
   }
+
+  const onPressDetail = (id, name, description) => {
+    navigation.navigate("DetailTips", {
+      id: id,
+      name: name,
+      desc: description,
+    });
+  };
 
   const onChangeSearch = (query) => setSearchQuery(query);
 
@@ -137,7 +146,7 @@ export default function tipsAndTrick({ navigation }) {
           <View>
             <TouchableOpacity
               style={styles.btnAdd}
-              onPress={() => navigation.navigate("TambahMenu")}
+              onPress={() => navigation.navigate("TambahTips")}
             >
               <Text style={{ color: "white", fontWeight: "700" }}>
                 Tulis Tips & Trick
@@ -145,12 +154,6 @@ export default function tipsAndTrick({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <CardMenu
-            // photoUrl={item?.photoURL}
-            namaMenu="test"
-            // notes={item?.note}
-            desc="test"
-          />
           {/* <View
                   style={{
                     backgroundColor: "black",
@@ -160,22 +163,29 @@ export default function tipsAndTrick({ navigation }) {
                   }}
                 />
               </View> */}
-          {/* <FlatList
+          <FlatList
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listData} // center emptyData component
             // data={surveyOpen}
-            data={dataMenu}
+            data={dataTips}
             // horizontal={true}
-            keyExtractor={(item) => item.menuId}
+            keyExtractor={(item) => item.tipstrickid}
             renderItem={({ item, index }) => (
-              <CardMenu
-                photoUrl={item?.photoURL}
-                namaMenu={item.menuName}
-                notes={item?.note}
-                desc={item?.description}
-              />
+              <>
+                <CardMenu
+                  // photoUrl={item?.photoURL}
+                  namaMenu={item.name}
+                  // notes={item?.note}
+                  id={item.tipstrickid}
+                  onPressDetail={onPressDetail}
+                  desc={item?.description}
+                  selectedId={selectedId}
+                  setSelectedId={setSelectedId}
+                />
+                <Divider />
+              </>
             )}
-          /> */}
+          />
         </View>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />

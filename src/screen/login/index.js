@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import React, { useState, useEffect, useRef } from "react";
-import { HelperText, TextInput, Divider } from "react-native-paper";
+import { HelperText, TextInput, Divider, Modal } from "react-native-paper";
 import useNavigation from "@react-navigation/core";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
@@ -32,6 +32,7 @@ import {
   TextInputPassword,
   PopUpLoader,
 } from "./../../component/index";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../store/models/auth/actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -42,9 +43,17 @@ import { moderateScale } from "react-native-size-matters";
 import Feather from "react-native-vector-icons/Feather";
 import API from "../../utils/apiService";
 import jwtDecode from "jwt-decode";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const LoginPage = ({ navigation }) => {
   const dispatch = useDispatch();
+
+  const [modalErroVis, setModalErrorVis] = useState(false);
+  const hideModalError = () => {
+    setModalErrorVis(false);
+
+    // getTaskDetail(route.params.assignmentId);
+  };
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -55,6 +64,7 @@ const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const token = useSelector((state) => state.auth);
   const [dataTok, setDataTok] = useState("");
+  const [messageError, setMessageError] = useState("");
   const [dataConverToken, setDataConvertToken] = useState(null);
 
   const showPassword = () => {
@@ -148,116 +158,146 @@ const LoginPage = ({ navigation }) => {
     } catch (err) {
       console.error(err, "error");
       setIsLoading(false);
+      setMessageError(err.message);
+      setModalErrorVis(true);
     }
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      {/* <StatusBar backgroundColor="#0E9C4A" translucent={true} /> */}
+    <>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {/* <StatusBar backgroundColor="#0E9C4A" translucent={true} /> */}
 
-      <View style={styles.mainContainer}>
-        <View style={[styles.container, { flexDirection: "column" }]}>
-          <View style={{ marginTop: moderateScale(64) }}>
-            <Text
-              style={{
-                color: COLORS.PRIMARY_DARK,
-                alignSelf: "center",
-                fontSize: moderateScale(18),
-                color: COLORS.GRAY_HARD,
-              }}
-            >
-              LOGIN
-            </Text>
-            {/* <Image
-                style={styles.logo}
-                source={require("../../Assets/Images/Login.png")}
-              /> */}
-          </View>
-          <View style={{ marginTop: moderateScale(32) }}>
-            <Text style={styles.text}>Email</Text>
-
-            <GeneralTextInput
-              placeholder="Email"
-              mode="outlined"
-              value={email}
-              // hasErrors={authFailed}
-              messageError="Wrong Username/Password"
-              onChangeText={(e) => setEmail(e)}
-              style={styles.inputUserName}
-            />
-            <View>
-              <Text style={styles.text}>Password</Text>
-
-              <TextInputPassword
-                placeholder="Password"
-                mode="outlined"
-                value={password}
-                // hasErrors={authFailed}
-                secureTextEntry={true}
-                // messageError="Wrong Username/Password"
-                // icoPress={() => {
-                //   setHidePassword(!hidePassword);
-                //   return false;
-                // }}
-                onChangeText={(e) => setPassword(e)}
-                style={styles.inputUserPassword}
-              />
-              <Text style={styles.text}>Forgot Passsword?</Text>
-            </View>
-
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.textBtn}>Sign In</Text>
-            </TouchableOpacity>
-
-            {/* <TouchableOpacity
-              style={styles.button}
-              onPress={() => console.log(token.user?.UserId)}
-            >
-              <Text style={styles.textBtn}>Sign In</Text>
-            </TouchableOpacity> */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginVertical: 10,
-              }}
-            >
-              <View
-                style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
-              />
-              <View style={styles.txtRegister}>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Register")}
-                >
-                  <Text
-                    style={[styles.textWhite, { color: COLORS.PRIMARY_DARK }]}
-                  >
-                    Daftar
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
-              />
-            </View>
-
-            {/* <TouchableOpacity onPress={() => navigation.navigate("PilihPaket")}>
+        <View style={styles.mainContainer}>
+          <View style={[styles.container, { flexDirection: "column" }]}>
+            <View style={{ marginTop: moderateScale(64) }}>
               <Text
-                style={[styles.textWhite, { color: COLORS.PRIMARY_MEDIUM }]}
+                style={{
+                  color: COLORS.PRIMARY_DARK,
+                  alignSelf: "center",
+                  fontSize: moderateScale(18),
+                  color: COLORS.GRAY_HARD,
+                }}
               >
-                Submit Pembayaran
+                LOGIN
               </Text>
-            </TouchableOpacity> */}
-          </View>
-        </View>
+              {/* <Image
+        style={styles.logo}
+        source={require("../../Assets/Images/Login.png")}
+      /> */}
+            </View>
+            <View style={{ marginTop: moderateScale(32) }}>
+              <Text style={styles.text}>Email</Text>
 
-        {isLoading ? (
-          <PopUpLoader visible={true} />
-        ) : (
-          <PopUpLoader visible={false} />
-        )}
-      </View>
-    </ScrollView>
+              <GeneralTextInput
+                placeholder="Email"
+                mode="outlined"
+                value={email}
+                // hasErrors={authFailed}
+                messageError="Wrong Username/Password"
+                onChangeText={(e) => setEmail(e)}
+                style={styles.inputUserName}
+              />
+              <View>
+                <Text style={styles.text}>Password</Text>
+
+                <TextInputPassword
+                  placeholder="Password"
+                  mode="outlined"
+                  value={password}
+                  // hasErrors={authFailed}
+                  secureTextEntry={true}
+                  // messageError="Wrong Username/Password"
+                  // icoPress={() => {
+                  //   setHidePassword(!hidePassword);
+                  //   return false;
+                  // }}
+                  onChangeText={(e) => setPassword(e)}
+                  style={styles.inputUserPassword}
+                />
+                <Text style={styles.text}>Forgot Passsword?</Text>
+              </View>
+
+              <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.textBtn}>Sign In</Text>
+              </TouchableOpacity>
+
+              {/* <TouchableOpacity
+      style={styles.button}
+      onPress={() => console.log(token.user?.UserId)}
+    >
+      <Text style={styles.textBtn}>Sign In</Text>
+    </TouchableOpacity> */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 10,
+                }}
+              >
+                <View
+                  style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
+                />
+                <View style={styles.txtRegister}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Register")}
+                  >
+                    <Text
+                      style={[styles.textWhite, { color: COLORS.PRIMARY_DARK }]}
+                    >
+                      Daftar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
+                />
+              </View>
+
+              {/* <TouchableOpacity onPress={() => navigation.navigate("PilihPaket")}>
+      <Text
+        style={[styles.textWhite, { color: COLORS.PRIMARY_MEDIUM }]}
+      >
+        Submit Pembayaran
+      </Text>
+    </TouchableOpacity> */}
+            </View>
+          </View>
+
+          {isLoading ? (
+            <PopUpLoader visible={true} />
+          ) : (
+            <PopUpLoader visible={false} />
+          )}
+        </View>
+      </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalErroVis}
+        onRequestClose={hideModalError}
+      >
+        {/* <View style={styles.centeredView}> */}
+        <View style={styles.containermodalView}>
+          <View style={styles.imgSubmit}>
+            <FontAwesome
+              name="close"
+              size={24}
+              style={{ fontSize: 72, color: COLORS.RED_BG }}
+            />
+          </View>
+          <Text style={styles.modalText}>{messageError}</Text>
+          <GeneralButton
+            style={styles.gettingButton}
+            mode="contained"
+            onPress={hideModalError}
+          >
+            Close
+          </GeneralButton>
+        </View>
+        {/* </View> */}
+      </Modal>
+    </>
   );
 };
 
@@ -389,4 +429,29 @@ const styles = StyleSheet.create({
   },
   inputUserName: { backgroundColor: COLORS.WHITE },
   inputUserPassword: { backgroundColor: COLORS.WHITE },
+  containermodalView: {
+    flexDirection: "column",
+    alignSelf: "center",
+    position: "absolute",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+  modalText: {
+    paddingTop: 20,
+    marginBottom: 28,
+    textAlign: "center",
+    alignSelf: "center",
+    fontSize: 17,
+    letterSpacing: 1,
+    lineHeight: 24,
+    width: constants.SCREEN_WIDTH * 0.7,
+    fontWeight: "600",
+  },
+  imgSubmit: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

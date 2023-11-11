@@ -82,6 +82,10 @@ export default function KelolaMenu({ navigation }) {
 
   const onChangeSearch = (query) => setSearchQuery(query);
 
+  const onPressNav = (id) => {
+    navigation.navigate("MenuDetail", { menuId: id });
+  };
+
   useEffect(() => {
     getMenu(uid);
   }, []);
@@ -160,12 +164,17 @@ export default function KelolaMenu({ navigation }) {
             // horizontal={true}
             keyExtractor={(item) => item.menuId}
             renderItem={({ item, index }) => (
-              <CardMenu
-                photoUrl={item?.photoURL}
-                namaMenu={item.menuName}
-                notes={item?.note}
-                desc={item?.description}
-              />
+              <>
+                <CardMenu
+                  photoUrl={item?.photoURL}
+                  namaMenu={item.menuName}
+                  notes={item?.note}
+                  menuId={item.menuId}
+                  desc={item?.description}
+                  onPressNav={onPressNav}
+                />
+                <Divider style={{ marginTop: ms(24) }} />
+              </>
             )}
           />
         </View>
