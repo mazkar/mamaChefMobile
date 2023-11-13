@@ -66,17 +66,12 @@ const AppBar = (props) => {
               />
             }
           >
-            {props.dataTaskPending?.map((e) => {
-              return (
-                <>
-                  <Menu.Item
-                    onPress={() => {}}
-                    title={`Task ${props.dataTaskPending[0].transportAssignmentRefId} Assigned to You`}
-                  />
-                  <Divider />
-                </>
-              );
-            })}
+            <>
+              <Menu.Item onPress={() => {}} title="Item 1" />
+              <Menu.Item onPress={() => {}} title="Item 2" />
+              <Divider />
+              <Menu.Item onPress={() => {}} title="Item 3" />
+            </>
           </Menu>
         </View>
         {/* <View>
@@ -86,6 +81,9 @@ const AppBar = (props) => {
     </View>
   ) : (
     <View style={styles.appBarContainer}>
+      <View style={styles.logoWrapper}>
+        <Image source={require("../../../assets/images/iconHeader.png")} />
+      </View>
       <View style={{ flexDirection: "column" }}>
         <Text
           style={{
@@ -96,8 +94,6 @@ const AppBar = (props) => {
         >
           {props.title}
         </Text>
-
-        <View style={styles.logoWrapper}></View>
       </View>
 
       <View style={styles.notif}>
@@ -106,31 +102,28 @@ const AppBar = (props) => {
             visible={notifVisible}
             onDismiss={closeNotif}
             anchor={
-              <FaIcons
-                onPress={showNotif}
-                style={{
-                  fontSize: 22,
-                  color: COLORS.PRIMARY_MEDIUM,
-                  marginRight: 12,
-                  color: COLORS.PRIMARY_DARK,
-                }}
-                name={
-                  notifVisible ? "notifications-sharp" : "notifications-outline"
-                }
-              />
+              // <FaIcons
+              //   onPress={showNotif}
+              //   style={{
+              //     fontSize: 22,
+              //     color: COLORS.PRIMARY_MEDIUM,
+              //     marginRight: 12,
+              //     color: COLORS.PRIMARY_DARK,
+              //   }}
+              //   name={
+              //     notifVisible ? "notifications-sharp" : "notifications-outline"
+              //   }
+              // />
+              <TouchableOpacity onPress={() => setNotifVisible(!notifVisible)}>
+                <Avatar.Text size={32} label="A" />
+              </TouchableOpacity>
             }
           >
-            {props.dataTaskPending?.map((e) => {
-              return (
-                <>
-                  <Menu.Item
-                    onPress={() => {}}
-                    title={`Task ${props.dataTaskPending[0].transportAssignmentRefId} Assigned to You`}
-                  />
-                  <Divider />
-                </>
-              );
-            })}
+            <>
+              <Menu.Item onPress={() => props.handleLogut()} title="Sign Out" />
+
+              <Divider />
+            </>
           </Menu>
         </View>
       </View>
@@ -151,7 +144,7 @@ const styles = StyleSheet.create({
     height: 80,
     elevation: 3,
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 2,
     borderBottomWidth: Platform.OS === "ios" ? 1 : 0,
     borderColor: Platform.OS === "ios" ? COLORS.GRAY_MEDIUM : null,
   },
@@ -159,6 +152,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 12,
+    marginRight: 8,
   },
   notif: {
     // paddingVertical: 4,
@@ -166,6 +160,7 @@ const styles = StyleSheet.create({
     // marginTop: ms(16),
 
     // paddingVertical: 12,
+    marginRight: 12,
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",

@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -22,7 +20,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mamachef.mamachef"
+      "package": "com.mamachef.mamachef",
+      "permissions": ["INTERNET"],
+      "networkSecurityConfig": "path/to/network_security_config.xml"
     },
     "web": {
       "favicon": "./assets/favicon.png"
