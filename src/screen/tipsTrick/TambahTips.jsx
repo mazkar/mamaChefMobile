@@ -224,7 +224,7 @@ export default function TambahTips({ navigation }) {
               <Text style={{ color: COLORS.PRIMARY_DARK }}>{videoToShow}</Text>
               <View>
                 <TouchableOpacity style={styles.button} onPress={handlePress}>
-                  <Text style={{ color: "white" }}>Tambah Menu</Text>
+                  <Text style={{ color: "white" }}>Tambahkan Tips</Text>
                 </TouchableOpacity>
               </View>
               {/* <View>

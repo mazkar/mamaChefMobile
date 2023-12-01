@@ -48,13 +48,12 @@ import { setUser } from "../../store/models/auth/actions";
 import StarRating from "react-native-star-rating";
 import { baseUrl } from "../../utils/apiURL";
 
-export default function Dashboard({ navigation }) {
+export default function AboutUs({ navigation }) {
   const dispatch = useDispatch();
   const [dataMenu, setDataMenu] = useState([]);
   const [dataMenu2, setDataMenu2] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const uid = useSelector((state) => state?.auth?.user?.UserId);
-  const user = useSelector((state) => state?.auth?.user);
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [messageError, setMessageError] = useState("");
@@ -133,10 +132,10 @@ export default function Dashboard({ navigation }) {
     navigation.navigate("MenuDetail", { menuId: id });
   };
 
-  useEffect(() => {
-    getMenu(uid);
-    getMenuNewest(uid);
-  }, []);
+  // useEffect(() => {
+  //   getMenu(uid);
+  //   getMenuNewest(uid);
+  // }, []);
 
   return (
     <ColorBgContainer>
@@ -166,7 +165,81 @@ export default function Dashboard({ navigation }) {
               </Text>
             </ImageBackground>
           </View>
-          {/* <Button onPress={() => console.log(user)}>Test</Button> */}
+          <View style={{ paddingHorizontal: ms(12), marginTop: ms(12) }}>
+            <View>
+              <Text style={{ fontWeight: "600" }}>TENTANG MAMACHEF</Text>
+              <Text
+                style={{
+                  color: COLORS.BLACK,
+                  fontWeight: "300",
+                  marginTop: ms(8),
+                }}
+              >
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </Text>
+            </View>
+            <View style={{ marginTop: ms(8) }}>
+              <Text style={{ fontWeight: "600" }}>
+                Navigasi yang Simple dan Intuitif
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.BLACK,
+                  fontWeight: "300",
+                  marginTop: ms(8),
+                }}
+              >
+                Lorem Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard dummy
+                text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+              </Text>
+            </View>
+            <View style={{ marginTop: ms(32), flex: 1 }}>
+              <Text style={{ fontWeight: "600" }}>HUBUNGI KAMI</Text>
+              <View style={{ flex: 1, flexDirection: "row" }}>
+                <View style={{ marginRight: ms(4) }}>
+                  <Image
+                    source={require("../../assets/images/wha.png")}
+                    style={{
+                      height: ms(20),
+                      width: ms(20),
+                      marginBottom: ms(8),
+                    }}
+                  />
+                  <Image
+                    source={require("../../assets/images/ig.png")}
+                    style={{
+                      height: ms(20),
+                      width: ms(20),
+                      marginBottom: ms(8),
+                    }}
+                  />
+                  <Image
+                    source={require("../../assets/images/gm.png")}
+                    style={{
+                      height: ms(20),
+                      width: ms(20),
+                      marginBottom: ms(8),
+                    }}
+                  />
+                </View>
+                <View>
+                  <Text style={{ marginBottom: ms(8) }}>
+                    : (+62) 8125622133
+                  </Text>
+                  <Text style={{ marginBottom: ms(8) }}>
+                    : mamachef@gmail.com
+                  </Text>
+                  <Text style={{ marginBottom: ms(8) }}>: mama_chef_idn</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
           {/* <View style={styles.continerSearch}>
             <Searchbar
               placeholder="Cari Menu"
@@ -174,296 +247,6 @@ export default function Dashboard({ navigation }) {
               value={searchQuery}
             />
           </View> */}
-          <View style={{ paddingHorizontal: ms(8) }}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: ms(12),
-                marginTop: ms(20),
-              }}
-            >
-              <View>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: "700",
-                    color: COLORS.GRAY_HARD,
-                  }}
-                >
-                  Menu Baru
-                </Text>
-                <View
-                  style={{
-                    backgroundColor: "black",
-                    borderBottomColor: COLORS.PRIMARY_DARK,
-                    borderBottomWidth: 4,
-                    width: 24,
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("KelolaMenu")}
-                >
-                  <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                    Lihat Semua ({dataMenu2?.length})
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={{ paddingVertical: 32 }}>
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listData} // center emptyData component
-                // data={surveyOpen}
-                data={dataMenu2}
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
-                keyExtractor={(item) => item.menuId}
-                renderItem={({ item, index }) => (
-                  <Card
-                    style={{
-                      borderRadius: 8,
-                      width: ms(138),
-                      height: ms(168),
-                      marginLeft: ms(12),
-                      borderTopStartRadius: 10,
-                      borderTopEndRadius: 10,
-                      backgroundColor: COLORS.WHITE,
-                      paddingBottom: ms(32),
-                    }}
-                    onPress={() => onPressNav(item.menuId)}
-                  >
-                    <Card.Cover
-                      style={{
-                        width: "auto",
-                        height: "80%",
-                        borderTopStartRadius: 10,
-                        borderTopEndRadius: 10,
-                      }}
-                      source={{
-                        uri: `data:image/jpeg;base64,${item?.photoURL}`,
-                      }}
-                    />
-                    <Card.Content
-                      style={{
-                        // marginTop: ms(4),
-                        // width: "100%",
-                        paddingHorizontal: ms(4),
-                        // backgroundColor: "red",
-                      }}
-                    >
-                      <View
-                        style={{
-                          backgroundColor: COLORS.PRIMARY_DARK,
-                          borderRadius: ms(10),
-                          alignContent: "center",
-                          // justifyContent: "center",
-                          // flex: 1,
-                          marginTop: ms(4),
-                          width: "100%",
-                          paddingHorizontal: ms(6),
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            alignSelf: "center",
-                            fontWeight: "600",
-                            color: COLORS.WHITE,
-                          }}
-                        >
-                          {item?.menuName}
-                        </Text>
-                      </View>
-
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "500",
-                          color: COLORS.PRIMARY_DARK,
-                        }}
-                      >
-                        Oleh : Budi
-                      </Text>
-                      {/* <Text numberOfLines={3} ellipsizeMode="tail">
-                      {item?.description}
-                    </Text> */}
-                    </Card.Content>
-                  </Card>
-                )}
-              />
-            </View>
-
-            <Divider style={{ height: 3, color: "#EEEEEE" }} />
-
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                paddingHorizontal: ms(12),
-                marginTop: ms(20),
-              }}
-            >
-              <View>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontWeight: "700",
-                    color: COLORS.GRAY_HARD,
-                  }}
-                >
-                  Rekomendasi Menu
-                </Text>
-                <View
-                  style={{
-                    backgroundColor: "black",
-                    borderBottomColor: COLORS.PRIMARY_DARK,
-                    borderBottomWidth: 4,
-                    width: 24,
-                  }}
-                />
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("KelolaMenu")}
-                >
-                  <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                    Lihat Semua ({dataMenu?.length})
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={{ paddingVertical: 32 }}>
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listData} // center emptyData component
-                // data={surveyOpen}
-                data={dataMenu}
-                showsHorizontalScrollIndicator={false}
-                // horizontal={true}
-                keyExtractor={(item) => item.menuId}
-                renderItem={({ item, index }) => (
-                  <Card
-                    style={{
-                      borderRadius: 8,
-                      width: "95%",
-                      height: ms(186),
-                      // paddingRight: ms(32),
-                      marginLeft: ms(12),
-                      borderTopStartRadius: 10,
-                      borderTopEndRadius: 10,
-                      marginBottom: ms(24),
-                      backgroundColor: COLORS.WHITE,
-                      paddingBottom: ms(32),
-                    }}
-                    // onPress={() => onPressNav(item.menuId)}
-                  >
-                    <Card.Content
-                      style={{
-                        // marginTop: ms(4),
-                        // width: "100%",
-                        // flex: 1,
-                        paddingHorizontal: ms(4),
-
-                        // backgroundColor: "red",
-                      }}
-                    >
-                      <View style={{ flexDirection: "row" }}>
-                        <View
-                          style={{
-                            // backgroundColor: COLORS.PRIMARY_DARK,
-                            borderRadius: ms(10),
-                            alignContent: "center",
-                            // justifyContent: "center",
-                            // flex: 1,
-                            // width: "100%",
-                            paddingHorizontal: ms(6),
-                          }}
-                        >
-                          <Image
-                            source={{
-                              uri: `data:image/jpeg;base64,${item?.photoURL}`,
-                            }}
-                            style={{
-                              width: ms(100),
-                              height: ms(100),
-                              borderRadius: ms(50),
-                            }}
-                          />
-                        </View>
-                        <View>
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            style={{
-                              fontSize: 16,
-                              fontWeight: "700",
-                              color: COLORS.GRAY_HARD,
-                            }}
-                          >
-                            {item.menuName}
-                          </Text>
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            style={{
-                              fontSize: 12,
-                              fontWeight: "400",
-                              color: COLORS.GRAY_HARD,
-                            }}
-                          >
-                            Ramon
-                          </Text>
-                          <View style={{ flexDirection: "row" }}>
-                            <Text>(4)</Text>
-                            <StarRating
-                              disabled={true}
-                              maxStars={5}
-                              rating={rating}
-                              selectedStar={(rating) => setRating(rating)}
-                              fullStarColor={"gold"}
-                              starStyle={{
-                                marginTop: ms(4),
-                                marginLeft: ms(2),
-                              }}
-                              containerStyle={{ width: 80 }}
-                              starSize={14}
-                            />
-                          </View>
-                        </View>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <View>
-                          <TouchableOpacity
-                            onPress={() => onPressNav(item.menuId)}
-                            style={styles.btnAdd}
-                            // onPress={() => navigation.navigate("TambahTips")}
-                          >
-                            <Text style={{ color: "white", fontWeight: "700" }}>
-                              Lihat Resep
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-
-                      {/* <Text numberOfLines={3} ellipsizeMode="tail">
-                      {item?.description}
-                    </Text> */}
-                    </Card.Content>
-                  </Card>
-                )}
-              />
-            </View>
-          </View>
 
           {/* Komponen Tips & Trik */}
           {/* <View

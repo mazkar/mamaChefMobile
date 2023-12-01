@@ -48,6 +48,7 @@ import { Video } from "expo-av";
 import { decode } from "base-64";
 
 import * as FileSystem from "expo-file-system";
+import moment from "moment/moment";
 // import RNFS from "react-native-fs";
 
 export default function DetailTips({ navigation, route }) {
@@ -55,6 +56,7 @@ export default function DetailTips({ navigation, route }) {
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [dataTips, setDataTips] = useState([]);
+  const [dataTanggal, setDataTangal] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [base64, setBase64] = useState(null);
@@ -89,6 +91,7 @@ export default function DetailTips({ navigation, route }) {
       //   convertBase64ToUrl(res.data.data.video);
       setBase64(res.data.data.video);
       setDataTips(res.data.data.description);
+      setDataTangal(res.data.data.createdDate);
       // test for status you want, etc
       // console.log(res.data.data, "==meeeeeeeee");
 
@@ -133,6 +136,30 @@ export default function DetailTips({ navigation, route }) {
         <AppBar title="Tips & Trick" dataTaskPending={[]} />
 
         <View style={styles.mainContainer}>
+          <View style={{ marginTop: ms(12) }}>
+            {/* <View style={{ marginBottom: ms(22) }}>
+              <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                Video Tips & Trick
+              </Text>
+            </View> */}
+            <Video
+              ref={videoRef}
+              // source={{ uri: videoUri }}
+              source={{
+                uri: `data:video/mp4;base64,${base64}`,
+              }}
+              style={styles.video}
+              useNativeControls // Enable built-in controls
+              resizeMode="contain"
+              isLooping
+            />
+            <View style={styles.buttonContainer}>
+              <Button
+                title={isPlaying ? "Pause" : "Play"}
+                onPress={togglePlay}
+              />
+            </View>
+          </View>
           <View style={{ marginBottom: ms(16) }}>
             <Text
               style={{
@@ -154,6 +181,37 @@ export default function DetailTips({ navigation, route }) {
             ></View>
           </View>
 
+          <View
+            style={{
+              flexDirection: "row",
+              // backgroundColor: COLORS.PRIMARY_ULTRASOFT,
+              padding: ms(0),
+              borderRadius: ms(6),
+            }}
+          >
+            <View style={{ alignSelf: "center" }}>
+              <Avatar.Text
+                size={38}
+                label="A"
+                color={COLORS.PRIMARY_ULTRASOFT}
+              />
+            </View>
+            <View style={{ marginLeft: ms(6) }}>
+              <Text>
+                <Text style={{ color: COLORS.DARK }}>dibuat oleh {""}</Text>
+                <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                  aulian26@gmail.com
+                </Text>
+              </Text>
+
+              <Text
+                style={{ color: COLORS.DARK, fontSize: 11, fontWeight: "300" }}
+              >
+                Tanggal {moment(dataTanggal).format("YYYY-MMM-DD")}
+              </Text>
+            </View>
+          </View>
+          <Divider style={{ height: ms(2), marginTop: ms(24) }} />
           <View style={{ paddingHorizontal: ms(12) }}>
             <View
               style={{
@@ -163,35 +221,10 @@ export default function DetailTips({ navigation, route }) {
             >
               <View style={{ marginBottom: ms(22) }}>
                 <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Deskripsi
+                  Tips Anda
                 </Text>
               </View>
               <Text style={{ color: COLORS.PRIMARY_DARK }}>{dataTips}</Text>
-            </View>
-            <Divider style={{ height: ms(2), marginTop: ms(24) }} />
-            <View style={{ marginTop: ms(12) }}>
-              <View style={{ marginBottom: ms(22) }}>
-                <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Video Tips & Trick
-                </Text>
-              </View>
-              <Video
-                ref={videoRef}
-                // source={{ uri: videoUri }}
-                source={{
-                  uri: `data:video/mp4;base64,${base64}`,
-                }}
-                style={styles.video}
-                useNativeControls // Enable built-in controls
-                resizeMode="contain"
-                isLooping
-              />
-              <View style={styles.buttonContainer}>
-                <Button
-                  title={isPlaying ? "Pause" : "Play"}
-                  onPress={togglePlay}
-                />
-              </View>
             </View>
           </View>
 

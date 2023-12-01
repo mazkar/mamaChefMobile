@@ -85,11 +85,11 @@ export default function CardMenu({
           style={styles.btnAdd}
           onPress={() => onPressDetail(id, namaMenu, desc)}
         >
-          <Text style={{ color: "white" }}>Detail</Text>
+          <Text style={{ color: "white" }}>Lihat Detail</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btnAdd2}>
+        {/* <TouchableOpacity style={styles.btnAdd2}>
           <Text style={{ color: "white" }}>Edit</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   btnAdd: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(24),
+    width: widthPercentageToDP(28),
     height: heightPercentageToDP(6),
     justifyContent: "center",
     alignItems: "center",

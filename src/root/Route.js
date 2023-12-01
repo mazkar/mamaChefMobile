@@ -22,12 +22,18 @@ import TipsAndTrick from "../screen/tipsTrick";
 import TambahTips from "../screen/tipsTrick/TambahTips";
 import DetailTips from "../screen/tipsTrick/DetailTips";
 import MenuDetail from "../screen/kelolaMenu/MenuDetail";
+import EditProfil from "../screen/Profile/EditProfil";
+
+import MenuDelegationMember from "../screen/MenuDeleationMember";
+import MenuDelegation from "../screen/MenuDeleation";
+import AboutUs from "../screen/AboutUs";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function Route() {
   const token = useSelector((state) => state.auth.token);
+
   return (
     <Stack.Navigator
       initialRouteName={token == null ? "Login" : "Main"}
@@ -107,12 +113,31 @@ export default function Route() {
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="UbahProfile"
+        component={EditProfil}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="AboutUs"
+        component={AboutUs}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
 
 export function BottomNav() {
   const Height = Dimensions.get("window").height;
+  const user = useSelector((state) => state?.auth?.user);
 
   return (
     <Tab.Navigator
@@ -148,6 +173,10 @@ export function BottomNav() {
             iconName = focused
               ? require("../assets/images/homeActive.png")
               : require("../assets/images/home.png");
+          } else if (route.name === "MenuDelegationMember") {
+            iconName = focused
+              ? require("../assets/images/homeActive.png")
+              : require("../assets/images/home.png");
           } else if (route.name === "KelolaMenu") {
             iconName = focused
               ? require("../assets/images/message.png")
@@ -164,6 +193,14 @@ export function BottomNav() {
             iconName = focused
               ? require("../assets/images/tipsIconActive.png")
               : require("../assets/images/tipsIcon.png");
+          } else if (route.name === "MenuDelegation") {
+            iconName = focused
+              ? require("../assets/images/calendarActive.png")
+              : require("../assets/images/calendar.png");
+          } else if (route.name === "MenuDelegationMember") {
+            iconName = focused
+              ? require("../assets/images/homeActive.png")
+              : require("../assets/images/home.png");
           }
           // You can return any component that you like here!
           return (
@@ -189,57 +226,93 @@ export function BottomNav() {
         },
       })}
     >
-      <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Member"
-        component={KelolaMember}
-        options={{ headerShown: false }}
-      />
-      {/* <Tab.Screen
-        name="Task2"
-        component={TaskManagementAdmin}
-        options={{ headerShown: false }}
-      /> */}
-      {/* <Tab.Screen
-        name="Employee"
-        component={Profile}
-        // options={{headerShown: false}}
-        options={{ headerShown: false }}
-      /> */}
+      {user?.RoleId == "2" ? (
+        <>
+          <Tab.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{ headerShown: false }}
+          />
 
-      <Tab.Screen
-        name="KelolaMenu"
-        component={KelolaMenu}
-        // options={{headerShown: false}}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Tips"
-        component={TipsAndTrick}
-        // options={{headerShown: false}}
-        options={{ headerShown: false }}
-      />
-      {/* <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Task"
-        component={TaskManagement}
-        options={{ headerShown: false }}
-      />
-     
-      <Tab.Screen
-        name="Profile2"
-        component={Profile}
-        // options={{headerShown: false}}
-        options={{ headerShown: false }}
-      /> */}
+          <Tab.Screen
+            name="Member"
+            component={KelolaMember}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="KelolaMenu"
+            component={KelolaMenu}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="Tips"
+            component={TipsAndTrick}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="MenuDelegation"
+            component={MenuDelegation}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+        </>
+      ) : user?.RoleId == "3" ? (
+        <>
+          <Tab.Screen
+            name="MenuDelegationMember"
+            component={MenuDelegationMember}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="Tips"
+            component={TipsAndTrick}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+        </>
+      ) : (
+        <>
+          <Tab.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{ headerShown: false }}
+          />
+
+          <Tab.Screen
+            name="Member"
+            component={KelolaMember}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="KelolaMenu"
+            component={KelolaMenu}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="Tips"
+            component={TipsAndTrick}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="MenuDelegation"
+            component={MenuDelegation}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+
+          <Tab.Screen
+            name="MenuDelegationMember"
+            component={MenuDelegationMember}
+            // options={{headerShown: false}}
+            options={{ headerShown: false }}
+          />
+        </>
+      )}
     </Tab.Navigator>
   );
 }

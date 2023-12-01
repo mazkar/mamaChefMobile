@@ -120,6 +120,10 @@ const AppBar = (props) => {
             }
           >
             <>
+              <Menu.Item
+                onPress={() => props.navigation.navigate("Profile")}
+                title="Pengaturan"
+              />
               <Menu.Item onPress={() => props.handleLogut()} title="Sign Out" />
 
               <Divider />

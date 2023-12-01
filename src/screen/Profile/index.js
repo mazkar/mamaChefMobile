@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import {
   AppBar,
@@ -18,7 +18,8 @@ import { baseUrl } from "../../utils/apiURL";
 export default function Profile({ navigation }) {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("Azka");
-  const user = useSelector((state) => state.auth.userData);
+  // const user = useSelector((state) => state.auth.userData);
+  const user = useSelector((state) => state?.auth?.user);
 
   const handleLogut = () => {
     dispatch(resetReducer());
@@ -31,143 +32,245 @@ export default function Profile({ navigation }) {
   return (
     <ColorBgContainer style={{ paddingHorizontal: 24, paddingVertical: 72 }}>
       <RootContainer isTransparent>
-        <AppBar />
+        <AppBar title="Pengaturan" />
         <View style={styles.mainContainer}>
-          <View style={{ flexDirection: "row", marginBottom: 22 }}>
-            <Image
-              source={require("../../assets/images/profile.png")}
-              style={{ width: 18, height: 24 }}
-            />
-            <View>
-              {/* <Button onPress={() => console.log(user)}>Test</Button> */}
+          <View>
+            <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
+              <Image source={require("../../assets/images/IconProfile.png")} />
               <Text
                 style={{
-                  fontSize: 20,
+                  marginLeft: ms(4),
+                  color: COLORS.GRAY_HARD,
                   fontWeight: "600",
-                  marginLeft: 12,
-                  marginBottom: 2,
                 }}
               >
-                Profile
+                PROFIL
               </Text>
+            </View>
+            <Card
+              style={{
+                backgroundColor: "#ffff",
+                paddingHorizontal: 16,
+                paddingVertical: 16,
+              }}
+            >
               <View
                 style={{
-                  backgroundColor: "black",
-                  borderBottomColor: COLORS.PRIMARY_MEDIUM,
-                  borderBottomWidth: 4,
-                  width: 24,
-                  marginLeft: 12,
+                  justifyContent: "space-between",
+                  // alignItems: "center",
+                  flexDirection: "row",
+                  marginBottom: 12,
+                  marginTop: 12,
                 }}
-              />
-            </View>
-          </View>
-          <Card
-            style={{
-              backgroundColor: "#ffff",
-              paddingHorizontal: 26,
-              paddingVertical: 32,
-            }}
-          >
-            <View
-              style={{
-                justifyContent: "flex-start",
-                // alignItems: "center",
-                flexDirection: "row",
-                marginBottom: 12,
-                marginTop: 12,
-              }}
-            >
-              <Avatar.Text size={32} label="MV" color={COLORS.WHITE} />
-              <View style={{ marginLeft: ms(12) }}>
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <Avatar.Text size={32} label="A" color={COLORS.WHITE} />
+                  <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
+                    <Text>
+                      {user.FirstName}
+                      {""}
+                      {user.LastName}
+                    </Text>
+                  </View>
+                  <View style={{ alignSelf: "center" }}>
+                    <Image
+                      source={require("../../assets/images/checked.png")}
+                    />
+                  </View>
+                </View>
+                <View style={{ alignSelf: "center" }}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("UbahProfile")}
+                  >
+                    <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                      Ubah Profil
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={{ marginLeft: ms(12) }}>
                 <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
                 <Text style={{ fontWeight: "300" }}>Mover</Text>
+              </View> */}
               </View>
+            </Card>
+          </View>
+
+          {/* Menu Favorit */}
+
+          <View style={{ marginTop: ms(32) }}>
+            <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
+              <Image source={require("../../assets/images/Love.png")} />
+              <Text
+                style={{
+                  marginLeft: ms(4),
+                  color: COLORS.GRAY_HARD,
+                  fontWeight: "600",
+                }}
+              >
+                FAVORIT
+              </Text>
             </View>
-            <Divider bold />
-            <View
+            <Card
               style={{
-                justifyContent: "space-between",
-                // alignItems: "center",
-                flexDirection: "row",
-                marginBottom: 12,
-                marginTop: 12,
+                backgroundColor: "#ffff",
+                paddingHorizontal: 16,
+                paddingVertical: 10,
               }}
             >
-              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "600" }}>
-                USER LOGIN
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  // alignItems: "center",
+                  flexDirection: "row",
+                  marginBottom: 12,
+                  marginTop: 12,
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ alignSelf: "center" }}>
+                    <Image source={require("../../assets/images/Foods.png")} />
+                  </View>
+                  <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
+                    <Text style={{ color: COLORS.GRAY_HARD }}>
+                      Menu Favorit
+                    </Text>
+                  </View>
+                </View>
+                <View style={{ alignSelf: "center" }}>
+                  <TouchableOpacity>
+                    <Image
+                      source={require("../../assets/images/ArrowRight.png")}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={{ marginLeft: ms(12) }}>
+                <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
+                <Text style={{ fontWeight: "300" }}>Mover</Text>
+              </View> */}
+              </View>
+            </Card>
+          </View>
+
+          {/* Keamanan */}
+          <View style={{ marginTop: ms(32) }}>
+            <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
+              <Image source={require("../../assets/images/Keamanan.png")} />
+              <Text
+                style={{
+                  marginLeft: ms(4),
+                  color: COLORS.GRAY_HARD,
+                  fontWeight: "600",
+                }}
+              >
+                KEAMANAN
               </Text>
-              <Text>{user?.userLogin}</Text>
             </View>
-            <Divider bold />
-            <View
+
+            <Card
               style={{
-                justifyContent: "space-between",
-                // alignItems: "center",
-                flexDirection: "row",
-                marginBottom: 12,
-                marginTop: 12,
+                backgroundColor: "#ffff",
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                marginTop: ms(8),
               }}
             >
-              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "600" }}>
-                Email
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  // alignItems: "center",
+                  flexDirection: "row",
+                  marginBottom: 12,
+                  marginTop: 12,
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <View style={{ alignSelf: "center" }}>
+                    <Image
+                      source={require("../../assets/images/IconPass.png")}
+                    />
+                  </View>
+                  <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
+                    <Text style={{ color: COLORS.GRAY_HARD }}>
+                      Ubah Kata Sandi
+                    </Text>
+                  </View>
+                </View>
+                <View style={{ alignSelf: "center" }}>
+                  <TouchableOpacity>
+                    <Image
+                      source={require("../../assets/images/ArrowRight.png")}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={{ marginLeft: ms(12) }}>
+                <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
+                <Text style={{ fontWeight: "300" }}>Mover</Text>
+              </View> */}
+              </View>
+            </Card>
+          </View>
+
+          {/* KONTAK */}
+
+          <View style={{ marginTop: ms(32) }}>
+            <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
+              <Image source={require("../../assets/images/Kontak.png")} />
+              <Text
+                style={{
+                  marginLeft: ms(4),
+                  color: COLORS.GRAY_HARD,
+                  fontWeight: "600",
+                }}
+              >
+                TENTANG KAMI
               </Text>
-              <Text>{user?.email}</Text>
             </View>
-            <Divider bold />
-            <View
+            <Card
               style={{
-                justifyContent: "space-between",
-                // alignItems: "center",
-                flexDirection: "row",
-                marginBottom: 12,
-                marginTop: 12,
+                backgroundColor: "#ffff",
+                paddingHorizontal: 16,
+                paddingVertical: 10,
               }}
             >
-              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "600" }}>
-                PHONE NUMBER
-              </Text>
-              <Text>{user?.phoneNo}</Text>
-            </View>
-            <Divider bold />
-            <View
-              style={{
-                justifyContent: "space-between",
-                // alignItems: "center",
-                flexDirection: "row",
-                marginBottom: 12,
-                marginTop: 12,
-              }}
-            >
-              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "600" }}>
-                USER TITLE
-              </Text>
-              <Text>Mover</Text>
-            </View>
-            <Divider bold />
-            <View
-              style={{
-                justifyContent: "space-between",
-                // alignItems: "center",
-                flexDirection: "row",
-                marginBottom: 12,
-                marginTop: 12,
-              }}
-            >
-              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "600" }}>
-                EMPLOYEE ID
-              </Text>
-              <Text>{user?.userID}</Text>
-            </View>
-          </Card>
-          <View style={{ marginTop: ms(18) }}>
-            <Text style={{ color: "#D2D2D2" }}>APP VERSION 1.0.0</Text>
-            <GeneralButton
-              style={{ backgroundColor: "#F87272", marginTop: ms(18) }}
-              mode="contained"
-              onPress={() => handleLogut()}
-            >
-              SIGN OUT
-            </GeneralButton>
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  // alignItems: "center",
+                  flexDirection: "row",
+                  marginBottom: 12,
+                  marginTop: 12,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("AboutUs")}
+                  style={{ flexDirection: "row" }}
+                >
+                  <View style={{ alignSelf: "center" }}>
+                    <Image source={require("../../assets/images/Kontak.png")} />
+                  </View>
+                  <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
+                    <Text style={{ color: COLORS.GRAY_HARD }}>
+                      Tentang Kami
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <View style={{ alignSelf: "center" }}>
+                  <TouchableOpacity>
+                    <Image
+                      source={require("../../assets/images/ArrowRight.png")}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={{ marginLeft: ms(12) }}>
+                <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
+                <Text style={{ fontWeight: "300" }}>Mover</Text>
+              </View> */}
+              </View>
+            </Card>
           </View>
         </View>
       </RootContainer>

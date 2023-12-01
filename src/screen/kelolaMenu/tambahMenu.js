@@ -49,6 +49,8 @@ import ImagePickerExample from "./components/ImagePicker";
 import ImagePickerVideo from "./components/ImagePickerVideo";
 import moment from "moment";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import PhotoTake from "./components/PhotoTake.js";
+import RekamVideo from "./components/VideoTake.js";
 
 export default function TambahMenu({ handleNext }) {
   const [valueNamaMenu, setValueNamaMenu] = useState("");
@@ -225,6 +227,23 @@ export default function TambahMenu({ handleNext }) {
                   setImageToShow={setImageToShow}
                 />
               </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Divider style={{ flex: 1 }} />
+                <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
+                  Atau
+                </Text>
+                <Divider style={{ flex: 1 }} />
+              </View>
+              <View style={styles.inputForm}>
+                {/* <Text style={styles.text}>Upload Gambar</Text> */}
+                <PhotoTake
+                  image={image}
+                  setImage={setImage}
+                  imagetoShow={imagetoShow}
+                  setImageToShow={setImageToShow}
+                />
+              </View>
+
               <View>
                 {imagetoShow && (
                   <Image
@@ -241,10 +260,25 @@ export default function TambahMenu({ handleNext }) {
                   videoToShow={videoToShow}
                   setVideoToShow={setVideoToShow}
                 />
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Divider style={{ flex: 1 }} />
+                  <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
+                    Atau
+                  </Text>
+                  <Divider style={{ flex: 1 }} />
+                </View>
+                <RekamVideo
+                  video={video}
+                  setVideo={setVideo}
+                  videoToShow={videoToShow}
+                  setVideoToShow={setVideoToShow}
+                />
+
                 <Text style={{ color: COLORS.PRIMARY_DARK }}>
                   {videoToShow}
                 </Text>
               </View>
+
               <View>
                 <TouchableOpacity style={styles.button} onPress={handlePress}>
                   <Text style={{ color: "white" }}>Tambah Menu</Text>
