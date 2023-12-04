@@ -13,7 +13,13 @@ import {
 } from "react-native";
 import FlashMessage from "react-native-flash-message";
 import React, { useState, useEffect, useRef } from "react";
-import { HelperText, TextInput, Divider, Modal } from "react-native-paper";
+import {
+  HelperText,
+  TextInput,
+  Divider,
+  Modal,
+  Card,
+} from "react-native-paper";
 import useNavigation from "@react-navigation/core";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
@@ -39,7 +45,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { baseUrl } from "../../utils/apiURL";
 import axios from "axios";
 
-import { moderateScale } from "react-native-size-matters";
+import { moderateScale, ms } from "react-native-size-matters";
 import Feather from "react-native-vector-icons/Feather";
 import API from "../../utils/apiService";
 import jwtDecode from "jwt-decode";
@@ -249,6 +255,7 @@ const LoginPage = ({ navigation }) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
+
                 <View
                   style={{ flex: 1, height: 1, backgroundColor: "lightgray" }}
                 />
@@ -261,6 +268,54 @@ const LoginPage = ({ navigation }) => {
         Submit Pembayaran
       </Text>
     </TouchableOpacity> */}
+            </View>
+
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "500",
+                  fontSize: 12,
+                  marginTop: ms(8),
+                  color: COLORS.PRIMARY_DARK,
+                }}
+              >
+                HUBUNGI KAMI
+              </Text>
+              <View
+                style={{ flex: 1, flexDirection: "row", marginTop: ms(12) }}
+              >
+                <View style={{ marginRight: ms(4) }}>
+                  <Image
+                    source={require("../../assets/images/ig.png")}
+                    style={{
+                      height: ms(20),
+                      width: ms(20),
+                      marginBottom: ms(8),
+                    }}
+                  />
+                  <Image
+                    source={require("../../assets/images/gm.png")}
+                    style={{
+                      height: ms(16),
+                      width: ms(16),
+                      marginBottom: ms(8),
+                    }}
+                  />
+                </View>
+                <View>
+                  <Text style={{ marginBottom: ms(8), fontSize: 12 }}>
+                    : mama_chef_idn
+                  </Text>
+                  <Text style={{ marginBottom: ms(8), fontSize: 12 }}>
+                    : mamachef@gmail.com
+                  </Text>
+                </View>
+              </View>
+              <Text>&copy; 2023 MamaChef</Text>
             </View>
           </View>
 
@@ -332,6 +387,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
+    flexDirection: "row",
     backgroundColor: "#FFFFFF",
     paddingHorizontal: moderateScale(22),
     // paddingHorizontal: moderateScale(10),
@@ -407,6 +463,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
 
     marginTop: moderateScale(10),
+    marginBottom: moderateScale(12),
+  },
+  txtRegister2: {
+    // flexDirection: "row",
+    alignSelf: "flex-end",
+    justifyContent: "flex-end",
+    marginTop: moderateScale(40),
     marginBottom: moderateScale(12),
   },
   textWhite: {

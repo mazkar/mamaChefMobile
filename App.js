@@ -7,6 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import store, { persistor } from "./src/store/index";
 import { NavigationContainer } from "@react-navigation/native";
 import Route from "./src/root/Route";
+// import "./config";
 
 export default function App() {
   return (

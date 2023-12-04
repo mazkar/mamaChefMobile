@@ -27,6 +27,7 @@ import EditProfil from "../screen/Profile/EditProfil";
 import MenuDelegationMember from "../screen/MenuDeleationMember";
 import MenuDelegation from "../screen/MenuDeleation";
 import AboutUs from "../screen/AboutUs";
+import EditPassword from "../screen/Profile/EditPassword";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -122,6 +123,12 @@ export default function Route() {
       <Tab.Screen
         name="UbahProfile"
         component={EditProfil}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="UbahPassword"
+        component={EditPassword}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
@@ -305,12 +312,12 @@ export function BottomNav() {
             options={{ headerShown: false }}
           />
 
-          <Tab.Screen
+          {/* <Tab.Screen
             name="MenuDelegationMember"
             component={MenuDelegationMember}
             // options={{headerShown: false}}
             options={{ headerShown: false }}
-          />
+          /> */}
         </>
       )}
     </Tab.Navigator>

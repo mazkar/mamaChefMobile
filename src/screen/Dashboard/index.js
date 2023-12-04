@@ -47,6 +47,7 @@ import axios from "axios";
 import { setUser } from "../../store/models/auth/actions";
 import StarRating from "react-native-star-rating";
 import { baseUrl } from "../../utils/apiURL";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
@@ -138,6 +139,17 @@ export default function Dashboard({ navigation }) {
     getMenuNewest(uid);
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // Do something when the screen is focused
+      console.log("Screen is focused");
+      getMenu(uid);
+      getMenuNewest(uid);
+      // Add your logic here to update the component or fetch new data
+
+      // Example: Refresh data or update components
+    }, [])
+  );
   return (
     <ColorBgContainer>
       <RootContainer>

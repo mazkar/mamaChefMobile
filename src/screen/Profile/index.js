@@ -32,7 +32,11 @@ export default function Profile({ navigation }) {
   return (
     <ColorBgContainer style={{ paddingHorizontal: 24, paddingVertical: 72 }}>
       <RootContainer isTransparent>
-        <AppBar title="Pengaturan" />
+        <AppBar
+          title="Pengaturan"
+          navigation={navigation}
+          handleLogut={handleLogut}
+        />
         <View style={styles.mainContainer}>
           <View>
             <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
@@ -67,9 +71,9 @@ export default function Profile({ navigation }) {
                   <Avatar.Text size={32} label="A" color={COLORS.WHITE} />
                   <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
                     <Text>
-                      {user.FirstName}
+                      {user?.FirstName}
                       {""}
-                      {user.LastName}
+                      {user?.LastName}
                     </Text>
                   </View>
                   <View style={{ alignSelf: "center" }}>
@@ -95,9 +99,7 @@ export default function Profile({ navigation }) {
               </View>
             </Card>
           </View>
-
           {/* Menu Favorit */}
-
           <View style={{ marginTop: ms(32) }}>
             <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
               <Image source={require("../../assets/images/Love.png")} />
@@ -152,7 +154,6 @@ export default function Profile({ navigation }) {
               </View>
             </Card>
           </View>
-
           {/* Keamanan */}
           <View style={{ marginTop: ms(32) }}>
             <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
@@ -176,7 +177,7 @@ export default function Profile({ navigation }) {
                 marginTop: ms(8),
               }}
             >
-              <View
+              <TouchableOpacity
                 style={{
                   justifyContent: "space-between",
                   // alignItems: "center",
@@ -184,6 +185,7 @@ export default function Profile({ navigation }) {
                   marginBottom: 12,
                   marginTop: 12,
                 }}
+                onPress={() => navigation.navigate("UbahPassword")}
               >
                 <View style={{ flexDirection: "row" }}>
                   <View style={{ alignSelf: "center" }}>
@@ -209,12 +211,10 @@ export default function Profile({ navigation }) {
                 <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
                 <Text style={{ fontWeight: "300" }}>Mover</Text>
               </View> */}
-              </View>
+              </TouchableOpacity>
             </Card>
           </View>
-
-          {/* KONTAK */}
-
+          {/* KONTAK
           <View style={{ marginTop: ms(32) }}>
             <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
               <Image source={require("../../assets/images/Kontak.png")} />
@@ -264,14 +264,9 @@ export default function Profile({ navigation }) {
                     />
                   </TouchableOpacity>
                 </View>
-
-                {/* <View style={{ marginLeft: ms(12) }}>
-                <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
-                <Text style={{ fontWeight: "300" }}>Mover</Text>
-              </View> */}
               </View>
             </Card>
-          </View>
+          </View> */}
         </View>
       </RootContainer>
     </ColorBgContainer>
