@@ -49,6 +49,7 @@ import ImagePickerExample from "./components/ImagePicker";
 import ImagePickerVideo from "./components/ImagePickerVideo";
 import moment from "moment";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import RekamVideo from "./components/VideoTake.js";
 
 export default function TambahTips({ navigation }) {
   const [valueNamaMenu, setValueNamaMenu] = useState("");
@@ -213,14 +214,28 @@ export default function TambahTips({ navigation }) {
               </View>
 
               <View style={styles.inputForm}>
-                <Text style={styles.text}>Upload Vide</Text>
+                <Text style={styles.text}>Upload Video</Text>
                 <ImagePickerVideo
                   video={video}
                   setVideo={setVideo}
                   videoToShow={videoToShow}
                   setVideoToShow={setVideoToShow}
                 />
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Divider style={{ flex: 1 }} />
+                  <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
+                    Atau
+                  </Text>
+                  <Divider style={{ flex: 1 }} />
+                </View>
+                <RekamVideo
+                  video={video}
+                  setVideo={setVideo}
+                  videoToShow={videoToShow}
+                  setVideoToShow={setVideoToShow}
+                />
               </View>
+
               <Text style={{ color: COLORS.PRIMARY_DARK }}>{videoToShow}</Text>
               <View>
                 <TouchableOpacity style={styles.button} onPress={handlePress}>

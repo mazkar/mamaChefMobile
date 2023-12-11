@@ -99,6 +99,68 @@ export default function Profile({ navigation }) {
               </View>
             </Card>
           </View>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("EditBank")}
+            style={{ marginTop: ms(20) }}
+          >
+            <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
+              <Image source={require("../../assets/images/IconProfile.png")} />
+              <Text
+                style={{
+                  marginLeft: ms(4),
+                  color: COLORS.GRAY_HARD,
+                  fontWeight: "600",
+                }}
+              >
+                BANK AKUN
+              </Text>
+            </View>
+            <Card
+              style={{
+                backgroundColor: "#ffff",
+                paddingHorizontal: 16,
+                paddingVertical: 16,
+              }}
+            >
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  // alignItems: "center",
+                  flexDirection: "row",
+                  marginBottom: 12,
+                  marginTop: 12,
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <Avatar.Text size={32} label="A" color={COLORS.WHITE} />
+                  <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
+                    <Text>Bank Account</Text>
+                  </View>
+                  <View style={{ alignSelf: "center" }}>
+                    <Image
+                      source={require("../../assets/images/checked.png")}
+                    />
+                  </View>
+                </View>
+
+                <View style={{ alignSelf: "center" }}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("EditBank")}
+                  >
+                    <Image
+                      source={require("../../assets/images/ArrowRight.png")}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={{ marginLeft: ms(12) }}>
+                <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
+                <Text style={{ fontWeight: "300" }}>Mover</Text>
+              </View> */}
+              </View>
+            </Card>
+          </TouchableOpacity>
           {/* Menu Favorit */}
           <View style={{ marginTop: ms(32) }}>
             <View style={{ flexDirection: "row", marginBottom: ms(8) }}>

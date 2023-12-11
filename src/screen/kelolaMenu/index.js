@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
+  ActivityIndicator,
   FlatList,
   Image,
 } from "react-native";
@@ -45,6 +46,7 @@ import axios from "axios";
 import { setUser } from "../../store/models/auth/actions";
 import { baseUrl } from "../../utils/apiURL";
 import CardMenu from "./components/CardMenu";
+import _ from "lodash";
 
 export default function KelolaMenu({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
@@ -52,6 +54,7 @@ export default function KelolaMenu({ navigation }) {
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [dataMenu, setDataMenu] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function getMenu(userId) {
     setIsLoadingGet(true);
@@ -80,6 +83,51 @@ export default function KelolaMenu({ navigation }) {
     }
   }
 
+  const [pageSize, setPageSize] = useState(3);
+  const [sumAllData, setAllSumData] = useState(0);
+  const [pageNume, setPageNum] = useState(1);
+  async function getMenuPagination(userId, page) {
+    setPageNum(pageNume + 1);
+    // console.log(pageNume, "page num");
+    const body = {
+      pageSize: 3,
+      currentPage: pageNume,
+      isPhoto: true,
+      isVideo: false,
+      userId: userId,
+    };
+    setIsLoadingGet(true);
+    setIsLoading(false);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        const newArray = [...dataMenu, ...res.data.data];
+        setDataMenu(newArray);
+        setIsLoading(false);
+        setIsLoadingGet(false);
+        setPageSize(pageSize + page);
+        setAllSumData(parseInt(res.data.message));
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
   const onChangeSearch = (query) => setSearchQuery(query);
 
   const onPressNav = (id) => {
@@ -87,24 +135,41 @@ export default function KelolaMenu({ navigation }) {
   };
 
   useEffect(() => {
-    getMenu(uid);
+    // getMenu(uid);
+    getMenuPagination(uid, 0);
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
       console.log("Screen is focused");
-      getMenu(uid);
+      getMenuPagination(uid, 0);
       // Add your logic here to update the component or fetch new data
 
       // Example: Refresh data or update components
     }, [])
   );
 
+  const handleMomentumScrollEnd = _.debounce(() => {
+    console.log("Scroll momentum ended");
+    sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1);
+    // Your custom logic here
+  }, 1000);
+
+  const renderFooter = () => {
+    return isLoading ? (
+      <ActivityIndicator
+        style={{ marginVertical: 20 }}
+        size="large"
+        color={COLORS.PRIMARY_DARK}
+      />
+    ) : null;
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Menu" dataTaskPending={[]} />
+        <AppBar title="Kelola Resep" dataTaskPending={[]} />
 
         <View style={styles.mainContainer}>
           <View style={{ marginBottom: ms(16) }}>
@@ -156,17 +221,47 @@ export default function KelolaMenu({ navigation }) {
                 }}
               />
             </View> */}
-          <FlatList
+          <ScrollView
+            // onMomentumScrollEnd={() =>
+            //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
+            // }
+            onMomentumScrollEnd={() => handleMomentumScrollEnd()}
+          >
+            {dataMenu?.map((item) => (
+              <>
+                <CardMenu
+                  photoUrl={item?.photo}
+                  namaMenu={item.menuName}
+                  notes={item?.note}
+                  menuId={item.menuId}
+                  desc={item?.description}
+                  onPressNav={onPressNav}
+                />
+                <Divider style={{ marginTop: ms(24) }} />
+                {isLoading && (
+                  <View style={{ padding: 16 }}>
+                    <ActivityIndicator size="small" color="#0000ff" />
+                  </View>
+                )}
+              </>
+            ))}
+          </ScrollView>
+          {/* <FlatList
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listData} // center emptyData component
             // data={surveyOpen}
             data={dataMenu}
+            ListFooterComponent={renderFooter}
+            // onEndReached={
+            //   sumAllData != dataMenu?.length ? getMenuPagination(uid, 2) : null
+            // } // Callback when the end of the list is reached
+            // onEndReachedThreshold={0.8}
             // horizontal={true}
             keyExtractor={(item) => item.menuId}
             renderItem={({ item, index }) => (
               <>
                 <CardMenu
-                  photoUrl={item?.photoURL}
+                  photoUrl={item?.photo}
                   namaMenu={item.menuName}
                   notes={item?.note}
                   menuId={item.menuId}
@@ -176,7 +271,7 @@ export default function KelolaMenu({ navigation }) {
                 <Divider style={{ marginTop: ms(24) }} />
               </>
             )}
-          />
+          /> */}
         </View>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />

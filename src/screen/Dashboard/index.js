@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ImageBackground,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
 import RootContainer from "../../component/RootContainer/index";
@@ -48,11 +49,13 @@ import { setUser } from "../../store/models/auth/actions";
 import StarRating from "react-native-star-rating";
 import { baseUrl } from "../../utils/apiURL";
 import { useFocusEffect } from "@react-navigation/native";
+import { Tab } from "@rneui/themed";
 
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
   const [dataMenu, setDataMenu] = useState([]);
   const [dataMenu2, setDataMenu2] = useState([]);
+  const [dataMenuPagination, setDataMenuPagination] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const user = useSelector((state) => state?.auth?.user);
@@ -61,6 +64,8 @@ export default function Dashboard({ navigation }) {
   const [messageError, setMessageError] = useState("");
   const [rating, setRating] = useState(4);
   const [modalErroVis, setModalErrorVis] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [index, setIndex] = React.useState(0);
   const hideModalError = () => {
     setModalErrorVis(false);
 
@@ -103,11 +108,11 @@ export default function Dashboard({ navigation }) {
       setIsLoadingGet(false);
     }
   }
-  async function getMenuNewest(userId) {
+  async function getMenuNewest(count) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Menu/GetNewestMenu/${userId}`,
+        url: `${baseUrl.URL}api/Menu/GetNewestMenu/${count}`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -119,7 +124,7 @@ export default function Dashboard({ navigation }) {
         // test for status you want, etc
         console.log(res.data, "newest");
         setDataMenu2(res.data.data);
-        // setIsLoadingGet(false);
+        setIsLoadingGet(false);
         // console.log(res.data, "transit");
       }
       // Don't forget to return something
@@ -130,26 +135,150 @@ export default function Dashboard({ navigation }) {
     }
   }
 
+  const [pageSize, setPageSize] = useState(2);
+  const [sumAllData, setAllSumData] = useState(0);
+  async function getMenuPagination(userId, page) {
+    const body = {
+      pageSize: pageSize,
+      currentPage: 1,
+      isPhoto: true,
+      isVideo: false,
+      userId: userId,
+    };
+    setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        setDataMenuPagination(res.data.data);
+        setIsLoading(false);
+        setPageSize(pageSize + page);
+        setAllSumData(parseInt(res.data.message));
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
+  async function getMenuPaginationTab(userId, page) {
+    const body = {
+      pageSize: 2,
+      currentPage: 1,
+      isPhoto: true,
+      isVideo: false,
+      userId: userId,
+    };
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        setDataMenuPagination(res.data.data);
+        setIsLoadingGet(false);
+        setPageSize(2);
+        setAllSumData(parseInt(res.data.message));
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoadingGet(false);
+    }
+  }
+
   const onPressNav = (id) => {
     navigation.navigate("MenuDetail", { menuId: id });
   };
 
+  const handleEndReached = (size) => {
+    if (!isLoading) {
+      getMenuPagination(uid, size);
+    }
+  };
+
   useEffect(() => {
-    getMenu(uid);
-    getMenuNewest(uid);
+    // getMenu(uid);
+    getMenuNewest(5);
+    getMenuPagination(0, 0);
   }, []);
+
+  // useEffect(() => {
+  //   if (index == 0) {
+  //     getMenuPagination(0, 0);
+  //   }
+  //   if (index == 1) {
+  //     getMenuPagination(uid, 0);
+  //   }
+  // }, [index]);
+
+  // useEffect(() => {
+  //   getMenuPagination(uid);
+  // }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
       console.log("Screen is focused");
-      getMenu(uid);
-      getMenuNewest(uid);
+      getMenuPagination(0, 0);
+      getMenuNewest(5);
+      // getMenuPagination(uid);
       // Add your logic here to update the component or fetch new data
 
       // Example: Refresh data or update components
     }, [])
   );
+
+  const renderFooter = () => {
+    return isLoading ? (
+      <ActivityIndicator
+        style={{ marginVertical: 20 }}
+        size="large"
+        color={COLORS.PRIMARY_DARK}
+      />
+    ) : null;
+  };
+
+  const handlerDoneTab = (val) => {
+    setIndex(val);
+    console.log(val);
+    // setPageSize(2);
+    if (val == 0) {
+      getMenuPaginationTab(0, 0);
+      // setPageSize(2);
+      // setIsLoadingGet(isLoading);
+    }
+    if (val == 1) {
+      getMenuPaginationTab(uid, 0);
+      // setPageSize(2);
+      // setIsLoadingGet(isLoading);
+    }
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -163,7 +292,14 @@ export default function Dashboard({ navigation }) {
         {/* <TouchableOpacity onPress={handleLogut}>
           <Text>Log Out</Text>
         </TouchableOpacity> */}
-        <ScrollView style={styles.mainContainer}>
+        <ScrollView
+          style={styles.mainContainer}
+          onMomentumScrollEnd={() =>
+            sumAllData == dataMenuPagination?.length
+              ? null
+              : getMenuPagination(0, 2)
+          }
+        >
           <View>
             <ImageBackground
               source={require("../../assets/images/Banner.png")}
@@ -343,19 +479,47 @@ export default function Dashboard({ navigation }) {
                   onPress={() => navigation.navigate("KelolaMenu")}
                 >
                   <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                    Lihat Semua ({dataMenu?.length})
+                    Lihat Semua ({sumAllData})
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
             <View style={{ paddingVertical: 32 }}>
+              <Tab
+                disableIndicator={true}
+                value={index}
+                onChange={handlerDoneTab}
+                dense
+              >
+                <Tab.Item
+                  containerStyle={(active) => ({
+                    paddingVertical: 8,
+                  })}
+                  titleStyle={(active) => ({
+                    color: active ? COLORS.PRIMARY_DARK : "black",
+                    fontSize: 11,
+                  })}
+                >
+                  {`Semua Menu `}
+                </Tab.Item>
+                <Tab.Item
+                  containerStyle={(active) => ({
+                    paddingVertical: 8,
+                  })}
+                  titleStyle={(active) => ({
+                    color: active ? COLORS.PRIMARY_DARK : "black",
+                    fontSize: 11,
+                  })}
+                >
+                  {`Menu Anda `}
+                </Tab.Item>
+              </Tab>
               <FlatList
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listData} // center emptyData component
-                // data={surveyOpen}
-                data={dataMenu}
+                contentContainerStyle={styles.listData}
+                data={dataMenuPagination}
                 showsHorizontalScrollIndicator={false}
-                // horizontal={true}
+                ListFooterComponent={renderFooter}
                 keyExtractor={(item) => item.menuId}
                 renderItem={({ item, index }) => (
                   <Card
@@ -371,13 +535,9 @@ export default function Dashboard({ navigation }) {
                       backgroundColor: COLORS.WHITE,
                       paddingBottom: ms(32),
                     }}
-                    // onPress={() => onPressNav(item.menuId)}
                   >
                     <Card.Content
                       style={{
-                        // marginTop: ms(4),
-                        // width: "100%",
-                        // flex: 1,
                         paddingHorizontal: ms(4),
 
                         // backgroundColor: "red",
@@ -397,7 +557,7 @@ export default function Dashboard({ navigation }) {
                         >
                           <Image
                             source={{
-                              uri: `data:image/jpeg;base64,${item?.photoURL}`,
+                              uri: `data:image/jpeg;base64,${item?.photo}`,
                             }}
                             style={{
                               width: ms(100),
@@ -466,100 +626,12 @@ export default function Dashboard({ navigation }) {
                           </TouchableOpacity>
                         </View>
                       </View>
-
-                      {/* <Text numberOfLines={3} ellipsizeMode="tail">
-                      {item?.description}
-                    </Text> */}
                     </Card.Content>
                   </Card>
                 )}
               />
             </View>
           </View>
-
-          {/* Komponen Tips & Trik */}
-          {/* <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              paddingHorizontal: ms(12),
-              marginTop: ms(20),
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "700",
-                  color: COLORS.GRAY_HARD,
-                }}
-              >
-                Tips & Trick
-              </Text>
-              <View
-                style={{
-                  backgroundColor: "black",
-                  borderBottomColor: COLORS.PRIMARY_DARK,
-                  borderBottomWidth: 4,
-                  width: 24,
-                }}
-              />
-            </View>
-            <View>
-              <TouchableOpacity onPress={() => navigation.navigate("Tips")}>
-                <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                  Lihat Semua ({dataMenu?.length})
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View> */}
-
-          {/* <View style={{ padding: 16, paddingVertical: 32 }}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listData} // center emptyData component
-              // data={surveyOpen}
-              data={dataMenu}
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              keyExtractor={(item) => item.menuId}
-              renderItem={({ item, index }) => (
-                <Card
-                  style={{
-                    borderRadius: 8,
-                    width: ms(206),
-                    height: ms(236),
-                    marginLeft: ms(12),
-                    borderTopStartRadius: 24,
-                    borderTopEndRadius: 24,
-                    backgroundColor: COLORS.WHITE,
-                    paddingBottom: ms(32),
-                  }}
-                >
-                  <Card.Cover
-                    style={{
-                      width: "auto",
-                      height: "60%",
-                      borderTopStartRadius: 24,
-                      borderTopEndRadius: 24,
-                    }}
-                    source={{
-                      uri: `data:image/jpeg;base64,${item?.photoURL}`,
-                    }}
-                  />
-                  <Card.Content style={{ marginTop: ms(4), width: "100%" }}>
-                    <Text style={{ fontSize: 16, fontWeight: "700" }}>
-                      {item?.menuName}
-                    </Text>
-                    <Text style={{ fontSize: 12, fontWeight: "500" }}>
-                      Deskripsi
-                    </Text>
-                    <Paragraph>{item?.description}</Paragraph>
-                  </Card.Content>
-                </Card>
-              )}
-            />
-          </View> */}
         </ScrollView>
         <Modal
           animationType="slide"

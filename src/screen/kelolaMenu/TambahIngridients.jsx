@@ -277,6 +277,7 @@ export default function TambahIngridients({ navigation, menuId }) {
                 placeholder="Pilih Bahan"
                 open={openDropDown}
                 value={selectedIng}
+                zIndex={3}
                 items={ddlIngridients.map((e) => {
                   return {
                     label: e.name,
@@ -325,6 +326,7 @@ export default function TambahIngridients({ navigation, menuId }) {
                 placeholder="Pilih Bahan"
                 open={openDropDown2}
                 value={selectedUom}
+                zIndex={2}
                 items={ddlUom.map((e) => {
                   return {
                     label: e.uomName,

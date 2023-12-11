@@ -51,6 +51,7 @@ const ImagePickerExample = ({
       aspect: [4, 3],
       quality: 1,
       base64: true,
+      bitrateMultiplier: 0.5,
     });
 
     console.log(result);

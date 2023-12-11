@@ -156,7 +156,7 @@ export default function MenuDetail({ navigation, route }) {
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Menu" dataTaskPending={[]} />
+        <AppBar title="Kelola Resep" dataTaskPending={[]} />
 
         <ScrollView
           style={styles.scrollView}
@@ -227,7 +227,7 @@ export default function MenuDetail({ navigation, route }) {
             <View style={{ marginTop: ms(12) }}>
               <View style={{ marginBottom: ms(22) }}>
                 <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Deskripsi
+                  Bahan
                 </Text>
               </View>
               {dataIng?.map((e, i) => (

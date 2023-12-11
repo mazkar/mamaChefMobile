@@ -74,6 +74,32 @@ const MyCalendar = ({
     // setModalVisible(true);
     console.log(events);
   };
+
+  const CustomDay = ({ date, state, children }) => {
+    // Customize the style of the day based on its state
+    let dayStyle = {
+      selected: {
+        backgroundColor: "#FF0000", // Red color when selected
+      },
+      selectedText: {
+        color: "#FFFFFF", // White text when selected
+      },
+    };
+
+    return (
+      <View style={{ flex: 1, alignItems: "center" }}>
+        <Text
+          style={[
+            { color: state === "disabled" ? "gray" : "black" },
+            state === "selected" && dayStyle.selectedText,
+          ]}
+        >
+          {String(children)}
+        </Text>
+      </View>
+    );
+  };
+
   const markedDates = {};
   data.forEach((event) => {
     const date = event.assignedDate.split("T")[0];
@@ -85,6 +111,7 @@ const MyCalendar = ({
       <Calendar
         markedDates={markedDates}
         // onDayPress={(day) => handleDatePress(day)}
+        // dayComponent={CustomDay}
         onDayPress={(day) => handleDatePress(day)}
         theme={{
           calendarBackground: "#ffffff",

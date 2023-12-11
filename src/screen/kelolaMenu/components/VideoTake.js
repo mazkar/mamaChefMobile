@@ -41,6 +41,7 @@ const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
       aspect: [4, 3],
       quality: 1,
       base64: true,
+      bitrateMultiplier: 0.3,
     });
 
     console.log(result);

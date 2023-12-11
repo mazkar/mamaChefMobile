@@ -28,6 +28,7 @@ import MenuDelegationMember from "../screen/MenuDeleationMember";
 import MenuDelegation from "../screen/MenuDeleation";
 import AboutUs from "../screen/AboutUs";
 import EditPassword from "../screen/Profile/EditPassword";
+import EditBank from "../screen/Profile/EditBankAcount";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -135,6 +136,12 @@ export default function Route() {
       <Tab.Screen
         name="AboutUs"
         component={AboutUs}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="EditBank"
+        component={EditBank}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

@@ -30,9 +30,13 @@ export default function CardMenu({
               height: ms(132),
               borderRadius: ms(12),
             }}
-            source={{
-              uri: `data:image/png;base64,${photoUrl}`,
-            }}
+            source={
+              photoUrl == undefined
+                ? require("./../../../assets/images/NoImage.jpeg")
+                : {
+                    uri: `data:image/png;base64,${photoUrl}`,
+                  }
+            }
           />
         </View>
         <View style={{ marginLeft: ms(12), width: "auto" }}>

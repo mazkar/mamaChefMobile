@@ -109,30 +109,38 @@ export default function MenuDelegation({ navigation }) {
 
   async function getMenu(id) {
     setIsLoadingGet(true);
+    const body = {
+      pageSize: 20,
+      currentPage: 1,
+      isPhoto: false,
+      isVideo: false,
+      userId: 0,
+    };
+    setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Menu/menubyuserid/${uid.UserId}`,
-        method: "get",
-        timeout: 38000,
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res, "<===res");
       if (res.status == 200) {
         // test for status you want, etc
-        console.log(res.data.data, "<===res data menu");
-
+        console.log(res.data, "menu pagination");
         setDdlMenu(res.data.data);
-        // setDdlUom(res.data.masterUomsList);
         setIsLoadingGet(false);
+        // setPageSize(2);
+        // setAllSumData(parseInt(res.data.message));
         // console.log(res.data, "transit");
       }
       // Don't forget to return something
       return res.data;
     } catch (err) {
-      console.error(err);
+      console.error(err, "error fetch");
       setIsLoadingGet(false);
     }
   }
@@ -284,6 +292,11 @@ export default function MenuDelegation({ navigation }) {
     getDataJadwal();
   }, []);
 
+  const onPressNav = (id) => {
+    navigation.navigate("MenuDetail", { menuId: id });
+    // console.log(id);
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
@@ -412,7 +425,12 @@ export default function MenuDelegation({ navigation }) {
                       // backgroundColor: "red",
                     }}
                   >
-                    <View style={{ flexDirection: "row" }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <View>
                         <Text
                           numberOfLines={1}
@@ -448,6 +466,27 @@ export default function MenuDelegation({ navigation }) {
                           tanggal: {moment(e.assignedDate).format("YYYY-MM-DD")}
                         </Text>
                       </View>
+                      <TouchableOpacity
+                        onPress={() => onPressNav(e.menuId)}
+                        style={{
+                          alignSelf: "center",
+                          justifyContent: "center",
+                          // backgroundColor: COLORS.PRIMARY_DARK,
+                          width: ms(72),
+
+                          height: ms(24),
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: COLORS.PRIMARY_DARK,
+                            fontSize: 12,
+                            fontWeight: "600",
+                          }}
+                        >
+                          Lihat Resep
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                     <View
                       style={{

@@ -1,52 +1,46 @@
-// components/ImagePickerExample.js
 import React, { useState, useEffect } from "react";
 import {
   View,
-  Button,
-  Image,
-  Platform,
   Text,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
+  Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { moderateScale, ms } from "react-native-size-matters";
-import { GeneralButton } from "../../../component";
+import * as FileSystem from "expo-file-system";
+import { ms, moderateScale } from "react-native-size-matters";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
-import * as FileSystem from "expo-file-system";
 
-const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
+const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
+          alert("Sorry, we need camera permissions to make this work!");
         }
       }
     })();
   }, []);
 
-  const convertToBase64 = async (imageUri) => {
-    let base64data = await FileSystem.readAsStringAsync(imageUri, {
+  const convertToBase64 = async (videoUri) => {
+    let base64data = await FileSystem.readAsStringAsync(videoUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
     setVideo(base64data);
   };
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+  const recordVideo = async () => {
+    let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
       base64: true,
-      bitrateMultiplier: 0.5,
     });
 
     console.log(result);
@@ -62,17 +56,16 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
   return (
     <View>
       <View>
-        <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
+        <TouchableOpacity style={styles.btnAdd} onPress={recordVideo}>
           {video == null ? (
             <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Video
+              Rekam Video
             </Text>
           ) : (
             <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Ulang Video
+              Rekam Ulang
             </Text>
           )}
-          {/* <Text>{videoToShow}</Text> */}
         </TouchableOpacity>
       </View>
     </View>
@@ -93,5 +86,4 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(10),
   },
 });
-
-export default ImagePickerVideo;
+export default RekamVideo;
