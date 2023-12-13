@@ -94,18 +94,30 @@ export default function TambahMenu({ handleNext }) {
     //   LMDT: `${moment().format("YYYY-MM-DD")}`,
     //   CreatedBy: parseInt(user.UserId),
     // };
+    const imageUri = image.replace("file://", ""); // Remove 'file://' from the URI
+    const videoUri = video.replace("file://", ""); // Remove 'file://' from the URI
 
     const formData = new FormData();
     formData.append("MenuName", valueNamaMenu);
     formData.append("Description", valueDesc);
     formData.append("Note", valuNote);
-    formData.append("PhotoFile", image);
-    formData.append("VideoFile", video);
+    formData.append("PhotoFile", {
+      uri: image,
+      name: "photo.jpg",
+      type: "image/jpg",
+    });
+
+    formData.append("VideoFile", {
+      uri: video,
+      name: "video.mp4",
+      type: "video/mp4",
+    });
     formData.append("LMBY", user.Email);
     formData.append("IsPublished", false);
     formData.append("LMDT", `${moment().format("YYYY-MM-DD")}`);
     formData.append("CreatedBy", parseInt(user.UserId));
-
+    console.log(imageUri, "foto");
+    console.log(videoUri, "video");
     // formData.append("myFile", {
     //   uri: `${image}`, // Replace with the actual file path
     //   name: "evidenceFile",
@@ -132,12 +144,7 @@ export default function TambahMenu({ handleNext }) {
     };
 
     axios
-      .post(
-        `${baseUrl.URL}api/Menu/RegisterMenuMobile`,
-        formData,
-        config,
-        timeOut
-      )
+      .post(`${baseUrl.URL}api/Menu/RegisterMenu`, formData, config, timeOut)
       .then((response) => {
         console.log(response.data);
         setIsLoading(false);
@@ -243,7 +250,7 @@ export default function TambahMenu({ handleNext }) {
                   setImageToShow={setImageToShow}
                 />
               </View>
-
+              <Button onPress={() => console.log(image, "gambar")}>test</Button>
               <View>
                 {imagetoShow && (
                   <Image

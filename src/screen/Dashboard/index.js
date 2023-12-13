@@ -141,7 +141,7 @@ export default function Dashboard({ navigation }) {
     const body = {
       pageSize: pageSize,
       currentPage: 1,
-      isPhoto: true,
+      isPhoto: false,
       isVideo: false,
       userId: userId,
     };

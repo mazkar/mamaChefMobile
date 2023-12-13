@@ -54,7 +54,8 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
     if (!result.cancelled) {
       const fileInfo = await FileSystem.getInfoAsync(result.uri);
       const fileNameFromFileSystem = fileInfo.uri.split("/").pop();
-      convertToBase64(result.uri);
+      // convertToBase64(result.uri);
+      setVideo(result.uri);
       setVideoToShow(fileNameFromFileSystem);
     }
   };

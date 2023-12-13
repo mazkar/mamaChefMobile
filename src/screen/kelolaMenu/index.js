@@ -92,7 +92,7 @@ export default function KelolaMenu({ navigation }) {
     const body = {
       pageSize: 3,
       currentPage: pageNume,
-      isPhoto: true,
+      isPhoto: false,
       isVideo: false,
       userId: userId,
     };
