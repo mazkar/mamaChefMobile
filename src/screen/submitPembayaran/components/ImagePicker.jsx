@@ -20,7 +20,12 @@ import { COLORS, FONTS } from "../../../assets/theme";
 import * as FileSystem from "expo-file-system";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
+const ImagePickerExample = ({
+  image,
+  setImage,
+  imageToShow,
+  setImageToShow,
+}) => {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -37,13 +42,13 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
     let base64data = await FileSystem.readAsStringAsync(imageUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
-    setVideo(base64data);
+    setImage(base64data);
   };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      allowsEditing: false,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
       base64: true,
@@ -51,13 +56,46 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
     });
 
     console.log(result);
+    const convertToBlob = async (imageUri) => {
+      try {
+        let base64data = await FileSystem.readAsStringAsync(imageUri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        // Convert base64 to binary
+        let binary = atob(base64data);
+
+        // Create an ArrayBuffer and a DataView to represent the binary data
+        let buffer = new ArrayBuffer(binary.length);
+        let view = new DataView(buffer);
+
+        // Populate the buffer with the binary data
+        for (let i = 0; i < binary.length; i++) {
+          view.setUint8(i, binary.charCodeAt(i));
+        }
+
+        // Create a Blob from the ArrayBuffer
+        let blob = new Blob([buffer], { type: "image/jpeg" }); // Adjust the type according to the file type
+
+        return blob;
+      } catch (error) {
+        console.error("Error converting image to blob:", error);
+        return null;
+      }
+    };
 
     if (!result.cancelled) {
-      const fileInfo = await FileSystem.getInfoAsync(result.uri);
-      const fileNameFromFileSystem = fileInfo.uri.split("/").pop();
-      // convertToBase64(result.uri);
-      setVideo(result.uri);
-      setVideoToShow(fileNameFromFileSystem);
+      // const fileInfo = await FileSystem.getInfoAsync(result.uri);
+      // const file = {
+      //   uri: fileInfo.uri,
+      //   name: fileInfo.uri.split("/").pop(),
+      //   type: "image/jpeg", // Adjust the type according to the file type
+      // };
+      const blob = await convertToBlob(result.uri);
+      setImage(blob);
+      setImageToShow(result.uri);
+      setImage(result.base64);
+      // setImage(formData);
     }
   };
 
@@ -65,7 +103,7 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
     <View>
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
-          {video == null ? (
+          {imageToShow == null ? (
             <>
               <FontAwesome
                 name="image"
@@ -77,7 +115,7 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
                 }}
               />
               <Text style={{ color: "white", fontWeight: "700" }}>
-                Pilih Video
+                Pilih Gambar
               </Text>
             </>
           ) : (
@@ -92,11 +130,10 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
                 }}
               />
               <Text style={{ color: "white", fontWeight: "700" }}>
-                Pilih Ulang Video
+                Pilih Ulang Gambar
               </Text>
             </>
           )}
-          {/* <Text>{videoToShow}</Text> */}
         </TouchableOpacity>
       </View>
     </View>
@@ -107,16 +144,16 @@ const styles = StyleSheet.create({
   btnAdd: {
     borderRadius: moderateScale(10),
     width: widthPercentageToDP(38),
-    flexDirection: "row",
     height: heightPercentageToDP(6),
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "flex-start",
+    flexDirection: "row",
     marginBottom: moderateScale(5),
     marginTop: moderateScale(5),
     marginTop: moderateScale(10),
   },
 });
 
-export default ImagePickerVideo;
+export default ImagePickerExample;

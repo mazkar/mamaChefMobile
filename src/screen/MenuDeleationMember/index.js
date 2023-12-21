@@ -81,7 +81,7 @@ export default function MenuDelegationMember({ navigation }) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Menu/getmenudelegationbyuserid/${uid.UserId}`,
+        url: `${baseUrl.URL}api/Menu/getmenudelegationbymemberid/${uid.UserId}`,
         method: "get",
         timeout: 38000,
         headers: {
@@ -106,6 +106,11 @@ export default function MenuDelegationMember({ navigation }) {
       setIsLoadingGet(false);
     }
   }
+
+  const onPressNav = (id) => {
+    navigation.navigate("MenuDetail", { menuId: id });
+    // console.log(id);
+  };
 
   async function getMenu(id) {
     setIsLoadingGet(true);
@@ -309,7 +314,7 @@ export default function MenuDelegationMember({ navigation }) {
               style={{
                 fontSize: 18,
                 fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
+                color: "gray",
               }}
             >
               Jadwal Saya
@@ -412,7 +417,12 @@ export default function MenuDelegationMember({ navigation }) {
                       // backgroundColor: "red",
                     }}
                   >
-                    <View style={{ flexDirection: "row" }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <View>
                         <Text
                           numberOfLines={1}
@@ -448,6 +458,27 @@ export default function MenuDelegationMember({ navigation }) {
                           tanggal: {moment(e.assignedDate).format("YYYY-MM-DD")}
                         </Text>
                       </View>
+                      <TouchableOpacity
+                        onPress={() => onPressNav(e.menuId)}
+                        style={{
+                          alignSelf: "center",
+                          justifyContent: "center",
+                          // backgroundColor: COLORS.PRIMARY_DARK,
+                          width: ms(72),
+
+                          height: ms(24),
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: COLORS.PRIMARY_DARK,
+                            fontSize: 12,
+                            fontWeight: "600",
+                          }}
+                        >
+                          Lihat Resep
+                        </Text>
+                      </TouchableOpacity>
                     </View>
                     <View
                       style={{

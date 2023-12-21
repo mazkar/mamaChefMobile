@@ -21,7 +21,10 @@ import {
   Card,
   Paragraph,
   Searchbar,
+  Modal,
 } from "react-native-paper";
+import constants from "../../assets/constants/index.js";
+
 import { ms, moderateScale } from "react-native-size-matters";
 import {
   AppBar,
@@ -46,6 +49,8 @@ import { baseUrl } from "../../utils/apiURL";
 import CardMenu from "./Component/CardMenu";
 import moment from "moment";
 import { useFocusEffect } from "@react-navigation/native";
+import PopUpConfirm from "./Component/PopUpConfirm";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 export default function KelolaMember({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
@@ -53,6 +58,15 @@ export default function KelolaMember({ navigation }) {
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [dataMember, setDataMember] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [selecteMemberId, setSelectedMemberId] = useState(0);
+  const [selectedActive, setSelectedActive] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [modalSuccesVis, setModalSuccessVis] = useState(false);
+  const [modalSuccesVis2, setModalSuccessVis2] = useState(false);
+  const [modalErroVis, setModalErrorVis] = useState(false);
+
+  const dispatch = useDispatch();
 
   async function getMember(userId) {
     setIsLoadingGet(true);
@@ -83,9 +97,69 @@ export default function KelolaMember({ navigation }) {
 
   const onChangeSearch = (query) => setSearchQuery(query);
 
+  async function hadleUpdate(memberId, stat) {
+    // setIsLoadingGet(true);
+    const body = {
+      memberId: memberId,
+      isActive: stat,
+    };
+
+    console.log(body);
+
+    try {
+      console.log(body);
+      let res = await axios({
+        url: `${baseUrl.URL}api/Member/UpdateStatus`,
+        method: "PUT",
+        timeout: 8000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res.data, "<==res");
+      if (res.data.code == "200") {
+        console.log(res.data.data, "<=== res berjhasil");
+        setIsLoadingGet(false);
+
+        // setModalSuccessVis(true);
+        getMember(uid);
+        setModalSuccessVis(true);
+        setSuccessMessage(res.data.message);
+        // test for status you want, etc
+        // setLoadingUpload(false);
+        // getTaskDetail(route.params.assignmentId);
+        console.log(res, "Success");
+
+        // setDataItem(res.data);
+        // setDataInfo(res.data);
+      } else {
+        setIsLoadingGet(false);
+        setModalErrorVis(true);
+        setErrorMessage(res.data.message);
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err, "error");
+      setModalErrorVis(true);
+      setIsLoadingGet(false);
+      setErrorMessage(err.message);
+    }
+  }
+
   useEffect(() => {
     getMember(uid);
   }, []);
+
+  const handleLogut = () => {
+    dispatch(resetReducer());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -98,10 +172,28 @@ export default function KelolaMember({ navigation }) {
     }, [])
   );
 
+  const hideModalError = () => {
+    setModalErrorVis(false);
+
+    // getTaskDetail(route.params.assignmentId);
+  };
+
+  const hideModalSuccess = () => {
+    setModalSuccessVis(false);
+
+    // handleNext(menuId);
+    // getTaskDetail(route.params.assignmentId);
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Member" dataTaskPending={[]} />
+        <AppBar
+          title="Kelola Member"
+          dataTaskPending={[]}
+          navigation={navigation}
+          handleLogut={handleLogut}
+        />
 
         <ScrollView style={styles.mainContainer}>
           <View style={{ marginBottom: ms(16) }}>
@@ -109,7 +201,7 @@ export default function KelolaMember({ navigation }) {
               style={{
                 fontSize: 18,
                 fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
+                color: "gray",
               }}
             >
               Daftar Member
@@ -149,12 +241,71 @@ export default function KelolaMember({ navigation }) {
                   noHp={item.phoneNumber}
                   notes={item?.note}
                   tglLahir={moment(item?.birthDate).format("YYYY-MMM-DD")}
-                  address={item.address}
+                  address={item?.address}
+                  isActive={item?.isActive}
+                  setSelectedActive={setSelectedActive}
+                  setSelectedMemberId={setSelectedMemberId}
+                  handleUpdate={hadleUpdate}
+                  memberId={item?.memberId}
+                  name={item?.name}
+                  userId={uid}
                 />
               )}
             />
           </View>
         </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalSuccesVis}
+          onRequestClose={hideModalSuccess}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <Ionicons
+                name="checkmark-circle"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.SUCCESS }}
+              />
+            </View>
+            <Text style={styles.modalText}>{successMessage}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalSuccess}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalErroVis}
+          onRequestClose={hideModalError}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <FontAwesome
+                name="close"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.RED_BG }}
+              />
+            </View>
+            <Text style={styles.modalText}>{errorMessage}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalError}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />
     </ColorBgContainer>
@@ -182,5 +333,29 @@ const styles = StyleSheet.create({
   continerSearch: {
     // paddingHorizontal: 8,
     // paddingVertical: 8,
+  },
+  containermodalView: {
+    flexDirection: "column",
+    alignSelf: "stretch",
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+  modalText: {
+    paddingTop: 20,
+    marginBottom: 28,
+    textAlign: "center",
+    alignSelf: "center",
+    fontSize: 17,
+    letterSpacing: 1,
+    lineHeight: 24,
+    width: constants.SCREEN_WIDTH * 0.7,
+    fontWeight: "600",
+  },
+  imgSubmit: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

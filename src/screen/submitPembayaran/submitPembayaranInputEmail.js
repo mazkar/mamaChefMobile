@@ -13,8 +13,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import React, { useState, useCallback, useEffect } from "react";
 import RootContainer from "../../component/RootContainer/index";
 import { useNavigation } from "@react-navigation/core";
-import ColorBgContainer from "../../component/ColorBgContainer";
-import { COLORS, FONTS } from "../../assets/theme";
+import ColorBgContainer from "../../component/ColorBgContainer/index.js";
+import { COLORS, FONTS } from "../../assets/theme/index.js";
 import {
   Button,
   Menu,
@@ -46,11 +46,11 @@ import constants from "../../assets/constants/index.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // iCONS
 
-import { resetReducer } from "../../store/models/auth/actions";
+import { resetReducer } from "../../store/models/auth/actions.js";
 import { useDispatch, useSelector } from "react-redux";
-import API from "../../utils/apiService";
+import API from "../../utils/apiService.js";
 import axios from "axios";
-import { baseUrl } from "../../utils/apiURL";
+import { baseUrl } from "../../utils/apiURL.js";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import FaIcons from "react-native-vector-icons/FontAwesome5";
 import moment from "moment";
@@ -58,10 +58,11 @@ import ImagePickerExample from "./components/ImagePicker.jsx";
 import PhotoTake from "./components/PhotoTake.js";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
-export default function SubmitPembayaran({ route, navigation }) {
+export default function SubmitPembayaranInputEmail({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const [openDropDown, setOpenDropDown] = useState(false);
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
+  const [modalSuccesVis2, setModalSuccessVis2] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [dataPayment, setDataPayment] = useState([]);
   const [itemsDropDown, setItemDropDown] = useState([
@@ -93,15 +94,23 @@ export default function SubmitPembayaran({ route, navigation }) {
   const [dataPeriode, setDataPeriode] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   //   const [date, setDate] = useState("");
+  const [valueEmail, setValueEmail] = useState(null);
   const userId = useSelector((state) => state.auth.userId);
   const [dataBank, setDataBank] = useState([]);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const hideModalSuccess = () => {
+    setModalSuccessVis(false);
+    // navigation.navigate("Login");
+    // getTaskDetail(route.params.assignmentId);
+  };
+
+  const hideModalSuccess2 = () => {
     setModalSuccessVis(false);
     navigation.navigate("Login");
     // getTaskDetail(route.params.assignmentId);
   };
-
   const hideModalError = () => {
     setModalErrorVis(false);
 
@@ -218,11 +227,11 @@ export default function SubmitPembayaran({ route, navigation }) {
     }
   }
 
-  async function getDataPayment(id) {
+  async function getDataPayment(email) {
     // setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Auth/GetPendingPayment/getpendingpayment/${userId}`,
+        url: `${baseUrl.URL}api/Auth/GetPendingPaymentByEmail/getpendingpaymentbyemail/${email}`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -231,18 +240,27 @@ export default function SubmitPembayaran({ route, navigation }) {
         },
       });
       console.log(res.data, "<== res");
-      if (res.data.code == 200) {
+      if (res.data.code == "200") {
         // test for status you want, etc
         // console.log(res.data, "meeeeeeeee");
-        setDataPayment(res.data.data[[res.data.data.length - 1]]);
-        setEmail(res.data.data[[res.data.data.length - 1]?.email]);
-
+        // setDataPayment(res.data.data[[res.data.data.length - 1]]);
+        // setEmail(res.data.data[[res.data.data.length - 1]?.email]);
+        setModalSuccessVis(true);
+        setSuccessMessage(res?.data?.message);
         // setIsLoadingGet(false);
+        setDataPayment(res.data.data);
+      } else {
+        setModalErrorVis(true);
+        setErrorMessage(res.data.message);
+        setDataPayment([]);
       }
       // Don't forget to return something
       return res.data;
     } catch (err) {
       console.error(err);
+      setModalErrorVis(true);
+      setErrorMessage(err.message);
+      setDataPayment([]);
       //   setIsLoadingGet(false);
     }
   }
@@ -265,9 +283,9 @@ export default function SubmitPembayaran({ route, navigation }) {
     const body = {
       masterBankAccounts: null,
       evidenceFile: image,
-      email: dataPayment?.email,
-      subscriptionPeriodId: route?.params?.subsctriptionPeriodsId,
-      transferBy: dataPayment?.email,
+      email: dataPayment[0]?.email,
+      subscriptionPeriodId: dataPayment[0]?.subsctriptionPeriodsId,
+      transferBy: dataPayment[0]?.email,
       selectedBankId: valueBankId,
     };
 
@@ -287,13 +305,14 @@ export default function SubmitPembayaran({ route, navigation }) {
       .then((response) => {
         console.log(response.data);
         setIsLoading(false);
-        setModalSuccessVis(true);
+        setModalSuccessVis2(true);
+        setSuccessMessage(response.data.message);
       })
       .catch((error) => {
         console.error("Error uploading the file", error);
         setIsLoading(false);
         setModalErrorVis(true);
-        setErrorMsg(error.message);
+        setErrorMessage(error.message);
       });
   };
 
@@ -346,9 +365,9 @@ export default function SubmitPembayaran({ route, navigation }) {
     }
   };
 
-  useEffect(() => {
-    getDataPayment();
-  }, []);
+  // useEffect(() => {
+  //   getDataPayment();
+  // }, []);
 
   return (
     <RootContainer>
@@ -370,12 +389,19 @@ export default function SubmitPembayaran({ route, navigation }) {
                 mode="outlined"
                 // value={email}
                 title="Email"
-                disabled
                 // hasErrors={authFailed}
                 messageError="Wrong Username/Password"
-                onChangeText={(e) => setEmail(e)}
+                onChangeText={(e) => setValueEmail(e)}
                 // style={styles.inputUserName}
               />
+            </View>
+            <View>
+              <TouchableOpacity
+                style={styles.button2}
+                onPress={() => getDataPayment(valueEmail)}
+              >
+                <Text style={{ color: "white" }}>Cari User</Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.inputForm}>
               <Text style={styles.text}>Pilih Bank</Text>
@@ -515,74 +541,78 @@ export default function SubmitPembayaran({ route, navigation }) {
           </View>
         </Card>
 
-        <Card style={styles.mainContainer2}>
-          <View style={styles.inputForm}>
-            <Text style={styles.text}>Menunggu Pembayaran</Text>
-          </View>
-          <Divider />
-          <View>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>Langganan : </Text>
-              <Text style={{ marginLeft: ms(24) }}>
-                {dataPayment.packageName}
-              </Text>
+        {dataPayment?.length === 0 || dataPayment == "" ? (
+          <></>
+        ) : (
+          <Card style={styles.mainContainer2}>
+            <View style={styles.inputForm}>
+              <Text style={styles.text}>Menunggu Pembayaran</Text>
             </View>
             <Divider />
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>Harga : </Text>
-              <Text style={{ marginLeft: ms(24) }}>
-                {formatRupiah(dataPayment.amount)}
-              </Text>
-            </View>
-            <Divider />
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>PPN : </Text>
-              <Text style={{ marginLeft: ms(24) }}>
-                {formatRupiah(dataPayment.taxAmount)}
-              </Text>
-            </View>
-            <Divider />
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>Total : </Text>
-              <Text
+            <View>
+              <View
                 style={{
-                  marginLeft: ms(24),
-                  color: COLORS.PRIMARY_DARK,
-                  fontWeight: "600",
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                {formatRupiah(dataPayment.totalAmount)}
-              </Text>
+                <Text>Langganan : </Text>
+                <Text style={{ marginLeft: ms(24) }}>
+                  {dataPayment[0]?.packageName}
+                </Text>
+              </View>
+              <Divider />
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text>Harga : </Text>
+                <Text style={{ marginLeft: ms(24) }}>
+                  {formatRupiah(dataPayment[0]?.amount)}
+                </Text>
+              </View>
+              <Divider />
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text>PPN : </Text>
+                <Text style={{ marginLeft: ms(24) }}>
+                  {formatRupiah(dataPayment[0]?.taxAmount)}
+                </Text>
+              </View>
+              <Divider />
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text>Total : </Text>
+                <Text
+                  style={{
+                    marginLeft: ms(24),
+                    color: COLORS.PRIMARY_DARK,
+                    fontWeight: "600",
+                  }}
+                >
+                  {formatRupiah(dataPayment[0]?.totalAmount)}
+                </Text>
+              </View>
             </View>
-          </View>
-          <TouchableOpacity style={styles.button} onPress={handlePress}>
-            <Text style={{ color: "white" }}>Daftar</Text>
-          </TouchableOpacity>
-        </Card>
+            <TouchableOpacity style={styles.button} onPress={handlePress}>
+              <Text style={{ color: "white" }}>Daftar</Text>
+            </TouchableOpacity>
+          </Card>
+        )}
 
         {isLoading ? (
           <PopUpLoader visible={true} />
@@ -605,7 +635,7 @@ export default function SubmitPembayaran({ route, navigation }) {
               style={{ fontSize: 72, color: COLORS.SUCCESS }}
             />
           </View>
-          <Text style={styles.modalText}>Submit Pembayaran Berhasil</Text>
+          <Text style={styles.modalText}>{successMessage}</Text>
           <GeneralButton
             style={{ backgroundColor: COLORS.PRIMARY_DARK }}
             mode="contained"
@@ -616,6 +646,34 @@ export default function SubmitPembayaran({ route, navigation }) {
         </View>
         {/* </View> */}
       </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalSuccesVis2}
+        onRequestClose={hideModalSuccess2}
+      >
+        {/* <View style={styles.centeredView}> */}
+        <View style={styles.containermodalView}>
+          <View style={styles.imgSubmit}>
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              style={{ fontSize: 72, color: COLORS.SUCCESS }}
+            />
+          </View>
+          <Text style={styles.modalText}>{successMessage}</Text>
+          <GeneralButton
+            style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+            mode="contained"
+            onPress={hideModalSuccess2}
+          >
+            Close
+          </GeneralButton>
+        </View>
+        {/* </View> */}
+      </Modal>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -631,10 +689,10 @@ export default function SubmitPembayaran({ route, navigation }) {
               style={{ fontSize: 72, color: COLORS.RED_BG }}
             />
           </View>
-          <Text style={styles.modalText}>Error</Text>
-          <Text style={styles.modalText}>{errorMsg}</Text>
+
+          <Text style={styles.modalText}>{errorMessage}</Text>
           <GeneralButton
-            style={{ backgroundColor: COLORS.PRIMARY_MEDIUM }}
+            style={{ backgroundColor: COLORS.PRIMARY_DARK }}
             mode="contained"
             onPress={hideModalError}
           >
@@ -709,11 +767,24 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(5),
     marginTop: moderateScale(18),
   },
+  button2: {
+    borderRadius: moderateScale(10),
+    width: widthPercentageToDP(35),
+    height: heightPercentageToDP(7),
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.PRIMARY_DARK,
+    alignSelf: "flex-end",
+    color: "white",
+    marginBottom: moderateScale(5),
+    marginTop: moderateScale(18),
+  },
   containermodalView: {
     flexDirection: "column",
-    alignSelf: "stretch",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
-    width: constants.SCREEN_WIDTH * 0.7,
     paddingTop: 10,
     paddingBottom: 28,
     backgroundColor: COLORS.WHITE,

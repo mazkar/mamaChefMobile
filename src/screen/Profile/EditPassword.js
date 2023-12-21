@@ -5,6 +5,7 @@ import {
   ColorBgContainer,
   GeneralButton,
   GeneralTextInput,
+  GeneralTextInput2,
   PopUpLoader,
   RootContainer,
 } from "../../component/index.js";
@@ -172,7 +173,7 @@ export default function EditPassword({ navigation }) {
                   marginTop: 12,
                 }}
               >
-                <GeneralTextInput
+                <GeneralTextInput2
                   placeholder="Kata Sandi"
                   mode="outlined"
                   value={password3}
@@ -230,7 +231,7 @@ export default function EditPassword({ navigation }) {
                   marginTop: 12,
                 }}
               >
-                <GeneralTextInput
+                <GeneralTextInput2
                   placeholder="Kata Sandi"
                   mode="outlined"
                   value={password}
@@ -288,7 +289,7 @@ export default function EditPassword({ navigation }) {
                   marginTop: 12,
                 }}
               >
-                <GeneralTextInput
+                <GeneralTextInput2
                   placeholder="Ulangi Kata Sandi"
                   mode="outlined"
                   value={password}
@@ -473,9 +474,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   containermodalView: {
-    // flexDirection: "column",
-    // alignSelf: "center",
+    flexDirection: "column",
+    alignSelf: "center",
     // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

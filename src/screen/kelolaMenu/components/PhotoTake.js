@@ -7,6 +7,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 export default function PhotoTake({
   image,
@@ -37,7 +38,7 @@ export default function PhotoTake({
 
     if (!result.cancelled) {
       setImageToShow(result.uri);
-      setImage(result.base64);
+      setImage(result.uri);
     }
   };
 
@@ -46,13 +47,35 @@ export default function PhotoTake({
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={takePhoto}>
           {imageToShow == null ? (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Ambil Foto
-            </Text>
+            <>
+              <FontAwesome
+                name="camera"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Ambil Foto
+              </Text>
+            </>
           ) : (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Ambil Ulang Foto
-            </Text>
+            <>
+              <FontAwesome
+                name="camera"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Ambil Ulang Foto
+              </Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -65,6 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(10),
     width: widthPercentageToDP(38),
     height: heightPercentageToDP(6),
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,

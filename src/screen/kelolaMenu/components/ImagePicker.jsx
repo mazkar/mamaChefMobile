@@ -18,6 +18,7 @@ import {
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
 import * as FileSystem from "expo-file-system";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const ImagePickerExample = ({
   image,
@@ -103,13 +104,35 @@ const ImagePickerExample = ({
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
           {imageToShow == null ? (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Gambar
-            </Text>
+            <>
+              <FontAwesome
+                name="image"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Pilih Gambar
+              </Text>
+            </>
           ) : (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Ulang Gambar
-            </Text>
+            <>
+              <FontAwesome
+                name="image"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Pilih Ulang Gambar
+              </Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -126,6 +149,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "flex-start",
+    flexDirection: "row",
     marginBottom: moderateScale(5),
     marginTop: moderateScale(5),
     marginTop: moderateScale(10),

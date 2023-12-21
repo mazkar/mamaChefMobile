@@ -60,7 +60,7 @@ export default function DetailTips({ navigation, route }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [base64, setBase64] = useState(null);
-
+  const dispatch = useDispatch();
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -79,7 +79,7 @@ export default function DetailTips({ navigation, route }) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickvideo/${route.params.id}`,
+        url: `${baseUrl.URL}api/TipsTricks/gettipsandtricksdetail/${route.params.id}`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -90,7 +90,7 @@ export default function DetailTips({ navigation, route }) {
       console.log(res, "==meeeeeeeee");
       //   convertBase64ToUrl(res.data.data.video);
       setBase64(res.data.data.video);
-      setDataTips(res.data.data.description);
+      setDataTips(res.data.data);
       setDataTangal(res.data.data.createdDate);
       // test for status you want, etc
       // console.log(res.data.data, "==meeeeeeeee");
@@ -130,10 +130,23 @@ export default function DetailTips({ navigation, route }) {
   //     }, [])
   //   );
 
+  const handleLogut = () => {
+    dispatch(resetReducer());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Tips & Trick" dataTaskPending={[]} />
+        <AppBar
+          title="Tips & Trick"
+          dataTaskPending={[]}
+          navigation={navigation}
+          handleLogut={handleLogut}
+        />
 
         <View style={styles.mainContainer}>
           <View style={{ marginTop: ms(12) }}>
@@ -146,7 +159,7 @@ export default function DetailTips({ navigation, route }) {
               ref={videoRef}
               // source={{ uri: videoUri }}
               source={{
-                uri: `data:video/mp4;base64,${base64}`,
+                uri: `${dataTips?.video}`,
               }}
               style={styles.video}
               useNativeControls // Enable built-in controls
@@ -165,10 +178,10 @@ export default function DetailTips({ navigation, route }) {
               style={{
                 fontSize: 18,
                 fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
+                color: "gray",
               }}
             >
-              {route.params.name}
+              {dataTips?.namaTipsTricks}
             </Text>
 
             <View
@@ -181,7 +194,7 @@ export default function DetailTips({ navigation, route }) {
             ></View>
           </View>
 
-          <View
+          {/* <View
             style={{
               flexDirection: "row",
               // backgroundColor: COLORS.PRIMARY_ULTRASOFT,
@@ -210,7 +223,7 @@ export default function DetailTips({ navigation, route }) {
                 Tanggal {moment(dataTanggal).format("YYYY-MMM-DD")}
               </Text>
             </View>
-          </View>
+          </View> */}
           <Divider style={{ height: ms(2), marginTop: ms(24) }} />
           <View style={{ paddingHorizontal: ms(12) }}>
             <View
@@ -220,11 +233,11 @@ export default function DetailTips({ navigation, route }) {
               }}
             >
               <View style={{ marginBottom: ms(22) }}>
-                <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                <Text style={{ fontSize: ms(22), color: COLORS.PRIMARY_DARK }}>
                   Tips Anda
                 </Text>
               </View>
-              <Text style={{ color: COLORS.PRIMARY_DARK }}>{dataTips}</Text>
+              <Text style={{ color: "gray" }}>{dataTips?.description}</Text>
             </View>
           </View>
 

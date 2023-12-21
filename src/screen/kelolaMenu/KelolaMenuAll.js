@@ -1,13 +1,13 @@
 import {
   View,
   Text,
+  ScrollView,
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
-  FlatList,
-  ScrollView,
-  Image,
   ActivityIndicator,
+  FlatList,
+  Image,
 } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -45,71 +45,67 @@ import API from "../../utils/apiService";
 import axios from "axios";
 import { setUser } from "../../store/models/auth/actions";
 import { baseUrl } from "../../utils/apiURL";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import CardMenuAll from "./components/CardMenuAll";
 import _ from "lodash";
-import CardMenu from "./components/CardMenu";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function TipsAndTrick({ navigation }) {
+export default function KelolaMenuAll({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
-  const [dataTips, setDataTips] = useState([]);
-  const [dataTipsSearch, setDataTipsSearch] = useState([]);
+  const [dataMenu, setDataMenu] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
   const [searchState, setSeacrchState] = useState(false);
+  const [dataMenuSearch, setDataMenuSearch] = useState([]);
+  const dispatch = useDispatch();
 
-  // async function getTips(userId) {
-  //   setIsLoadingGet(true);
-  //   try {
-  //     let res = await axios({
-  //       url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickbystatus/true`,
-  //       method: "get",
-  //       timeout: 8000,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     if (res.status == 200) {
-  //       // test for status you want, etc
-  //       console.log(res, "meeeeeeeee");
-  //       setDataTips(res.data.data);
-  //       setIsLoadingGet(false);
-  //       // console.log(res.data, "transit");
-  //     }
-  //     // Don't forget to return something
-  //     return res.data;
-  //   } catch (err) {
-  //     console.error(err, "error fetch");
-
-  //     setIsLoadingGet(false);
-  //   }
-  // }
+  async function getMenu(userId) {
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/menubyuserid/${userId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "meeeeeeeee");
+        setDataMenu(res.data.data);
+        setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoadingGet(false);
+    }
+  }
 
   const [pageSize, setPageSize] = useState(3);
   const [sumAllData, setAllSumData] = useState(0);
   const [pageNume, setPageNum] = useState(1);
-  async function getTips(userId, page) {
+  async function getMenuPagination(userId, page) {
     setPageNum(pageNume + 1);
-    console.log(searchQuery, "page num");
+    // console.log(pageNume, "page num");
     const body = {
-      pageSize: 10,
+      pageSize: 4,
       currentPage: pageNume,
-      isPhoto: false,
+      isPhoto: true,
       isVideo: false,
-      userId: userId,
-      // keyword: "garpit",
+      userId: 0,
     };
-    setIsLoadingGet(true);
+    setIsLoadingGet(false);
     setIsLoading(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickall`,
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
         method: "POST",
         timeout: 20000,
         data: body,
@@ -121,11 +117,11 @@ export default function TipsAndTrick({ navigation }) {
       if (res.status == 200) {
         // test for status you want, etc
         console.log(res.data, "menu pagination");
-        const newArray = [...dataTips, ...res.data.data];
-        setDataTips(newArray);
+        const newArray = [...dataMenu, ...res.data.data];
+        setDataMenu(newArray);
         setIsLoading(false);
         setIsLoadingGet(false);
-        setPageSize(pageSize);
+        setPageSize(pageSize + page);
         setAllSumData(parseInt(res.data.message));
         // console.log(res.data, "transit");
       }
@@ -137,22 +133,22 @@ export default function TipsAndTrick({ navigation }) {
     }
   }
 
-  async function getTipsSearch(userId, page) {
-    setPageNum(pageNume + 1);
+  async function getMenuPaginationSearch(userId, page) {
+    // setPageNum(pageNume + page);
     console.log(searchQuery, "page num");
     const body = {
       pageSize: 15,
       currentPage: 1,
-      isPhoto: false,
+      isPhoto: true,
       isVideo: false,
       userId: 0,
       keyword: searchQuery,
     };
     setIsLoadingGet(true);
-    setIsLoading(true);
+    // setIsLoading(false);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickall`,
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
         method: "POST",
         timeout: 20000,
         data: body,
@@ -163,9 +159,9 @@ export default function TipsAndTrick({ navigation }) {
       });
       if (res.status == 200) {
         // test for status you want, etc
-        // console.log(res.data, "menu pagination");
-        // const newArray = [...dataTips, ...res.data.data];
-        setDataTipsSearch(res.data.data);
+        console.log(res.data, "menu pagination");
+        // const newArray = [...dataMenu, ...res.data.data];
+        setDataMenuSearch(res.data.data);
         setIsLoading(false);
         setIsLoadingGet(false);
         setSeacrchState(true);
@@ -181,36 +177,38 @@ export default function TipsAndTrick({ navigation }) {
     }
   }
 
-  const onPressDetail = (id, name, description) => {
-    navigation.navigate("DetailTips", {
-      id: id,
-      name: name,
-      desc: description,
-    });
-  };
-
   const onChangeSearch = (query) => setSearchQuery(query);
 
+  const onPressNav = (id) => {
+    navigation.navigate("MenuDetail", { menuId: id, isEdit: false });
+  };
+
   useEffect(() => {
-    getTips();
+    // getMenu(uid);
+    getMenuPagination(0, 0);
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
-      // console.log("Screen is focused");
-      getTips();
+      console.log("Screen is focused");
+      getMenuPagination(0, 0);
       // Add your logic here to update the component or fetch new data
 
       // Example: Refresh data or update components
     }, [])
   );
-  const handleLogut = () => {
-    dispatch(resetReducer());
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Login" }],
-    });
+
+  const handleMomentumScrollEnd = _.debounce(() => {
+    console.log("Scroll momentum ended");
+    sumAllData == dataMenu?.length ? null : getMenuPagination(0, 1);
+    // Your custom logic here
+  }, 1000);
+
+  const handleReset = () => {
+    setSeacrchState(false);
+    setSearchQuery("");
+    getMenuPagination(0, 1);
   };
 
   const RenderFooter = () => {
@@ -223,39 +221,34 @@ export default function TipsAndTrick({ navigation }) {
     ) : null;
   };
 
-  const handleMomentumScrollEnd = _.debounce(() => {
-    console.log("Scroll momentum ended");
-    sumAllData == dataTips?.length ? null : getTips(uid, 1);
-    // Your custom logic here
-  }, 1500);
-
-  const handleReset = () => {
-    setSeacrchState(false);
-    setSearchQuery("");
-    getTips(uid, 1);
-    setDataTipsSearch([]);
+  const handleLogut = () => {
+    dispatch(resetReducer());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
   };
 
   return (
     <ColorBgContainer>
       <RootContainer>
         <AppBar
-          title="Tips & Trick"
+          title="Rekomendasi Resep"
           dataTaskPending={[]}
-          navigation={navigation}
           handleLogut={handleLogut}
+          navigation={navigation}
         />
 
         <View style={styles.mainContainer}>
-          {/* <View style={{ marginBottom: ms(16) }}>
+          <View style={{ marginBottom: ms(16) }}>
             <Text
               style={{
                 fontSize: 18,
                 fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
+                color: "gray",
               }}
             >
-              Menu Kamu
+              Rekomendasi Resep
             </Text>
 
             <View
@@ -266,13 +259,27 @@ export default function TipsAndTrick({ navigation }) {
                 width: 24,
               }}
             ></View>
-          </View> */}
+          </View>
           <View>
             <View style={styles.continerSearch}>
               <Searchbar
-                placeholder="Cari Tips"
+                placeholder="Cari Resep"
                 onChangeText={onChangeSearch}
                 value={searchQuery}
+                // icon={() => (
+                //   <TouchableOpacity
+                //     style={{
+                //       padding: ms(8),
+                //       borderRadius: ms(0),
+                //     }}
+                //   >
+                //     <MaterialCommunityIcons
+                //       name="close"
+                //       size={24}
+                //       color="black"
+                //     />
+                //   </TouchableOpacity>
+                // )}
                 style={{
                   // flexDirection: "row-reverse",
                   // paddingRight: ms(12),
@@ -311,7 +318,7 @@ export default function TipsAndTrick({ navigation }) {
                       marginLeft: ms(6),
                       flexDirection: "row",
                     }}
-                    onPress={() => getTipsSearch(uid, 0)}
+                    onPress={() => getMenuPaginationSearch(0, 0)}
                   >
                     <MaterialCommunityIcons
                       name="magnify"
@@ -332,7 +339,7 @@ export default function TipsAndTrick({ navigation }) {
                     marginLeft: ms(6),
                     flexDirection: "row",
                   }}
-                  onPress={() => getTipsSearch(uid, 0)}
+                  onPress={() => getMenuPaginationSearch(uid, 0)}
                 >
                   <MaterialCommunityIcons
                     name="magnify"
@@ -343,25 +350,16 @@ export default function TipsAndTrick({ navigation }) {
               )}
             </View>
           </View>
-          <View>
-            <TouchableOpacity
-              style={styles.btnAdd}
-              onPress={() => navigation.navigate("TambahTips")}
-            >
-              <FontAwesome
-                name="pencil-square-o"
-                size={11}
+
+          {/* <View
                 style={{
-                  fontSize: 18,
-                  color: COLORS.WHITE,
-                  marginRight: ms(4),
+                  backgroundColor: "black",
+                  borderBottomColor: COLORS.PRIMARY_DARK,
+                  borderBottomWidth: 4,
+                  width: 24,
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
-                Tulis Tips & Trick
-              </Text>
-            </TouchableOpacity>
-          </View>
+            </View> */}
           {searchState ? (
             <ScrollView
               // onMomentumScrollEnd={() =>
@@ -369,19 +367,22 @@ export default function TipsAndTrick({ navigation }) {
               // }
               onMomentumScrollEnd={() => handleMomentumScrollEnd()}
             >
-              {dataTipsSearch?.map((item) => (
+              {dataMenuSearch?.map((item) => (
                 <>
-                  <CardMenu
-                    // photoUrl={item?.photoURL}
-                    namaMenu={item.name}
-                    // notes={item?.note}
-                    id={item.tipstrickid}
-                    onPressDetail={onPressDetail}
+                  <CardMenuAll
+                    photoUrl={item?.photo}
+                    namaMenu={item.menuName}
+                    notes={item?.note}
+                    menuId={item.menuId}
                     desc={item?.description}
-                    selectedId={selectedId}
-                    setSelectedId={setSelectedId}
+                    onPressNav={onPressNav}
                   />
-                  <Divider />
+                  <Divider style={{ marginTop: ms(24) }} />
+                  {/* {isLoading && (
+                    <View style={{ padding: 16 }}>
+                      <ActivityIndicator size="small" color="#0000ff" />
+                    </View>
+                  )} */}
                 </>
               ))}
             </ScrollView>
@@ -392,61 +393,65 @@ export default function TipsAndTrick({ navigation }) {
               // }
               onMomentumScrollEnd={() => handleMomentumScrollEnd()}
             >
-              {dataTips?.map((item) => (
+              {dataMenu?.map((item) => (
                 <>
-                  <CardMenu
-                    // photoUrl={item?.photoURL}
-                    namaMenu={item.name}
-                    // notes={item?.note}
-                    id={item.tipstrickid}
-                    onPressDetail={onPressDetail}
+                  <CardMenuAll
+                    photoUrl={item?.photo}
+                    namaMenu={item.menuName}
+                    notes={item?.note}
+                    menuId={item.menuId}
                     desc={item?.description}
-                    selectedId={selectedId}
-                    setSelectedId={setSelectedId}
+                    onPressNav={onPressNav}
                   />
-                  <Divider />
+                  <Divider style={{ marginTop: ms(24) }} />
+                  {/* {isLoading && (
+                    <View style={{ padding: 16 }}>
+                      <ActivityIndicator size="small" color="#0000ff" />
+                    </View>
+                  )} */}
                 </>
               ))}
+              {sumAllData === dataMenu?.length ? (
+                <View style={{ alignSelf: "center", marginTop: ms(8) }}>
+                  <Text style={{ fontWeight: "300", color: COLORS.GRAY_HARD }}>
+                    Semua Menu Sudah di Tampilkan
+                  </Text>
+                </View>
+              ) : (
+                <></>
+              )}
             </ScrollView>
           )}
-
-          <RenderFooter />
-
-          {/* <View
-                  style={{
-                    backgroundColor: "black",
-                    borderBottomColor: COLORS.PRIMARY_DARK,
-                    borderBottomWidth: 4,
-                    width: 24,
-                  }}
-                />
-              </View> */}
           {/* <FlatList
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listData} // center emptyData component
             // data={surveyOpen}
-            data={dataTips}
+            data={dataMenu}
+            ListFooterComponent={renderFooter}
+            // onEndReached={
+            //   sumAllData != dataMenu?.length ? getMenuPagination(uid, 2) : null
+            // } // Callback when the end of the list is reached
+            // onEndReachedThreshold={0.8}
             // horizontal={true}
-            keyExtractor={(item) => item.tipstrickid}
+            keyExtractor={(item) => item.menuId}
             renderItem={({ item, index }) => (
               <>
                 <CardMenu
-                  // photoUrl={item?.photoURL}
-                  namaMenu={item.name}
-                  // notes={item?.note}
-                  id={item.tipstrickid}
-                  onPressDetail={onPressDetail}
+                  photoUrl={item?.photo}
+                  namaMenu={item.menuName}
+                  notes={item?.note}
+                  menuId={item.menuId}
                   desc={item?.description}
-                  selectedId={selectedId}
-                  setSelectedId={setSelectedId}
+                  onPressNav={onPressNav}
                 />
-                <Divider />
+                <Divider style={{ marginTop: ms(24) }} />
               </>
             )}
           /> */}
         </View>
+        <RenderFooter />
       </RootContainer>
-      {/* <PopUpLoader visible={isLoadingGet} /> */}
+      <PopUpLoader visible={isLoadingGet} />
     </ColorBgContainer>
   );
 }
@@ -459,10 +464,10 @@ const styles = StyleSheet.create({
   },
   btnAdd: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(42),
+    width: widthPercentageToDP(41),
     height: heightPercentageToDP(6),
-    justifyContent: "center",
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "flex-end",

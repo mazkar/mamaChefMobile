@@ -18,6 +18,7 @@ import {
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
 import * as FileSystem from "expo-file-system";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
   useEffect(() => {
@@ -54,7 +55,8 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
       const fileInfo = await FileSystem.getInfoAsync(result.uri);
       const fileNameFromFileSystem = fileInfo.uri.split("/").pop();
 
-      convertToBase64(result.uri);
+      // convertToBase64(result.uri);
+      setVideo(result.uri);
       setVideoToShow(fileNameFromFileSystem);
     }
   };
@@ -64,13 +66,35 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={pickImage}>
           {video == null ? (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Video
-            </Text>
+            <>
+              <FontAwesome
+                name="image"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Pilih Video
+              </Text>
+            </>
           ) : (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Pilih Ulang Video
-            </Text>
+            <>
+              <FontAwesome
+                name="image"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Pilih Ulang Video
+              </Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -81,8 +105,9 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
 const styles = StyleSheet.create({
   btnAdd: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(38),
+    width: widthPercentageToDP(42),
     height: heightPercentageToDP(6),
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,

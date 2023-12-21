@@ -5,6 +5,7 @@ import {
   ColorBgContainer,
   GeneralButton,
   GeneralTextInput,
+  GeneralTextInput2,
   PopUpLoader,
   RootContainer,
 } from "../../component";
@@ -425,7 +426,7 @@ export default function EditBank({ navigation }) {
                 }}
               >
                 {edit ? (
-                  <GeneralTextInput
+                  <GeneralTextInput2
                     placeholder={dataMember?.accountNo}
                     mode="outlined"
                     value={valueRek}
@@ -530,7 +531,7 @@ export default function EditBank({ navigation }) {
                   //   label="name"
 
                   // />
-                  <GeneralTextInput
+                  <GeneralTextInput2
                     placeholder={dataMember?.accountName}
                     mode="outlined"
                     value={valueAkun}
@@ -713,7 +714,7 @@ export default function EditBank({ navigation }) {
                 style={styles.button}
                 onPress={() => setIsEdit(true)}
               >
-                <Text style={{ color: "white" }}>Edit Profil</Text>
+                <Text style={{ color: "white" }}>Edit Akun Bank</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -845,9 +846,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   containermodalView: {
-    // flexDirection: "column",
-    // alignSelf: "center",
+    flexDirection: "column",
+    alignSelf: "center",
     // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     // flex: 1,
 
     alignItems: "center",
-    height: 80,
+    height: 110,
     elevation: 3,
     paddingVertical: 10,
     paddingHorizontal: 2,

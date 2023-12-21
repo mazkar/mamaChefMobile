@@ -315,6 +315,7 @@ export default function MenuDelegation({ navigation }) {
           title="Jadwal Menu"
           // handleLogut={handleLogut}
           navigation={navigation}
+          handleLogut={handleLogut}
         />
         <ScrollView style={styles.mainContainer}>
           <View style={{ marginBottom: ms(16) }}>
@@ -322,7 +323,7 @@ export default function MenuDelegation({ navigation }) {
               style={{
                 fontSize: 18,
                 fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
+                color: "gray",
               }}
             >
               Jadwal Saya
@@ -354,22 +355,17 @@ export default function MenuDelegation({ navigation }) {
                 // setModalVisible={setModalVisible}
               />
             </Card>
-            {selectedEvents?.length == 0 ? (
-              <>
-                <View>
-                  <TouchableOpacity
-                    style={styles.btnAdd}
-                    onPress={showModalAdd}
-                  >
-                    <Text style={{ color: "white", fontWeight: "700" }}>
-                      Tambah Jadwal Menu
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            ) : (
-              <>
-                <View style={{ marginBottom: ms(8), marginTop: ms(24) }}>
+            {/* {selectedDate == null ? <Text>{selectedDate}</Text> : <></>} */}
+            <Card
+              style={{
+                paddingHorizontal: ms(12),
+                paddingTop: ms(12),
+                backgroundColor: COLORS.WHITE,
+                marginTop: ms(28),
+              }}
+            >
+              {selectedEvents?.length == 0 ? (
+                <>
                   <Text
                     style={{
                       fontSize: 18,
@@ -379,19 +375,64 @@ export default function MenuDelegation({ navigation }) {
                   >
                     Jadwal Menu
                   </Text>
-                </View>
-                <View>
-                  <TouchableOpacity
-                    style={styles.btnAdd}
-                    onPress={showModalAdd}
-                  >
-                    <Text style={{ color: "white", fontWeight: "700" }}>
-                      Tambah Jadwal Menu
+                  <Text>
+                    <Text style={{ color: "gray", fontWeight: "300" }}>
+                      Tanggal Di Pilih :
                     </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
+                    <Text
+                      style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}
+                    >
+                      {selectedDate}
+                    </Text>
+                  </Text>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.btnAdd}
+                      onPress={showModalAdd}
+                    >
+                      <Text style={{ color: "white", fontWeight: "700" }}>
+                        Tambah Jadwal Menu
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              ) : (
+                <>
+                  <View style={{ marginBottom: ms(8), marginTop: ms(24) }}>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: "700",
+                        color: COLORS.GRAY_HARD,
+                      }}
+                    >
+                      Jadwal Menu
+                    </Text>
+                  </View>
+                  <Text>
+                    <Text style={{ color: "gray", fontWeight: "300" }}>
+                      Tanggal Di Pilih :
+                    </Text>
+                    <Text
+                      style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}
+                    >
+                      {" "}
+                      {selectedDate}
+                    </Text>
+                  </Text>
+                  <View>
+                    <TouchableOpacity
+                      style={styles.btnAdd}
+                      onPress={showModalAdd}
+                    >
+                      <Text style={{ color: "white", fontWeight: "700" }}>
+                        Tambah Jadwal Menu
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              )}
+            </Card>
 
             {/* <Button onPress={() => console.log(selectedEvents)}>Test</Button> */}
             <View style={{ paddingVertical: 32, paddingHorizontal: ms(4) }}>
@@ -804,9 +845,10 @@ const styles = StyleSheet.create({
     color: "red",
   },
   containermodalView: {
-    // flexDirection: "column",
-    // alignSelf: "center",
+    flexDirection: "column",
+    alignSelf: "center",
     // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

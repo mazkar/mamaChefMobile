@@ -14,6 +14,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { COLORS, FONTS } from "../../../assets/theme";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
   useEffect(() => {
@@ -48,7 +49,8 @@ const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
     if (!result.cancelled) {
       const fileInfo = await FileSystem.getInfoAsync(result.uri);
       const fileNameFromFileSystem = fileInfo.uri.split("/").pop();
-      convertToBase64(result.uri);
+      // convertToBase64(result.uri);
+      setVideo(result.uri);
       setVideoToShow(fileNameFromFileSystem);
     }
   };
@@ -58,13 +60,35 @@ const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
       <View>
         <TouchableOpacity style={styles.btnAdd} onPress={recordVideo}>
           {video == null ? (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Rekam Video
-            </Text>
+            <>
+              <Ionicons
+                name="videocam"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Rekam Video
+              </Text>
+            </>
           ) : (
-            <Text style={{ color: "white", fontWeight: "700" }}>
-              Rekam Ulang
-            </Text>
+            <>
+              <Ionicons
+                name="videocam"
+                size={11}
+                style={{
+                  fontSize: 16,
+                  color: COLORS.WHITE,
+                  marginRight: ms(4),
+                }}
+              />
+              <Text style={{ color: "white", fontWeight: "700" }}>
+                Rekam Ulang
+              </Text>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -75,7 +99,8 @@ const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
 const styles = StyleSheet.create({
   btnAdd: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(38),
+    width: widthPercentageToDP(41),
+    flexDirection: "row",
     height: heightPercentageToDP(6),
     justifyContent: "center",
     alignItems: "center",

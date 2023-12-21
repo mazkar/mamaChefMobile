@@ -50,6 +50,7 @@ import StarRating from "react-native-star-rating";
 import { baseUrl } from "../../utils/apiURL";
 import { useFocusEffect } from "@react-navigation/native";
 import { Tab } from "@rneui/themed";
+import _ from "lodash";
 
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
@@ -109,42 +110,53 @@ export default function Dashboard({ navigation }) {
     }
   }
   async function getMenuNewest(count) {
-    setIsLoadingGet(true);
+    setIsLoading(true);
+    const body = {
+      pageSize: 5,
+      currentPage: 1,
+      isPhoto: true,
+      isVideo: false,
+      userId: uid,
+    };
+    setIsLoading(true);
+    setIsLoading(false);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Menu/GetNewestMenu/${count}`,
-        method: "get",
-        timeout: 8000,
+        url: `${baseUrl.URL}api/Menu/getmenupagination`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
       if (res.status == 200) {
-        // test for status you want, etc
-        console.log(res.data, "newest");
         setDataMenu2(res.data.data);
-        setIsLoadingGet(false);
-        // console.log(res.data, "transit");
+        setIsLoading(false);
       }
       // Don't forget to return something
       return res.data;
     } catch (err) {
       console.error(err);
-      // setIsLoadingGet(false);
+      setIsLoading(false);
     }
   }
 
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(3);
   const [sumAllData, setAllSumData] = useState(0);
+  const [pageNume, setPageNum] = useState(1);
   async function getMenuPagination(userId, page) {
+    setPageNum(pageNume + 1);
+    // console.log(pageNume, "page num");
     const body = {
-      pageSize: pageSize,
-      currentPage: 1,
-      isPhoto: false,
+      pageSize: 1,
+      currentPage: pageNume,
+      isPhoto: true,
       isVideo: false,
-      userId: userId,
+      userId: 0,
     };
+    // setIsLoadingGet(true);
     setIsLoading(true);
     try {
       let res = await axios({
@@ -160,8 +172,10 @@ export default function Dashboard({ navigation }) {
       if (res.status == 200) {
         // test for status you want, etc
         console.log(res.data, "menu pagination");
-        setDataMenuPagination(res.data.data);
+        const newArray = [...dataMenuPagination, ...res.data.data];
+        setDataMenuPagination(newArray);
         setIsLoading(false);
+        setIsLoadingGet(false);
         setPageSize(pageSize + page);
         setAllSumData(parseInt(res.data.message));
         // console.log(res.data, "transit");
@@ -174,42 +188,42 @@ export default function Dashboard({ navigation }) {
     }
   }
 
-  async function getMenuPaginationTab(userId, page) {
-    const body = {
-      pageSize: 2,
-      currentPage: 1,
-      isPhoto: true,
-      isVideo: false,
-      userId: userId,
-    };
-    setIsLoadingGet(true);
-    try {
-      let res = await axios({
-        url: `${baseUrl.URL}api/Menu/getmenupagination`,
-        method: "POST",
-        timeout: 20000,
-        data: body,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status == 200) {
-        // test for status you want, etc
-        console.log(res.data, "menu pagination");
-        setDataMenuPagination(res.data.data);
-        setIsLoadingGet(false);
-        setPageSize(2);
-        setAllSumData(parseInt(res.data.message));
-        // console.log(res.data, "transit");
-      }
-      // Don't forget to return something
-      return res.data;
-    } catch (err) {
-      console.error(err);
-      setIsLoadingGet(false);
-    }
-  }
+  // async function getMenuPaginationTab(userId, page) {
+  //   const body = {
+  //     pageSize: 2,
+  //     currentPage: 1,
+  //     isPhoto: true,
+  //     isVideo: false,
+  //     userId: userId,
+  //   };
+  //   setIsLoadingGet(true);
+  //   try {
+  //     let res = await axios({
+  //       url: `${baseUrl.URL}api/Menu/getmenupagination`,
+  //       method: "POST",
+  //       timeout: 20000,
+  //       data: body,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (res.status == 200) {
+  //       // test for status you want, etc
+  //       console.log(res.data, "menu pagination");
+  //       setDataMenuPagination(res.data.data);
+  //       setIsLoadingGet(false);
+  //       setPageSize(2);
+  //       setAllSumData(parseInt(res.data.message));
+  //       // console.log(res.data, "transit");
+  //     }
+  //     // Don't forget to return something
+  //     return res.data;
+  //   } catch (err) {
+  //     console.error(err);
+  //     setIsLoadingGet(false);
+  //   }
+  // }
 
   const onPressNav = (id) => {
     navigation.navigate("MenuDetail", { menuId: id });
@@ -224,7 +238,7 @@ export default function Dashboard({ navigation }) {
   useEffect(() => {
     // getMenu(uid);
     getMenuNewest(5);
-    getMenuPagination(0, 0);
+    getMenuPagination(0, 1);
   }, []);
 
   // useEffect(() => {
@@ -244,7 +258,7 @@ export default function Dashboard({ navigation }) {
     React.useCallback(() => {
       // Do something when the screen is focused
       console.log("Screen is focused");
-      getMenuPagination(0, 0);
+      getMenuPagination(uid, 1);
       getMenuNewest(5);
       // getMenuPagination(uid);
       // Add your logic here to update the component or fetch new data
@@ -263,21 +277,33 @@ export default function Dashboard({ navigation }) {
     ) : null;
   };
 
-  const handlerDoneTab = (val) => {
-    setIndex(val);
-    console.log(val);
-    // setPageSize(2);
-    if (val == 0) {
-      getMenuPaginationTab(0, 0);
-      // setPageSize(2);
-      // setIsLoadingGet(isLoading);
-    }
-    if (val == 1) {
-      getMenuPaginationTab(uid, 0);
-      // setPageSize(2);
-      // setIsLoadingGet(isLoading);
-    }
-  };
+  // const handlerDoneTab = (val) => {
+  //   setIndex(val);
+  //   console.log(val);
+  //   // setPageSize(2);
+  //   if (val == 0) {
+  //     getMenuPaginationTab(0, 1);
+  //     // setPageSize(2);
+  //     // setIsLoadingGet(isLoading);
+  //   }
+  //   if (val == 1) {
+  //     getMenuPaginationTab(uid, 1);
+  //     // setPageSize(2);
+  //     // setIsLoadingGet(isLoading);
+  //   }
+  // };
+
+  const handleMomentumScrollEnd = _.debounce(() => {
+    console.log("Scroll momentum ended");
+    sumAllData == dataMenuPagination?.length ? null : getMenuPagination(0, 1);
+    // Your custom logic here
+  }, 1500);
+
+  // const handleMomentumScrollEndUid = _.debounce(() => {
+  //   console.log("Scroll momentum ended");
+  //   sumAllData == dataMenuPagination?.length ? null : getMenuPagination(uid, 1);
+  //   // Your custom logic here
+  // }, 1000);
 
   return (
     <ColorBgContainer>
@@ -294,11 +320,7 @@ export default function Dashboard({ navigation }) {
         </TouchableOpacity> */}
         <ScrollView
           style={styles.mainContainer}
-          onMomentumScrollEnd={() =>
-            sumAllData == dataMenuPagination?.length
-              ? null
-              : getMenuPagination(0, 2)
-          }
+          onMomentumScrollEnd={() => handleMomentumScrollEnd()}
         >
           <View>
             <ImageBackground
@@ -314,14 +336,7 @@ export default function Dashboard({ navigation }) {
               </Text>
             </ImageBackground>
           </View>
-          {/* <Button onPress={() => console.log(user)}>Test</Button> */}
-          {/* <View style={styles.continerSearch}>
-            <Searchbar
-              placeholder="Cari Menu"
-              onChangeText={onChangeSearch}
-              value={searchQuery}
-            />
-          </View> */}
+
           <View style={{ paddingHorizontal: ms(8) }}>
             <View
               style={{
@@ -334,12 +349,12 @@ export default function Dashboard({ navigation }) {
               <View>
                 <Text
                   style={{
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: "700",
                     color: COLORS.GRAY_HARD,
                   }}
                 >
-                  Menu Baru
+                  Resep Terposting Anda
                 </Text>
                 <View
                   style={{
@@ -355,94 +370,129 @@ export default function Dashboard({ navigation }) {
                   onPress={() => navigation.navigate("KelolaMenu")}
                 >
                   <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                    Lihat Semua ({dataMenu2?.length})
+                    Lihat Semua
+                    {/* ({dataMenu2?.length}) */}
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
 
             <View style={{ paddingVertical: 32 }}>
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listData} // center emptyData component
-                // data={surveyOpen}
-                data={dataMenu2}
-                showsHorizontalScrollIndicator={false}
-                horizontal={true}
-                keyExtractor={(item) => item.menuId}
-                renderItem={({ item, index }) => (
-                  <Card
+              {dataMenu2.length == 0 ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    width: "20vw",
+                    alignItems: "center",
+                    // backgroundColor: "red",
+                  }}
+                >
+                  <Image
+                    source={require("../../assets/images/empty_data.png")}
+                  />
+                  <Text
                     style={{
-                      borderRadius: 8,
-                      width: ms(138),
-                      height: ms(168),
-                      marginLeft: ms(12),
-                      borderTopStartRadius: 10,
-                      borderTopEndRadius: 10,
-                      backgroundColor: COLORS.WHITE,
-                      paddingBottom: ms(32),
+                      marginTop: ms(8),
+                      color: COLORS.GRAY_HARD,
+                      fontSize: 18,
                     }}
-                    onPress={() => onPressNav(item.menuId)}
                   >
-                    <Card.Cover
+                    Kamu Belum Memposting Resep
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.listData} // center emptyData component
+                  // data={surveyOpen}
+                  data={dataMenu2}
+                  showsHorizontalScrollIndicator={false}
+                  horizontal={true}
+                  keyExtractor={(item) => item.menuId}
+                  renderItem={({ item, index }) => (
+                    <Card
                       style={{
-                        width: "auto",
-                        height: "80%",
+                        borderRadius: 8,
+                        width: ms(148),
+                        height: ms(178),
+                        marginLeft: ms(12),
                         borderTopStartRadius: 10,
                         borderTopEndRadius: 10,
+                        backgroundColor: COLORS.WHITE,
+                        paddingBottom: ms(38),
                       }}
-                      source={{
-                        uri: `data:image/jpeg;base64,${item?.photoURL}`,
-                      }}
-                    />
-                    <Card.Content
-                      style={{
-                        // marginTop: ms(4),
-                        // width: "100%",
-                        paddingHorizontal: ms(4),
-                        // backgroundColor: "red",
-                      }}
+                      onPress={() => onPressNav(item.menuId)}
                     >
-                      <View
+                      <Card.Cover
                         style={{
-                          backgroundColor: COLORS.PRIMARY_DARK,
-                          borderRadius: ms(10),
-                          alignContent: "center",
-                          // justifyContent: "center",
-                          // flex: 1,
-                          marginTop: ms(4),
-                          width: "100%",
-                          paddingHorizontal: ms(6),
+                          width: "auto",
+                          height: "80%",
+                          borderTopStartRadius: 10,
+                          borderTopEndRadius: 10,
+                        }}
+                        source={{
+                          uri: `${item?.photo}`,
+                        }}
+                      />
+                      <Card.Content
+                        style={{
+                          // marginTop: ms(4),
+                          // width: "100%",
+                          paddingHorizontal: ms(4),
+                          // backgroundColor: "red",
                         }}
                       >
-                        <Text
+                        <View
                           style={{
-                            fontSize: 12,
-                            alignSelf: "center",
-                            fontWeight: "600",
-                            color: COLORS.WHITE,
+                            backgroundColor: COLORS.PRIMARY_DARK,
+                            borderRadius: ms(10),
+                            alignContent: "center",
+                            // justifyContent: "center",
+                            // flex: 1,
+                            marginTop: ms(4),
+                            width: "100%",
+                            paddingHorizontal: ms(6),
                           }}
                         >
-                          {item?.menuName}
-                        </Text>
-                      </View>
+                          <Text
+                            numberOfLines={1} // Set the number of lines to 1 to enable ellipsis
+                            ellipsizeMode="tail"
+                            style={{
+                              fontSize: 11,
+                              alignSelf: "center",
+                              fontWeight: "600",
+                              color: COLORS.WHITE,
+                            }}
+                          >
+                            {item?.menuName}
+                          </Text>
+                        </View>
 
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "500",
-                          color: COLORS.PRIMARY_DARK,
-                        }}
-                      >
-                        Oleh : Budi
-                      </Text>
-                      {/* <Text numberOfLines={3} ellipsizeMode="tail">
+                        <Text
+                          numberOfLines={2} // Set the number of lines to 1 to enable ellipsis
+                          ellipsizeMode="tail"
+                          style={{
+                            fontSize: 11,
+
+                            fontWeight: "500",
+                            color: COLORS.PRIMARY_DARK,
+                          }}
+                        >
+                          <Text style={{ color: COLORS.GRAY_HARD }}>
+                            Resep Oleh :
+                          </Text>
+                          {"\n"}
+                          <Text> {item?.recipeBy}</Text>
+                        </Text>
+                        {/* <Text numberOfLines={3} ellipsizeMode="tail">
                       {item?.description}
                     </Text> */}
-                    </Card.Content>
-                  </Card>
-                )}
-              />
+                      </Card.Content>
+                    </Card>
+                  )}
+                />
+              )}
             </View>
 
             <Divider style={{ height: 3, color: "#EEEEEE" }} />
@@ -458,12 +508,12 @@ export default function Dashboard({ navigation }) {
               <View>
                 <Text
                   style={{
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: "700",
                     color: COLORS.GRAY_HARD,
                   }}
                 >
-                  Rekomendasi Menu
+                  Rekomendasi Resep
                 </Text>
                 <View
                   style={{
@@ -476,44 +526,16 @@ export default function Dashboard({ navigation }) {
               </View>
               <View>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("KelolaMenu")}
+                  onPress={() => navigation.navigate("KelolaMenuAll")}
                 >
                   <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                    Lihat Semua ({sumAllData})
+                    Lihat Semua
+                    {/* ({sumAllData}) */}
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
             <View style={{ paddingVertical: 32 }}>
-              <Tab
-                disableIndicator={true}
-                value={index}
-                onChange={handlerDoneTab}
-                dense
-              >
-                <Tab.Item
-                  containerStyle={(active) => ({
-                    paddingVertical: 8,
-                  })}
-                  titleStyle={(active) => ({
-                    color: active ? COLORS.PRIMARY_DARK : "black",
-                    fontSize: 11,
-                  })}
-                >
-                  {`Semua Menu `}
-                </Tab.Item>
-                <Tab.Item
-                  containerStyle={(active) => ({
-                    paddingVertical: 8,
-                  })}
-                  titleStyle={(active) => ({
-                    color: active ? COLORS.PRIMARY_DARK : "black",
-                    fontSize: 11,
-                  })}
-                >
-                  {`Menu Anda `}
-                </Tab.Item>
-              </Tab>
               <FlatList
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listData}
@@ -557,16 +579,19 @@ export default function Dashboard({ navigation }) {
                         >
                           <Image
                             source={{
-                              uri: `data:image/jpeg;base64,${item?.photo}`,
+                              uri: `${item?.photo}`,
                             }}
                             style={{
                               width: ms(100),
                               height: ms(100),
                               borderRadius: ms(50),
                             }}
+                            onError={(error) =>
+                              console.log("Image load error:", error)
+                            }
                           />
                         </View>
-                        <View>
+                        <View style={{ marginLeft: ms(16) }}>
                           <Text
                             numberOfLines={1}
                             ellipsizeMode="tail"
@@ -578,17 +603,7 @@ export default function Dashboard({ navigation }) {
                           >
                             {item.menuName}
                           </Text>
-                          <Text
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                            style={{
-                              fontSize: 12,
-                              fontWeight: "400",
-                              color: COLORS.GRAY_HARD,
-                            }}
-                          >
-                            Ramon
-                          </Text>
+
                           <View style={{ flexDirection: "row" }}>
                             <Text>(4)</Text>
                             <StarRating
@@ -605,6 +620,21 @@ export default function Dashboard({ navigation }) {
                               starSize={14}
                             />
                           </View>
+                          <Text>
+                            <Text
+                              style={{
+                                color: COLORS.GRAY_HARD,
+                                fontWeight: "600",
+                                fontSize: 11,
+                              }}
+                            >
+                              Resep Oleh:
+                            </Text>
+                            {"\n"}
+                            <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                              {item?.recipeBy}
+                            </Text>
+                          </Text>
                         </View>
                       </View>
                       <View
@@ -639,7 +669,6 @@ export default function Dashboard({ navigation }) {
           visible={modalErroVis}
           onRequestClose={hideModalError}
         >
-          {/* <View style={styles.centeredView}> */}
           <View style={styles.containermodalView}>
             <View style={styles.imgSubmit}>
               <FontAwesome
@@ -657,11 +686,8 @@ export default function Dashboard({ navigation }) {
               Close
             </GeneralButton>
           </View>
-          {/* </View> */}
         </Modal>
-        {/* <TouchableOpacity style={styles.button} onPress={handleLogut}>
-          <Text style={{ color: COLORS.WHITE }}>Sign Out</Text>
-        </TouchableOpacity> */}
+
         <PopUpLoader visible={isLoadingGet} />
       </RootContainer>
     </ColorBgContainer>
@@ -671,8 +697,6 @@ export default function Dashboard({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    // paddingHorizontal: 12,
-    // paddingVertical: 12,
   },
   continerSearch: {
     paddingHorizontal: 12,

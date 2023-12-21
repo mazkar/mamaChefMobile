@@ -27,7 +27,7 @@ export default function CardMenu({
           borderRadius: ms(12),
         }}
       >
-        <View>
+        {/* <View>
           <Image
             style={{
               width: ms(132),
@@ -36,7 +36,7 @@ export default function CardMenu({
             }}
             source={require("./../../../assets/images/NoImage.jpeg")}
           />
-        </View>
+        </View> */}
         <View style={{ marginLeft: ms(12), width: "auto" }}>
           <Text
             style={{

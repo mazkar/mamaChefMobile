@@ -57,8 +57,8 @@ export default function TambahTips({ navigation }) {
   const [valuNote, setValeNote] = useState("");
   const [valueGambar, setValueGambar] = useState(null);
   const [image, setImage] = useState(null);
-  const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state?.auth?.user);
+  const token = useSelector((state) => state?.auth?.token);
   const [imagetoShow, setImageToShow] = useState(null);
   const [video, setVideo] = useState(null);
   const [videoToShow, setVideoToShow] = useState(null);
@@ -67,7 +67,14 @@ export default function TambahTips({ navigation }) {
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [menuId, setMenuId] = useState([]);
   const [messageError, setMessageError] = useState("");
-
+  const dispatch = useDispatch();
+  const handleLogut = () => {
+    dispatch(resetReducer());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
 
@@ -83,20 +90,23 @@ export default function TambahTips({ navigation }) {
 
   const handlePress = async () => {
     setIsLoading(true);
-    const body = {
-      name: valueNamaMenu,
-      description: valueDesc,
-      videoFile: video,
-      createdBy: parseInt(user.UserId),
-    };
+    // const body = {
+    //   name: valueNamaMenu,
+    //   description: valueDesc,
+    //   videoFile: video,
+    //   createdBy: parseInt(user.UserId),
+    // };
 
-    // const formData = new FormData();
-    // formData.append("MenuName", valueNamaMenu);
-    // formData.append("Description", valueDesc);
-    // formData.append("Note", valuNote);
-    // formData.append("PhotoFile", image);
-    // formData.append("VideoFile", video);
-    // formData.append("LMBY", user.Email);
+    const formData = new FormData();
+    formData.append("Name", valueNamaMenu);
+    formData.append("Description", valueDesc);
+    formData.append("VideoFile", {
+      uri: video,
+      name: "video.mp4",
+      type: "video/mp4",
+    });
+    formData.append("CreatedBy", parseInt(user.UserId));
+
     // formData.append("IsPublished", false);
     // formData.append("LMDT", `${moment().format("YYYY-MM-DD")}`);
     // formData.append("CreatedBy", parseInt(user.UserId));
@@ -118,7 +128,7 @@ export default function TambahTips({ navigation }) {
     // });
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
       },
     };
@@ -128,8 +138,8 @@ export default function TambahTips({ navigation }) {
 
     axios
       .post(
-        `${baseUrl.URL}api/TipsTricks/inserttipstrickmobile`,
-        body,
+        `${baseUrl.URL}api/TipsTricks/inserttipstrick`,
+        formData,
         config,
         timeOut
       )
@@ -150,17 +160,22 @@ export default function TambahTips({ navigation }) {
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Tips & Trick" dataTaskPending={[]} />
+        <AppBar
+          title="Tips & Trick"
+          dataTaskPending={[]}
+          handleLogut={handleLogut}
+          navigation={navigation}
+        />
         <ScrollView style={styles.mainContainer}>
           <View style={{ marginBottom: ms(24) }}>
             <Text
               style={{
                 fontSize: 18,
                 fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
+                color: "gray",
               }}
             >
-              Tambah Tips & Trick
+              Tulis Tips & Trick
             </Text>
             <View
               style={{
@@ -174,7 +189,7 @@ export default function TambahTips({ navigation }) {
 
           <Card
             style={{
-              backgroundColor: COLORS.PRIMARY_ULTRASOFT,
+              backgroundColor: COLORS.WHITE,
               paddingHorizontal: ms(24),
               paddingVertical: ms(32),
               borderRadius: ms(6),
@@ -186,9 +201,9 @@ export default function TambahTips({ navigation }) {
                 {/* <Text style={styles.text}>Nama Menu</Text> */}
 
                 <GeneralTextInput
-                  placeholder="Nama Menu"
+                  placeholder="Judul"
                   mode="outlined"
-                  label="Judul"
+                  title="Judul"
                   value={valueNamaMenu}
                   // hasErrors={authFailed}
                   messageError="Wrong Username/Password"
@@ -203,7 +218,7 @@ export default function TambahTips({ navigation }) {
                   placeholder="Deskripsi"
                   mode="outlined"
                   value={valueDesc}
-                  label="Deskripsi"
+                  title="Deskripsi"
                   // hasErrors={authFailed}
                   multiline
                   numberOfLines={10}
@@ -361,7 +376,9 @@ const styles = StyleSheet.create({
   },
   containermodalView: {
     flexDirection: "column",
-    alignSelf: "stretch",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

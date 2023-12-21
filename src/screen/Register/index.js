@@ -250,8 +250,9 @@ export default function Register({ navigation }) {
 
               <GeneralTextInput
                 placeholder="Email"
-                label="Email"
+                // label="Email"
                 mode="outlined"
+                title="Email"
                 value={email}
                 // hasErrors={authFailed}
                 messageError="Wrong Username/Password"
@@ -264,7 +265,7 @@ export default function Register({ navigation }) {
                 placeholder="Kata Sandi"
                 mode="outlined"
                 value={password}
-                label="Kata Sandi"
+                title="Kata Sandi"
                 // hasErrors={authFailed}
                 secureTextEntry={showPassword}
                 // messageError="Wrong Username/Password"
@@ -288,7 +289,7 @@ export default function Register({ navigation }) {
                 placeholder="Ulangi Kata Sandi"
                 mode="outlined"
                 value={password}
-                label="Ulangi Kata Sandi"
+                title="Ulangi Kata Sandi"
                 // hasErrors={authFailed}
                 secureTextEntry={showPassword2}
                 // messageError="Wrong Username/Password"
@@ -323,6 +324,7 @@ export default function Register({ navigation }) {
               <GeneralTextInput
                 placeholder="Referal"
                 mode="outlined"
+                title="referal"
                 value={referal}
                 // hasErrors={authFailed}
                 messageError="Wrong Username/Password"
@@ -346,23 +348,25 @@ export default function Register({ navigation }) {
               </View>
 
               <Text>
-                <Text>Dengan Melakukan Pendafaran, berarti </Text>
-                <Text>anda telah menyetujui </Text>
+                <Text style={{ color: "gray" }}>
+                  Dengan Melakukan Pendafaran, berarti{" "}
+                </Text>
+                <Text style={{ color: "gray" }}>anda telah menyetujui </Text>
                 <Text style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}>
                   Syarat Ketentuan{" "}
                 </Text>
-                <Text>dan </Text>
+                <Text style={{ color: "gray" }}>dan </Text>
                 <Text style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}>
                   Kebijakan Privasi
                 </Text>
-                <Text> Mama Chef</Text>
+                <Text style={{ color: "gray" }}> Mama Chef</Text>
               </Text>
             </View>
 
             <TouchableOpacity
-              style={styles.button}
+              style={checked ? styles.button : styles.button2}
               onPress={handleDaftar}
-              // disabled={checked}
+              disabled={!checked}
             >
               <Text style={{ color: COLORS.WHITE }}>Daftar</Text>
             </TouchableOpacity>
@@ -465,7 +469,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   inputUserName: {
-    height: 72,
+    // height: 72,
     border: "0px",
     backgroundColor: "transparent",
   },
@@ -497,12 +501,25 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(5),
     marginTop: moderateScale(18),
   },
+  button2: {
+    borderRadius: moderateScale(10),
+    width: widthPercentageToDP(88),
+    height: heightPercentageToDP(7),
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "gray",
+    alignSelf: "center",
+
+    marginBottom: moderateScale(5),
+    marginTop: moderateScale(18),
+  },
   containermodalView: {
     flexDirection: "column",
     alignSelf: "stretch",
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,
+    width: constants.SCREEN_WIDTH * 0.7,
     paddingHorizontal: 32,
     backgroundColor: COLORS.WHITE,
     borderRadius: 10,

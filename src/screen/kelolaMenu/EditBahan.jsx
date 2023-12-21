@@ -155,7 +155,7 @@ export default function EditBahan({ navigation, menuId, route }) {
 
     const body = {
       menuIngredientId: 0,
-      menuId: menuId,
+      menuId: route?.params?.menuId,
       ingredientsId: selectedIng,
       quantity: qty,
       otherIngridients: valueOther,
@@ -215,7 +215,7 @@ export default function EditBahan({ navigation, menuId, route }) {
 
     const body = {
       menuIngredientId: 0,
-      menuId: menuId,
+      menuId: route?.params?.menuId,
       ingredientsId: selectedIng,
       quantity: qty,
       otherIngridients: valueOther,
@@ -278,7 +278,7 @@ export default function EditBahan({ navigation, menuId, route }) {
     setIsLoadingGet(true);
 
     const body = {
-      menuId: menuId,
+      menuId: route?.params?.menuId,
       isPublished: publish,
       lmby: uid.Email,
     };
@@ -329,7 +329,7 @@ export default function EditBahan({ navigation, menuId, route }) {
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
 
-    getData(menuId);
+    getData(route?.params?.menuId);
     // getTaskDetail(route.params.assignmentId);
   };
   const hideModalSuccess2 = () => {
@@ -346,7 +346,7 @@ export default function EditBahan({ navigation, menuId, route }) {
   };
 
   useEffect(() => {
-    getData(menuId);
+    getData(route?.params?.menuId);
   }, []);
 
   const handleLogut = () => {
@@ -394,7 +394,7 @@ export default function EditBahan({ navigation, menuId, route }) {
     setIsLoadingGet(true);
 
     const body = {
-      menuId: menuId,
+      menuId: route?.params.menuId,
       description: valueDesc,
       lmby: parseInt(uid.UserId),
       // lmdt: moment().format("YYYY-MM-DD hh:mm:ss"),
@@ -451,7 +451,7 @@ export default function EditBahan({ navigation, menuId, route }) {
     setIsLoadingGet(true);
 
     const body = {
-      menuId: menuId,
+      menuId: route?.params?.menuId,
       note: valueNote,
       lmby: parseInt(uid.UserId),
       // lmdt: moment().format("YYYY-MM-DD hh:mm:ss"),

@@ -53,7 +53,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const LoginPage = ({ navigation }) => {
   const dispatch = useDispatch();
-
+  const [showPassword, setShowPassword] = useState(true);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const hideModalError = () => {
     setModalErrorVis(false);
@@ -73,8 +73,8 @@ const LoginPage = ({ navigation }) => {
   const [messageError, setMessageError] = useState("");
   const [dataConverToken, setDataConvertToken] = useState(null);
 
-  const showPassword = () => {
-    setIsShowPassword(true);
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const converToken = (token) => {
@@ -192,36 +192,40 @@ const LoginPage = ({ navigation }) => {
         source={require("../../Assets/Images/Login.png")}
       /> */}
             </View>
-            <View style={{ marginTop: moderateScale(32) }}>
-              <Text style={styles.text}>Email</Text>
-
+            <View style={{ marginTop: moderateScale(32), marginTop: ms(64) }}>
               <GeneralTextInput
                 placeholder="Email"
                 mode="outlined"
                 value={email}
+                title="Email"
                 // hasErrors={authFailed}
                 messageError="Wrong Username/Password"
                 onChangeText={(e) => setEmail(e)}
                 style={styles.inputUserName}
               />
-              <View>
-                <Text style={styles.text}>Password</Text>
-
-                <TextInputPassword
-                  placeholder="Password"
+              <View style={{ marginTop: ms(18), marginBottom: ms(64) }}>
+                <GeneralTextInput
+                  placeholder="Kata Sandi"
                   mode="outlined"
+                  title="Kata Sandi"
                   value={password}
                   // hasErrors={authFailed}
-                  secureTextEntry={true}
+                  secureTextEntry={showPassword}
                   // messageError="Wrong Username/Password"
                   // icoPress={() => {
                   //   setHidePassword(!hidePassword);
                   //   return false;
                   // }}
+                  right={
+                    <TextInput.Icon
+                      icon={showPassword ? "eye" : "eye-off"}
+                      color={COLORS.PRIMARY_DARK}
+                      onPress={togglePassword}
+                    />
+                  }
                   onChangeText={(e) => setPassword(e)}
-                  style={styles.inputUserPassword}
+                  style={styles.inputUserName}
                 />
-                <Text style={styles.text}>Forgot Passsword?</Text>
               </View>
 
               <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -238,7 +242,7 @@ const LoginPage = ({ navigation }) => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginVertical: 10,
+                  marginTop: 10,
                 }}
               >
                 <View
@@ -275,12 +279,27 @@ const LoginPage = ({ navigation }) => {
                 flex: 1,
               }}
             >
+              <TouchableOpacity
+                onPress={() => navigation.navigate("SubmitPembayaran2")}
+              >
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    fontSize: 14,
+                    marginTop: ms(8),
+                    color: COLORS.PRIMARY_DARK,
+                  }}
+                >
+                  Submit Pembayaran
+                </Text>
+              </TouchableOpacity>
+
               <Text
                 style={{
                   fontWeight: "500",
                   fontSize: 12,
                   marginTop: ms(8),
-                  color: COLORS.PRIMARY_DARK,
+                  color: "gray",
                 }}
               >
                 HUBUNGI KAMI

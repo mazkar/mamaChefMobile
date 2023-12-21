@@ -3,7 +3,7 @@ import React from "react";
 import { ms } from "react-native-size-matters";
 import { COLORS, FONTS } from "../../../assets/theme";
 
-export default function CardMenu({
+export default function CardMenuAll({
   photoUrl,
   namaMenu,
   desc,
@@ -13,7 +13,7 @@ export default function CardMenu({
   isPublish,
 }) {
   return (
-    <TouchableOpacity onPress={() => onPressNav(menuId, isPublish)}>
+    <TouchableOpacity onPress={() => onPressNav(menuId)}>
       <View
         style={{
           flexDirection: "row",
@@ -92,36 +92,6 @@ export default function CardMenu({
           >
             {notes}
           </Text>
-          <Text
-            style={{
-              fontWeight: "300",
-              color: COLORS.PRIMARY_DARK,
-              fontSize: ms(12),
-            }}
-          >
-            Status:
-          </Text>
-          <View
-            style={{
-              backgroundColor: isPublish ? "green" : COLORS.RED_BG,
-              width: isPublish ? ms(76) : ms(106),
-              paddingHorizontal: ms(6),
-              paddingVertical: ms(6),
-              alignItems: "center",
-              borderRadius: ms(12),
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: COLORS.WHITE,
-                fontSize: ms(11),
-                maxWidth: 200,
-              }}
-            >
-              {isPublish ? "Published" : "Not Published"}
-            </Text>
-          </View>
         </View>
       </View>
     </TouchableOpacity>

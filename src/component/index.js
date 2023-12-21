@@ -4,6 +4,7 @@ import ColorBgContainer from "./ColorBgContainer";
 //widget
 import GeneralButton from "./widget/GeneralButton";
 import GeneralTextInput from "./widget/GeneralTextInput";
+import GeneralTextInput2 from "./widget/GeneralTextInput2";
 import TextInputPassword from "./widget/TextInputPassword";
 import TextInputIco from "./widget/TextInputIco";
 import AppBar from "./widget/AppBar";
@@ -79,6 +80,7 @@ export {
   DateTimePckrIOSAfter,
   DateTimePckrAndroAfter,
   LoadingScreen,
+  GeneralTextInput2,
   RefreshScreen,
   ServerError,
   AutoTextCompleteInput,

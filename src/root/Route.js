@@ -29,6 +29,10 @@ import MenuDelegation from "../screen/MenuDeleation";
 import AboutUs from "../screen/AboutUs";
 import EditPassword from "../screen/Profile/EditPassword";
 import EditBank from "../screen/Profile/EditBankAcount";
+import KelolaMenuAll from "../screen/kelolaMenu/KelolaMenuAll";
+import SubmitPembayaranInputEmail from "../screen/submitPembayaran/submitPembayaranInputEmail";
+import TambahIngridients from "../screen/kelolaMenu/TambahIngridients";
+import EditBahan from "../screen/kelolaMenu/EditBahan";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -66,7 +70,6 @@ export default function Route() {
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
-
       <Tab.Screen
         name="TambahMenu"
         component={TambahMenuMain}
@@ -74,8 +77,26 @@ export default function Route() {
         options={{ headerShown: false }}
       />
       <Tab.Screen
+        name="EditBahan"
+        component={EditBahan}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="TambahBahan"
+        component={TambahIngridients}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
         name="SubmitPembayaran"
         component={SubmitPembayaran}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="SubmitPembayaran2"
+        component={SubmitPembayaranInputEmail}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />
@@ -142,6 +163,12 @@ export default function Route() {
       <Tab.Screen
         name="EditBank"
         component={EditBank}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="KelolaMenuAll"
+        component={KelolaMenuAll}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

@@ -5,6 +5,7 @@ import {
   ColorBgContainer,
   GeneralButton,
   GeneralTextInput,
+  GeneralTextInput2,
   RootContainer,
 } from "../../component";
 import { useDispatch, useSelector } from "react-redux";
@@ -221,7 +222,11 @@ export default function EditProfil({ navigation }) {
   return (
     <ColorBgContainer style={{ paddingHorizontal: 24, paddingVertical: 72 }}>
       <RootContainer isTransparent>
-        <AppBar title="Ubah Profil" />
+        <AppBar
+          title="Ubah Profil"
+          handleLogut={handleLogut}
+          navigation={navigation}
+        />
         <ScrollView style={styles.mainContainer}>
           {/* <Button onPress={() => console.log(user)}>test</Button> */}
           <View>
@@ -254,7 +259,7 @@ export default function EditProfil({ navigation }) {
                 }}
               >
                 {edit ? (
-                  <GeneralTextInput
+                  <GeneralTextInput2
                     placeholder={dataMember?.firstName}
                     mode="outlined"
                     value={valueName}
@@ -331,7 +336,7 @@ export default function EditProfil({ navigation }) {
                 }}
               >
                 {edit ? (
-                  <GeneralTextInput
+                  <GeneralTextInput2
                     placeholder={dataMember?.lastName}
                     mode="outlined"
                     value={valueNameLast}
@@ -517,7 +522,7 @@ export default function EditProfil({ navigation }) {
                 }}
               >
                 {edit ? (
-                  <GeneralTextInput
+                  <GeneralTextInput2
                     placeholder={dataMember?.education}
                     mode="outlined"
                     value={valueNameLast}
@@ -600,7 +605,7 @@ export default function EditProfil({ navigation }) {
                       justifyContent: "space-between",
                     }}
                   >
-                    <GeneralTextInput
+                    <GeneralTextInput2
                       // placeholder={moment(dataMember?.dateofBirth).format(
                       //   "DD-MMMM-YYYY"
                       // )}
@@ -892,9 +897,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   containermodalView: {
-    // flexDirection: "column",
-    // alignSelf: "center",
+    flexDirection: "column",
+    alignSelf: "center",
     // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

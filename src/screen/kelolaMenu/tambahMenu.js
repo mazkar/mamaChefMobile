@@ -52,7 +52,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import PhotoTake from "./components/PhotoTake.js";
 import RekamVideo from "./components/VideoTake.js";
 
-export default function TambahMenu({ handleNext }) {
+export default function TambahMenu({ handleNext, navigation }) {
   const [valueNamaMenu, setValueNamaMenu] = useState("");
   const [valueDesc, setValueDesc] = useState("");
   const [valuNote, setValeNote] = useState("");
@@ -67,6 +67,14 @@ export default function TambahMenu({ handleNext }) {
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [menuId, setMenuId] = useState([]);
+
+  const handleLogut = () => {
+    dispatch(resetReducer());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  };
 
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
@@ -161,7 +169,12 @@ export default function TambahMenu({ handleNext }) {
   return (
     <ColorBgContainer>
       <RootContainer>
-        <AppBar title="Kelola Menu" dataTaskPending={[]} />
+        <AppBar
+          title="Kelola Resep"
+          dataTaskPending={[]}
+          navigation={navigation}
+          handleLogut={handleLogut}
+        />
         <ScrollView style={styles.mainContainer}>
           <Text
             style={{
@@ -170,11 +183,11 @@ export default function TambahMenu({ handleNext }) {
               color: COLORS.PRIMARY_DARK,
             }}
           >
-            Tambah Menu
+            Tambah Resep
           </Text>
           <Card
             style={{
-              // backgroundColor: COLORS.PRIMARY_ULTRASOFT,
+              backgroundColor: COLORS.WHITE,
               paddingHorizontal: ms(24),
               paddingVertical: ms(18),
               borderRadius: ms(6),
@@ -184,9 +197,9 @@ export default function TambahMenu({ handleNext }) {
             <View>
               <View style={styles.inputForm}>
                 <GeneralTextInput
-                  placeholder="Nama Menu"
+                  placeholder="Nama Resep"
                   mode="outlined"
-                  label="Nama Menu"
+                  title="Nama Resep"
                   value={valueNamaMenu}
                   // hasErrors={authFailed}
                   messageError="Wrong Username/Password"
@@ -202,7 +215,7 @@ export default function TambahMenu({ handleNext }) {
                   mode="outlined"
                   value={valueDesc}
                   // hasErrors={authFailed}
-                  label="Deskripsi"
+                  title="Deskripsi"
                   multiline
                   numberOfLines={10}
                   messageError="Wrong Username/Password"
@@ -214,7 +227,7 @@ export default function TambahMenu({ handleNext }) {
                 <GeneralTextInput
                   placeholder="Catatan"
                   mode="outlined"
-                  label="Catatan"
+                  title="Catatan"
                   // multiline
                   // numberOfLines={5}
                   value={valuNote}
@@ -250,7 +263,7 @@ export default function TambahMenu({ handleNext }) {
                   setImageToShow={setImageToShow}
                 />
               </View>
-              <Button onPress={() => console.log(image, "gambar")}>test</Button>
+
               <View>
                 {imagetoShow && (
                   <Image
@@ -288,7 +301,16 @@ export default function TambahMenu({ handleNext }) {
 
               <View>
                 <TouchableOpacity style={styles.button} onPress={handlePress}>
-                  <Text style={{ color: "white" }}>Tambah Menu</Text>
+                  <FontAwesome
+                    name="pencil-square-o"
+                    size={11}
+                    style={{
+                      fontSize: 18,
+                      color: COLORS.WHITE,
+                      marginRight: ms(4),
+                    }}
+                  />
+                  <Text style={{ color: "white" }}>Tambah Resep</Text>
                 </TouchableOpacity>
               </View>
               {/* <View>
@@ -379,7 +401,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "center",
-
+    flexDirection: "row",
     marginBottom: moderateScale(32),
     marginTop: moderateScale(18),
   },
@@ -389,6 +411,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP(6),
     justifyContent: "center",
     alignItems: "center",
+
     backgroundColor: COLORS.PRIMARY_MEDIUM,
     alignSelf: "flex-end",
     marginBottom: moderateScale(5),
@@ -409,7 +432,9 @@ const styles = StyleSheet.create({
   },
   containermodalView: {
     flexDirection: "column",
-    alignSelf: "stretch",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,
