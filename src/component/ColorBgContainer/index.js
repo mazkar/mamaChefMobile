@@ -1,12 +1,12 @@
-import React from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
-import PropTypes from 'prop-types';
-import {COLORS} from '../../assets/theme';
+import React from "react";
+import { StyleSheet, SafeAreaView } from "react-native";
+import PropTypes from "prop-types";
+import { COLORS } from "../../assets/theme";
 
-const ColorBgContainer = props => {
-  const {children, bgColor = COLORS.GRAY_HARD} = props;
+const ColorBgContainer = (props) => {
+  const { children, bgColor = COLORS.GRAY_HARD } = props;
   return (
-    <SafeAreaView style={[styles.root, {backgroundColor: bgColor}]}>
+    <SafeAreaView style={[styles.root, { backgroundColor: bgColor }]}>
       {children}
     </SafeAreaView>
   );
@@ -23,5 +23,5 @@ ColorBgContainer.defaultProps = {
 export default ColorBgContainer;
 
 const styles = StyleSheet.create({
-  root: {flex: 1},
+  root: { flex: 1 },
 });

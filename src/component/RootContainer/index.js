@@ -1,14 +1,15 @@
-import React from 'react';
-import {SafeAreaView, StatusBar} from 'react-native';
-import PropTypes from 'prop-types';
-import {COLORS} from '../../assets/theme';
-import styles from './styles';
+import React from "react";
+import { SafeAreaView, StatusBar } from "react-native";
+import PropTypes from "prop-types";
+import { COLORS } from "../../assets/theme";
+import styles from "./styles";
 
 function RootContainer(props) {
-  const {children, isTransparent, barStyle} = props;
+  const { children, isTransparent, barStyle } = props;
   return (
     <SafeAreaView
-      style={isTransparent ? styles.safeArea : styles.safeAreaDefaultBg}>
+      style={isTransparent ? styles.safeArea : styles.safeAreaDefaultBg}
+    >
       {isTransparent ? (
         <StatusBar
           translucent
@@ -18,7 +19,7 @@ function RootContainer(props) {
       ) : (
         <StatusBar
           backgroundColor={
-            barStyle === 'dark-content' ? COLORS.WHITE : COLORS.DARK
+            barStyle === "dark-content" ? COLORS.WHITE : COLORS.DARK
           }
           barStyle={barStyle}
         />
@@ -34,7 +35,7 @@ RootContainer.propTypes = {
 };
 RootContainer.defaultProps = {
   isTransparent: false,
-  barStyle: 'dark-content',
+  barStyle: "dark-content",
 };
 
 export default RootContainer;

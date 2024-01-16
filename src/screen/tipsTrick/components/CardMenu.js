@@ -1,4 +1,11 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ImageBackground,
+} from "react-native";
 import React from "react";
 import { ms, moderateScale } from "react-native-size-matters";
 import { COLORS, FONTS } from "../../../assets/theme";
@@ -17,7 +24,7 @@ export default function CardMenu({
 }) {
   return (
     <View>
-      <View
+      <ImageBackground
         style={{
           flexDirection: "row",
           //   justifyContent: "space-between",
@@ -25,7 +32,10 @@ export default function CardMenu({
           marginTop: ms(20),
           backgroundColor: COLORS.WHITE,
           borderRadius: ms(12),
+          height: ms(186),
+          borderRadius: ms(10),
         }}
+        source={require("../../../assets/images/TipsImg.png")}
       >
         {/* <View>
           <Image
@@ -41,7 +51,7 @@ export default function CardMenu({
           <Text
             style={{
               fontWeight: "bold",
-              color: COLORS.GRAY_HARD,
+              color: COLORS.WHITE,
               fontSize: ms(18),
               maxWidth: ms(200),
             }}
@@ -61,7 +71,7 @@ export default function CardMenu({
           <Text
             style={{
               fontWeight: "bold",
-              color: COLORS.GRAY_MEDIUM,
+              color: COLORS.WHITE,
               fontSize: ms(11),
               maxWidth: 200,
             }}
@@ -71,26 +81,26 @@ export default function CardMenu({
             {desc}
           </Text>
         </View>
-      </View>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          alignContent: "center",
-          justifyContent: "flex-end",
-          marginBottom: ms(4),
-        }}
-      >
-        <TouchableOpacity
-          style={styles.btnAdd}
-          onPress={() => onPressDetail(id, namaMenu, desc)}
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            alignContent: "center",
+            justifyContent: "flex-end",
+            marginBottom: ms(4),
+          }}
         >
-          <Text style={{ color: "white" }}>Lihat Detail</Text>
-        </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.btnAdd2}>
+          <TouchableOpacity
+            style={styles.btnAdd}
+            onPress={() => onPressDetail(id, namaMenu, desc)}
+          >
+            <Text style={{ color: "white" }}>Lihat Detail</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.btnAdd2}>
           <Text style={{ color: "white" }}>Edit</Text>
         </TouchableOpacity> */}
-      </View>
+        </View>
+      </ImageBackground>
     </View>
   );
 }

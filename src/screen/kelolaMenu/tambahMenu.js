@@ -124,8 +124,8 @@ export default function TambahMenu({ handleNext, navigation }) {
     formData.append("IsPublished", false);
     formData.append("LMDT", `${moment().format("YYYY-MM-DD")}`);
     formData.append("CreatedBy", parseInt(user.UserId));
-    console.log(imageUri, "foto");
-    console.log(videoUri, "video");
+    // console.log(imageUri, "foto");
+    // console.log(videoUri, "video");
     // formData.append("myFile", {
     //   uri: `${image}`, // Replace with the actual file path
     //   name: "evidenceFile",

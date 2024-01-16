@@ -386,12 +386,7 @@ export default function TipsAndTrick({ navigation }) {
               ))}
             </ScrollView>
           ) : (
-            <ScrollView
-              // onMomentumScrollEnd={() =>
-              //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
-              // }
-              onMomentumScrollEnd={() => handleMomentumScrollEnd()}
-            >
+            <ScrollView onMomentumScrollEnd={() => handleMomentumScrollEnd()}>
               {dataTips?.map((item) => (
                 <>
                   <CardMenu
@@ -411,42 +406,8 @@ export default function TipsAndTrick({ navigation }) {
           )}
 
           <RenderFooter />
-
-          {/* <View
-                  style={{
-                    backgroundColor: "black",
-                    borderBottomColor: COLORS.PRIMARY_DARK,
-                    borderBottomWidth: 4,
-                    width: 24,
-                  }}
-                />
-              </View> */}
-          {/* <FlatList
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listData} // center emptyData component
-            // data={surveyOpen}
-            data={dataTips}
-            // horizontal={true}
-            keyExtractor={(item) => item.tipstrickid}
-            renderItem={({ item, index }) => (
-              <>
-                <CardMenu
-                  // photoUrl={item?.photoURL}
-                  namaMenu={item.name}
-                  // notes={item?.note}
-                  id={item.tipstrickid}
-                  onPressDetail={onPressDetail}
-                  desc={item?.description}
-                  selectedId={selectedId}
-                  setSelectedId={setSelectedId}
-                />
-                <Divider />
-              </>
-            )}
-          /> */}
         </View>
       </RootContainer>
-      {/* <PopUpLoader visible={isLoadingGet} /> */}
     </ColorBgContainer>
   );
 }

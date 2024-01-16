@@ -57,7 +57,7 @@ import PopUpConfirm from "./components/PopUpConfirm.jsx";
 
 export default function EditBahan({ navigation, menuId, route }) {
   const [valueNamaMenu, setValueNamaMenu] = useState("");
-
+  const dispatch = useDispatch();
   const [valueGambar, setValueGambar] = useState(null);
   // const [menuId, setMenuId] = useState(null);
 

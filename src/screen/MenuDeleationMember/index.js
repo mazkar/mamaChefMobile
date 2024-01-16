@@ -108,7 +108,7 @@ export default function MenuDelegationMember({ navigation }) {
   }
 
   const onPressNav = (id) => {
-    navigation.navigate("MenuDetail", { menuId: id });
+    navigation.navigate("MenuDetail", { menuId: id, isEdit: false });
     // console.log(id);
   };
 

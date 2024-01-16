@@ -64,6 +64,7 @@ export default function Dashboard({ navigation }) {
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [messageError, setMessageError] = useState("");
   const [rating, setRating] = useState(4);
+  const [dataContent, setDataContent] = useState([]);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [index, setIndex] = React.useState(0);
@@ -188,43 +189,6 @@ export default function Dashboard({ navigation }) {
     }
   }
 
-  // async function getMenuPaginationTab(userId, page) {
-  //   const body = {
-  //     pageSize: 2,
-  //     currentPage: 1,
-  //     isPhoto: true,
-  //     isVideo: false,
-  //     userId: userId,
-  //   };
-  //   setIsLoadingGet(true);
-  //   try {
-  //     let res = await axios({
-  //       url: `${baseUrl.URL}api/Menu/getmenupagination`,
-  //       method: "POST",
-  //       timeout: 20000,
-  //       data: body,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     if (res.status == 200) {
-  //       // test for status you want, etc
-  //       console.log(res.data, "menu pagination");
-  //       setDataMenuPagination(res.data.data);
-  //       setIsLoadingGet(false);
-  //       setPageSize(2);
-  //       setAllSumData(parseInt(res.data.message));
-  //       // console.log(res.data, "transit");
-  //     }
-  //     // Don't forget to return something
-  //     return res.data;
-  //   } catch (err) {
-  //     console.error(err);
-  //     setIsLoadingGet(false);
-  //   }
-  // }
-
   const onPressNav = (id) => {
     navigation.navigate("MenuDetail", { menuId: id });
   };
@@ -241,29 +205,11 @@ export default function Dashboard({ navigation }) {
     getMenuPagination(0, 1);
   }, []);
 
-  // useEffect(() => {
-  //   if (index == 0) {
-  //     getMenuPagination(0, 0);
-  //   }
-  //   if (index == 1) {
-  //     getMenuPagination(uid, 0);
-  //   }
-  // }, [index]);
-
-  // useEffect(() => {
-  //   getMenuPagination(uid);
-  // }, []);
-
   useFocusEffect(
     React.useCallback(() => {
-      // Do something when the screen is focused
       console.log("Screen is focused");
       getMenuPagination(uid, 1);
       getMenuNewest(5);
-      // getMenuPagination(uid);
-      // Add your logic here to update the component or fetch new data
-
-      // Example: Refresh data or update components
     }, [])
   );
 
@@ -277,33 +223,42 @@ export default function Dashboard({ navigation }) {
     ) : null;
   };
 
-  // const handlerDoneTab = (val) => {
-  //   setIndex(val);
-  //   console.log(val);
-  //   // setPageSize(2);
-  //   if (val == 0) {
-  //     getMenuPaginationTab(0, 1);
-  //     // setPageSize(2);
-  //     // setIsLoadingGet(isLoading);
-  //   }
-  //   if (val == 1) {
-  //     getMenuPaginationTab(uid, 1);
-  //     // setPageSize(2);
-  //     // setIsLoadingGet(isLoading);
-  //   }
-  // };
-
   const handleMomentumScrollEnd = _.debounce(() => {
     console.log("Scroll momentum ended");
     sumAllData == dataMenuPagination?.length ? null : getMenuPagination(0, 1);
     // Your custom logic here
   }, 1500);
 
-  // const handleMomentumScrollEndUid = _.debounce(() => {
-  //   console.log("Scroll momentum ended");
-  //   sumAllData == dataMenuPagination?.length ? null : getMenuPagination(uid, 1);
-  //   // Your custom logic here
-  // }, 1000);
+  async function getContentDashboard(userId) {
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/ContentManagementMaster/getcontentbypage/dashboard`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "content");
+        setDataContent(res.data.data);
+        setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoadingGet(false);
+    }
+  }
+
+  useEffect(() => {
+    getContentDashboard();
+  }, []);
 
   return (
     <ColorBgContainer>
@@ -315,9 +270,6 @@ export default function Dashboard({ navigation }) {
           navigation={navigation}
         />
 
-        {/* <TouchableOpacity onPress={handleLogut}>
-          <Text>Log Out</Text>
-        </TouchableOpacity> */}
         <ScrollView
           style={styles.mainContainer}
           onMomentumScrollEnd={() => handleMomentumScrollEnd()}
@@ -328,12 +280,7 @@ export default function Dashboard({ navigation }) {
               style={styles.imageBackground}
             >
               <Text style={styles.text}>Mama Chef</Text>
-              <Text style={styles.text2}>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
-              </Text>
+              <Text style={styles.text2}>{dataContent[0]?.content}</Text>
             </ImageBackground>
           </View>
 
@@ -405,7 +352,6 @@ export default function Dashboard({ navigation }) {
                 <FlatList
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.listData} // center emptyData component
-                  // data={surveyOpen}
                   data={dataMenu2}
                   showsHorizontalScrollIndicator={false}
                   horizontal={true}
@@ -437,10 +383,7 @@ export default function Dashboard({ navigation }) {
                       />
                       <Card.Content
                         style={{
-                          // marginTop: ms(4),
-                          // width: "100%",
                           paddingHorizontal: ms(4),
-                          // backgroundColor: "red",
                         }}
                       >
                         <View
@@ -448,15 +391,14 @@ export default function Dashboard({ navigation }) {
                             backgroundColor: COLORS.PRIMARY_DARK,
                             borderRadius: ms(10),
                             alignContent: "center",
-                            // justifyContent: "center",
-                            // flex: 1,
+
                             marginTop: ms(4),
                             width: "100%",
                             paddingHorizontal: ms(6),
                           }}
                         >
                           <Text
-                            numberOfLines={1} // Set the number of lines to 1 to enable ellipsis
+                            numberOfLines={1}
                             ellipsizeMode="tail"
                             style={{
                               fontSize: 11,
@@ -470,7 +412,7 @@ export default function Dashboard({ navigation }) {
                         </View>
 
                         <Text
-                          numberOfLines={2} // Set the number of lines to 1 to enable ellipsis
+                          numberOfLines={2}
                           ellipsizeMode="tail"
                           style={{
                             fontSize: 11,
@@ -485,9 +427,6 @@ export default function Dashboard({ navigation }) {
                           {"\n"}
                           <Text> {item?.recipeBy}</Text>
                         </Text>
-                        {/* <Text numberOfLines={3} ellipsizeMode="tail">
-                      {item?.description}
-                    </Text> */}
                       </Card.Content>
                     </Card>
                   )}
@@ -530,7 +469,6 @@ export default function Dashboard({ navigation }) {
                 >
                   <Text style={{ color: COLORS.PRIMARY_DARK }}>
                     Lihat Semua
-                    {/* ({sumAllData}) */}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -568,12 +506,9 @@ export default function Dashboard({ navigation }) {
                       <View style={{ flexDirection: "row" }}>
                         <View
                           style={{
-                            // backgroundColor: COLORS.PRIMARY_DARK,
                             borderRadius: ms(10),
                             alignContent: "center",
-                            // justifyContent: "center",
-                            // flex: 1,
-                            // width: "100%",
+
                             paddingHorizontal: ms(6),
                           }}
                         >

@@ -347,25 +347,18 @@ export default function KelolaMenu({ navigation }) {
         />
 
         <View style={styles.mainContainer}>
-          <View style={{ marginBottom: ms(16) }}>
+          <View style={{ marginBottom: ms(2), flexDirection: "row" }}>
+            <Image source={require("../../assets/images/IconMakanan.png")} />
             <Text
               style={{
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: "700",
                 color: "gray",
+                marginLeft: ms(4),
               }}
             >
-              Resep Kamu
+              Resep Terposting
             </Text>
-
-            <View
-              style={{
-                backgroundColor: "black",
-                borderBottomColor: COLORS.PRIMARY_DARK,
-                borderBottomWidth: 4,
-                width: 24,
-              }}
-            ></View>
           </View>
 
           {/* <View
@@ -677,6 +670,7 @@ export default function KelolaMenu({ navigation }) {
                         desc={item?.description}
                         onPressNav={onPressNav}
                         isPublish={valueIsPublish}
+                        recipeBy={item?.recipeBy}
                       />
                       <Divider style={{ marginTop: ms(24) }} />
                       {isLoading && (
@@ -808,6 +802,7 @@ export default function KelolaMenu({ navigation }) {
                         onPressNav={onPressNav}
                         isPublish={valueIsPublish}
                         isEdit={true}
+                        recipeBy={item?.recipeBy}
                       />
                       <Divider style={{ marginTop: ms(24) }} />
                       {isLoading && (

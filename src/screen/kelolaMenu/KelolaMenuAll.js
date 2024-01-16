@@ -240,25 +240,19 @@ export default function KelolaMenuAll({ navigation }) {
         />
 
         <View style={styles.mainContainer}>
-          <View style={{ marginBottom: ms(16) }}>
+          <View style={{ marginBottom: ms(8), flexDirection: "row" }}>
+            <Image source={require("../../assets/images/IconRekomen.png")} />
             <Text
               style={{
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: "700",
                 color: "gray",
+                marginLeft: ms(4),
+                alignSelf: "center",
               }}
             >
               Rekomendasi Resep
             </Text>
-
-            <View
-              style={{
-                backgroundColor: "black",
-                borderBottomColor: COLORS.PRIMARY_DARK,
-                borderBottomWidth: 4,
-                width: 24,
-              }}
-            ></View>
           </View>
           <View>
             <View style={styles.continerSearch}>
@@ -376,6 +370,7 @@ export default function KelolaMenuAll({ navigation }) {
                     menuId={item.menuId}
                     desc={item?.description}
                     onPressNav={onPressNav}
+                    recipeBy={item?.recipeBy}
                   />
                   <Divider style={{ marginTop: ms(24) }} />
                   {/* {isLoading && (
@@ -402,6 +397,7 @@ export default function KelolaMenuAll({ navigation }) {
                     menuId={item.menuId}
                     desc={item?.description}
                     onPressNav={onPressNav}
+                    recipeBy={item?.recipeBy}
                   />
                   <Divider style={{ marginTop: ms(24) }} />
                   {/* {isLoading && (

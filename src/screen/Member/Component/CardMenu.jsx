@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { ms } from "react-native-size-matters";
 import { COLORS, FONTS } from "../../../assets/theme";
-import { Avatar } from "react-native-paper";
+import { Avatar, Card } from "react-native-paper";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { IconButton, MD3Colors } from "react-native-paper";
 import {
@@ -59,11 +59,11 @@ export default function CardMenu({
 
   return (
     <View>
-      <View
+      <Card
         style={{
           // flexDirection: "row",
           // justifyContent: "space-between",
-
+          flex: 1,
           marginTop: ms(20),
           backgroundColor: COLORS.WHITE,
           borderWidth: 1, // Set the border width
@@ -87,7 +87,7 @@ export default function CardMenu({
             // paddingHorizontal: ms(12),
           }}
         >
-          <View style={{ alignSelf: "center" }}>
+          <View style={{ alignSelf: "center", flexDirection: "row" }}>
             {/* <Image
             style={{
               width: ms(76),
@@ -99,93 +99,94 @@ export default function CardMenu({
             }}
           /> */}
             <Avatar.Text size={86} label={namaMember.charAt(0).toUpperCase()} />
-          </View>
-          <View style={{ marginRight: ms(64), width: "auto" }}>
-            <View style={{ flexDirection: "row" }}>
+            <View style={{ width: "auto", marginLeft: ms(4) }}>
+              <View style={{ flexDirection: "row" }}>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    color: COLORS.PRIMARY_DARK,
+                    fontSize: ms(18),
+                    maxWidth: ms(200),
+                  }}
+                  numberOfLines={2}
+                >
+                  {namaMember}
+                </Text>
+                <View style={{ alignSelf: "center", marginLeft: ms(2) }}>
+                  {isActive ? (
+                    // <Tag
+                    //   name="checkmark-circle"
+                    //   size={24}
+                    //   style={{ fontSize: 12, color: COLORS.SUCCESS }}
+                    // />
+                    <Tag label="Active" color={COLORS.SUCCESS} />
+                  ) : (
+                    // <FontAwesome
+                    //   name="times-circle-o"
+                    //   size={24}
+                    //   style={{ fontSize: 12, color: COLORS.RED_BG }}
+                    // />
+                    <Tag label="InActive" color={COLORS.RED_BG} />
+                  )}
+                </View>
+              </View>
+
               <Text
                 style={{
                   fontWeight: "bold",
                   color: COLORS.PRIMARY_DARK,
-                  fontSize: ms(18),
+                  fontSize: ms(11),
                   maxWidth: ms(200),
                 }}
                 numberOfLines={2}
               >
-                {namaMember}
+                No Hp : {noHp}
               </Text>
-              <View style={{ alignSelf: "center", marginLeft: ms(2) }}>
-                {isActive ? (
-                  // <Tag
-                  //   name="checkmark-circle"
-                  //   size={24}
-                  //   style={{ fontSize: 12, color: COLORS.SUCCESS }}
-                  // />
-                  <Tag label="Active" color={COLORS.SUCCESS} />
-                ) : (
-                  // <FontAwesome
-                  //   name="times-circle-o"
-                  //   size={24}
-                  //   style={{ fontSize: 12, color: COLORS.RED_BG }}
-                  // />
-                  <Tag label="InActive" color={COLORS.RED_BG} />
-                )}
-              </View>
+              <Text
+                style={{
+                  fontWeight: "500",
+                  color: "gray",
+                  fontSize: ms(12),
+                }}
+              >
+                Tanggal Lahir:
+              </Text>
+              <Text
+                style={{
+                  fontWeight: "300",
+                  color: "gray",
+                  fontSize: ms(11),
+                  maxWidth: 200,
+                }}
+                numberOfLines={3}
+                ellipsizeMode="tail"
+              >
+                {tglLahir}
+              </Text>
+              <Text
+                style={{
+                  fontWeight: "300",
+                  color: "gray",
+                  fontSize: ms(12),
+                }}
+              >
+                Alamat:
+              </Text>
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={{
+                  fontWeight: "300",
+                  color: "gray",
+                  fontSize: ms(11),
+                  maxWidth: 200,
+                }}
+              >
+                {address}
+              </Text>
             </View>
-
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: COLORS.PRIMARY_DARK,
-                fontSize: ms(11),
-                maxWidth: ms(200),
-              }}
-              numberOfLines={2}
-            >
-              No Hp : {noHp}
-            </Text>
-            <Text
-              style={{
-                fontWeight: "500",
-                color: "gray",
-                fontSize: ms(12),
-              }}
-            >
-              Tanggal Lahir:
-            </Text>
-            <Text
-              style={{
-                fontWeight: "300",
-                color: "gray",
-                fontSize: ms(11),
-                maxWidth: 200,
-              }}
-              numberOfLines={3}
-              ellipsizeMode="tail"
-            >
-              {tglLahir}
-            </Text>
-            <Text
-              style={{
-                fontWeight: "300",
-                color: "gray",
-                fontSize: ms(12),
-              }}
-            >
-              Alamat:
-            </Text>
-            <Text
-              numberOfLines={2}
-              ellipsizeMode="tail"
-              style={{
-                fontWeight: "300",
-                color: "gray",
-                fontSize: ms(11),
-                maxWidth: 200,
-              }}
-            >
-              {address}
-            </Text>
           </View>
+
           {isActive ? (
             <TouchableOpacity
               // onPress={() => handleClick(memberId, false)}
@@ -201,6 +202,7 @@ export default function CardMenu({
                 padding: 6,
                 width: widthPercentageToDP(8),
                 height: heightPercentageToDP(4),
+                // position: "relative",
               }}
             >
               <FontAwesome
@@ -234,7 +236,7 @@ export default function CardMenu({
             </TouchableOpacity>
           )}
         </View>
-      </View>
+      </Card>
       <PopUpConfirm
         popUpVisible={popUpVisible}
         hidePopUp={hidePopUp}

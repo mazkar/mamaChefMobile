@@ -54,6 +54,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 const LoginPage = ({ navigation }) => {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(true);
+  const [dataContent, setDataContent] = useState([]);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const hideModalError = () => {
     setModalErrorVis(false);
@@ -168,6 +169,37 @@ const LoginPage = ({ navigation }) => {
       setModalErrorVis(true);
     }
   }
+
+  async function getContentDashboard(userId) {
+    // setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/ContentManagementMaster/getcontentbypage/Contact`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "content");
+        setDataContent(res.data.data);
+        // setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      // setIsLoadingGet(false);
+    }
+  }
+
+  useEffect(() => {
+    getContentDashboard();
+  }, []);
 
   return (
     <>
@@ -327,10 +359,17 @@ const LoginPage = ({ navigation }) => {
                 </View>
                 <View>
                   <Text style={{ marginBottom: ms(8), fontSize: 12 }}>
-                    : mama_chef_idn
+                    {`: ${
+                      dataContent?.filter(
+                        (e) => e.titleContent == "Instagram"
+                      )[0]?.content
+                    }`}
                   </Text>
                   <Text style={{ marginBottom: ms(8), fontSize: 12 }}>
-                    : mamachef@gmail.com
+                    {`: ${
+                      dataContent?.filter((e) => e.titleContent == "Gmail")[0]
+                        ?.content
+                    }`}
                   </Text>
                 </View>
               </View>

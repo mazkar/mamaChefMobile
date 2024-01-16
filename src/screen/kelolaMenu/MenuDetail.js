@@ -9,6 +9,7 @@ import {
   Image,
   Animated,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -55,8 +56,37 @@ import moment from "moment";
 import { Video } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import PopUpConfirm from "./components/PopUpConfirm.jsx";
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+// Define your tabs
+const FirstRoute = () => (
+  <View style={[styles.scene, { backgroundColor: "#ff4081" }]}>
+    <Text style={styles.text}>First Tab</Text>
+  </View>
+);
+
+const SecondRoute = () => (
+  <View style={[styles.scene, { backgroundColor: "#673ab7" }]}>
+    <Text style={styles.text}>Second Tab</Text>
+  </View>
+);
+
+const ThirdRoute = () => (
+  <View style={[styles.scene, { backgroundColor: "#4caf50" }]}>
+    <Text style={styles.text}>Third Tab</Text>
+  </View>
+);
+
+// Combine routes
+const initialLayout = { width: 360 };
+
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+  third: ThirdRoute,
+});
 
 export default function MenuDetail({ navigation, route }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
@@ -81,6 +111,23 @@ export default function MenuDetail({ navigation, route }) {
   const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
   const [popUpConfirmVis, setPopUpConfirmVis] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isVideoError, setIsVideoError] = useState(false);
+
+  const handleLoadStart = () => {
+    setIsVideoLoading(true);
+    setIsVideoError(false);
+  };
+
+  const handleLoad = () => {
+    setIsVideoLoading(false);
+    setIsVideoError(false);
+  };
+
+  const handleError = () => {
+    setIsVideoLoading(false);
+    setIsVideoError(true);
+  };
 
   const handleLogut = () => {
     dispatch(resetReducer());
@@ -400,6 +447,13 @@ export default function MenuDetail({ navigation, route }) {
     }
   }
 
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: "first", title: "Bahan-Bahan" },
+    { key: "second", title: "Deskripsi" },
+    { key: "third", title: "Profil" },
+  ]);
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -436,250 +490,311 @@ export default function MenuDetail({ navigation, route }) {
             <View
               style={{
                 marginBottom: ms(16),
-                marginTop: ms(18),
+                marginTop: ms(12),
                 paddingHorizontal: ms(8),
+                flexDirection: "row",
               }}
             >
+              <Image
+                style={{ alignSelf: "center" }}
+                source={require("../../assets/images/Foods.png")}
+              />
               <Text
                 style={{
-                  fontSize: 24,
+                  fontSize: 18,
                   fontWeight: "700",
                   color: "gray",
+                  marginLeft: ms(4),
                 }}
               >
                 {dataMenu.menuName}
               </Text>
-
+            </View>
+            <View>
+              <TabView
+                navigationState={{ index, routes }}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={initialLayout}
+                renderTabBar={(props) => (
+                  <TabBar
+                    {...props}
+                    indicatorStyle={{ backgroundColor: COLORS.PRIMARY_DARK }}
+                    style={{ backgroundColor: "transaparant" }}
+                    labelStyle={{ color: "grey", fontSize: 10 }}
+                  />
+                )}
+              />
+            </View>
+            {/* <Divider style={{ color: "#F5F5F5", height: ms(1) }} /> */}
+            {index == 2 ? (
               <View
                 style={{
-                  backgroundColor: "black",
-                  borderBottomColor: COLORS.PRIMARY_DARK,
-                  borderBottomWidth: 4,
-                  width: 24,
+                  flex: 1,
+                  flexDirection: "row",
+                  marginTop: ms(8),
+                  marginBottom: ms(32),
                 }}
-              ></View>
-            </View>
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <View style={{}}>
-                <Avatar.Text
-                  size={86}
-                  label={dataMenu?.lmby?.charAt(0)?.toUpperCase()}
-                  lable="A"
-                />
-              </View>
-              <View style={{ marginLeft: ms(14), marginTop: ms(12) }}>
-                <Text style={{ fontWeight: "600" }}>{dataMenu.lmby}</Text>
-                <Text style={{ fontSize: 11 }}>
-                  {moment(dataMenu.lmdt).format("DD-MMM-YYYY")}
-                </Text>
+              >
+                <View style={{}}>
+                  <Avatar.Text
+                    size={86}
+                    label={dataMenu?.lmby?.charAt(0)?.toUpperCase()}
+                    lable="A"
+                  />
+                </View>
+                <View style={{ marginLeft: ms(14), marginTop: ms(12) }}>
+                  <Text style={{ fontWeight: "600" }}>{dataMenu.lmby}</Text>
+                  <Text style={{ fontSize: 11 }}>
+                    {moment(dataMenu.lmdt).format("DD-MMM-YYYY")}
+                  </Text>
 
-                {route?.params?.isEdit ? (
-                  <View
-                    style={{
-                      backgroundColor: dataMenu?.isPublished
-                        ? "green"
-                        : COLORS.RED_BG,
-                      // backgroundColor: COLORS.RED_BG,
-                      width: dataMenu?.isPublished ? ms(76) : ms(106),
-                      width: ms(106),
-                      paddingHorizontal: ms(6),
-                      paddingVertical: ms(6),
-                      alignItems: "center",
-                      borderRadius: ms(12),
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontWeight: "bold",
-                        color: COLORS.WHITE,
-                        fontSize: ms(11),
-                        maxWidth: 200,
-                      }}
-                    >
-                      {dataMenu?.isPublished ? "Published" : "Not Published"}
-                    </Text>
-                  </View>
-                ) : (
-                  <></>
-                )}
-              </View>
-            </View>
-
-            <Divider style={{ marginTop: ms(48), height: ms(2) }} />
-            {/* Bahan-Bahan */}
-            <View style={{ marginTop: ms(12) }}>
-              <View style={{ marginBottom: ms(22) }}>
-                <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Bahan
-                </Text>
-              </View>
-              {dataIng?.map((e, i) => (
-                <>
-                  <View style={{ flexDirection: "row" }}>
+                  {route?.params?.isEdit ? (
                     <View
                       style={{
-                        backgroundColor: COLORS.PRIMARY_DARK,
-                        width: 24,
-                        height: 24,
-                        borderRadius: 12,
+                        backgroundColor: dataMenu?.isPublished
+                          ? "green"
+                          : COLORS.RED_BG,
+                        // backgroundColor: COLORS.RED_BG,
+                        width: dataMenu?.isPublished ? ms(76) : ms(106),
+                        width: ms(106),
+                        paddingHorizontal: ms(6),
+                        paddingVertical: ms(6),
                         alignItems: "center",
+                        borderRadius: ms(12),
                       }}
                     >
                       <Text
                         style={{
-                          //   marginRight: ms(4),
-                          fontSize: 14,
-                          alignSelf: "center",
+                          fontWeight: "bold",
                           color: COLORS.WHITE,
+                          fontSize: ms(11),
+                          maxWidth: 200,
                         }}
                       >
-                        {i + 1}
+                        {dataMenu?.isPublished ? "Published" : "Not Published"}
                       </Text>
                     </View>
-
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        color: COLORS.GRAY_HARD,
-                        marginRight: ms(2),
-                        marginLeft: ms(8),
-                      }}
-                    >
-                      {e.quantity}
-                    </Text>
-                    <Text
-                      style={{
-                        marginLeft: ms(2),
-                        marginRight: ms(4),
-                        fontSize: 16,
-                        color: COLORS.GRAY_HARD,
-                      }}
-                    >
-                      {e.uom}
-                    </Text>
-                    <Text
-                      style={{
-                        marginRight: ms(4),
-                        fontSize: 16,
-                        color: COLORS.GRAY_HARD,
-                      }}
-                    >
-                      {e.ingredientsName}
+                  ) : (
+                    <></>
+                  )}
+                </View>
+              </View>
+            ) : index == 0 ? (
+              <>
+                {/* Bahan-Bahan */}
+                <View style={{ marginTop: ms(12) }}>
+                  <View style={{ marginBottom: ms(22) }}>
+                    <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                      Bahan
                     </Text>
                   </View>
-                  <Divider style={{ marginTop: ms(6) }} />
-                </>
-              ))}
-            </View>
-            <Divider style={{ height: ms(2), marginTop: ms(24) }} />
-            {/* Deskripsi */}
-            <View style={{ marginTop: ms(12) }}>
-              <View style={{ marginBottom: ms(22), flexDirection: "row" }}>
-                <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Deskripsi
-                </Text>
-              </View>
-              <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                {dataMenu?.description}
-              </Text>
-              <View
-                style={{
-                  marginBottom: ms(22),
-                  marginTop: ms(12),
-                  flexDirection: "row",
-                }}
-              >
-                <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Catatan
-                </Text>
-              </View>
-              <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                {dataMenu.note}
-              </Text>
-            </View>
+                  {dataIng?.map((e, i) => (
+                    <>
+                      <View style={{ flexDirection: "row" }}>
+                        <View
+                          style={{
+                            // backgroundColor: COLORS.PRIMARY_DARK,
+                            width: 24,
+                            height: 24,
+                            borderRadius: 12,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              //   marginRight: ms(4),
+                              fontSize: 14,
+                              alignSelf: "center",
+                              color: "grey",
+                            }}
+                          >
+                            {i + 1}
+                          </Text>
+                        </View>
 
-            <Divider style={{ height: ms(2), marginTop: ms(24) }} />
-            <View style={{ marginTop: ms(12) }}>
-              <View style={{ marginBottom: ms(22) }}>
-                <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
-                  Video Memasak
-                </Text>
-              </View>
-              <Video
-                ref={videoRef}
-                // source={{ uri: videoUri }}
-                source={{
-                  uri: `${dataMenu.videoURL}`,
-                }}
-                style={styles.video}
-                useNativeControls // Enable built-in controls
-                resizeMode="contain"
-                isLooping
-              />
-              <View style={styles.buttonContainer}>
-                <Button
-                  title={isPlaying ? "Pause" : "Play"}
-                  onPress={togglePlay}
-                />
-              </View>
-            </View>
-            {route.params?.isEdit ? (
-              dataMenu?.isPublished ? (
-                <TouchableOpacity
-                  onPress={showPopUpConfirm}
-                  style={{
-                    alignSelf: "center",
-                    backgroundColor: COLORS.RED_BG,
-                    width: ms(186),
-                    height: ms(44),
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 12,
-                    // marginBottom: ms(32),
-                  }}
-                >
-                  <Text style={{ color: COLORS.WHITE }}>Sembunyikan Resep</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={showPopUpConfirm}
-                  style={{
-                    alignSelf: "center",
-                    backgroundColor: "green",
-                    width: ms(186),
-                    height: ms(44),
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 12,
-                    // marginBottom: ms(32),
-                  }}
-                >
-                  <Text style={{ color: COLORS.WHITE }}>Publish Resep</Text>
-                </TouchableOpacity>
-              )
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: "grey",
+                            marginRight: ms(2),
+                            marginLeft: ms(8),
+                          }}
+                        >
+                          {e.quantity}
+                        </Text>
+                        <Text
+                          style={{
+                            marginLeft: ms(2),
+                            marginRight: ms(4),
+                            fontSize: 16,
+                            color: "grey",
+                          }}
+                        >
+                          {e.uom}
+                        </Text>
+                        <Text
+                          style={{
+                            marginRight: ms(4),
+                            fontSize: 16,
+                            color: "grey",
+                          }}
+                        >
+                          {e.ingredientsName}
+                        </Text>
+                      </View>
+                      <Divider style={{ marginTop: ms(6) }} />
+                    </>
+                  ))}
+                </View>
+              </>
             ) : (
-              <></>
+              <>
+                {/* Deskripsi */}
+                <View style={{ marginTop: ms(12) }}>
+                  <View style={{ marginBottom: ms(22), flexDirection: "row" }}>
+                    <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                      Deskripsi
+                    </Text>
+                  </View>
+                  <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                    {dataMenu?.description}
+                  </Text>
+                  <View
+                    style={{
+                      marginBottom: ms(22),
+                      marginTop: ms(12),
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                      Catatan
+                    </Text>
+                  </View>
+                  <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                    {dataMenu.note}
+                  </Text>
+                </View>
+
+                <Divider style={{ height: ms(2), marginTop: ms(24) }} />
+                <View style={{ marginTop: ms(12) }}>
+                  <View style={{ marginBottom: ms(22) }}>
+                    <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                      Video Memasak
+                    </Text>
+                  </View>
+                  <Video
+                    ref={videoRef}
+                    source={{
+                      uri: `${dataMenu.videoURL}`,
+                    }}
+                    style={styles.video}
+                    // shouldPlay
+                    isLooping
+                    resizeMode="contain"
+                    onLoadStart={handleLoadStart}
+                    onLoad={handleLoad}
+                    useNativeControls
+                    onError={handleError}
+                  />
+
+                  {isVideoLoading && !isVideoError && (
+                    <View
+                      style={{
+                        ...StyleSheet.absoluteFillObject,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ActivityIndicator
+                        size="large"
+                        color={COLORS.PRIMARY_DARK}
+                      />
+                      <Text style={{ color: "grey" }}>Menunggu Video ...</Text>
+                    </View>
+                  )}
+
+                  {isVideoError && (
+                    <View
+                      style={{
+                        ...StyleSheet.absoluteFillObject,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text>Error loading video</Text>
+                    </View>
+                  )}
+                </View>
+              </>
             )}
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("EditBahan", {
-                  menuId: route?.params?.menuId,
-                })
-              }
-              style={{
-                alignSelf: "center",
-                backgroundColor: COLORS.PRIMARY_MEDIUM,
-                width: ms(186),
-                height: ms(44),
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 12,
-                marginBottom: ms(32),
-                marginTop: ms(8),
-              }}
-            >
-              <Text style={{ color: COLORS.WHITE }}>Perbarui Resep</Text>
-            </TouchableOpacity>
+
+            {/* {indicator hide/show} */}
+            <View style={{ marginTop: ms(12) }}>
+              {route.params?.isEdit ? (
+                dataMenu?.isPublished ? (
+                  <TouchableOpacity
+                    onPress={showPopUpConfirm}
+                    style={{
+                      alignSelf: "center",
+                      backgroundColor: COLORS.RED_BG,
+                      width: ms(186),
+                      height: ms(44),
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 12,
+                      marginBottom: ms(32),
+                    }}
+                  >
+                    <Text style={{ color: COLORS.WHITE }}>
+                      Sembunyikan Resep
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <>
+                    <TouchableOpacity
+                      onPress={showPopUpConfirm}
+                      style={{
+                        alignSelf: "center",
+                        backgroundColor: "green",
+                        width: ms(186),
+                        height: ms(44),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 12,
+                        // marginBottom: ms(32),
+                      }}
+                    >
+                      <Text style={{ color: COLORS.WHITE }}>Publish Resep</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("EditBahan", {
+                          menuId: route?.params?.menuId,
+                        })
+                      }
+                      style={{
+                        alignSelf: "center",
+                        backgroundColor: COLORS.PRIMARY_MEDIUM,
+                        width: ms(186),
+                        height: ms(44),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 12,
+                        marginBottom: ms(32),
+                        marginTop: ms(8),
+                      }}
+                    >
+                      <Text style={{ color: COLORS.WHITE }}>
+                        Perbarui Resep
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )
+              ) : (
+                <></>
+              )}
+            </View>
           </View>
         </ScrollView>
         <Modal
@@ -897,9 +1012,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   video: {
-    width: 300,
+    width: 340,
     height: 200,
     alignSelf: "center",
+    borderRadius: ms(10),
   },
   buttonContainer: {
     marginTop: 20,

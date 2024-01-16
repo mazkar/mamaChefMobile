@@ -7,6 +7,7 @@ import {
   StyleSheet,
   FlatList,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -50,6 +51,7 @@ import { decode } from "base-64";
 import * as FileSystem from "expo-file-system";
 import moment from "moment/moment";
 // import RNFS from "react-native-fs";
+import LazyLoad from "react-lazyload";
 
 export default function DetailTips({ navigation, route }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
@@ -63,6 +65,23 @@ export default function DetailTips({ navigation, route }) {
   const dispatch = useDispatch();
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const [isVideoError, setIsVideoError] = useState(false);
+
+  const handleLoadStart = () => {
+    setIsVideoLoading(true);
+    setIsVideoError(false);
+  };
+
+  const handleLoad = () => {
+    setIsVideoLoading(false);
+    setIsVideoError(false);
+  };
+
+  const handleError = () => {
+    setIsVideoLoading(false);
+    setIsVideoError(true);
+  };
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -138,6 +157,13 @@ export default function DetailTips({ navigation, route }) {
     });
   };
 
+  const handleVideoRef = async (component) => {
+    const playbackObject = component;
+    if (playbackObject) {
+      await playbackObject.loadAsync({ uri: dataTips?.video });
+    }
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -157,14 +183,17 @@ export default function DetailTips({ navigation, route }) {
             </View> */}
             <Video
               ref={videoRef}
-              // source={{ uri: videoUri }}
               source={{
                 uri: `${dataTips?.video}`,
               }}
               style={styles.video}
-              useNativeControls // Enable built-in controls
-              resizeMode="contain"
+              // shouldPlay
               isLooping
+              resizeMode="contain"
+              onLoadStart={handleLoadStart}
+              onLoad={handleLoad}
+              useNativeControls
+              onError={handleError}
             />
             <View style={styles.buttonContainer}>
               <Button
@@ -172,6 +201,43 @@ export default function DetailTips({ navigation, route }) {
                 onPress={togglePlay}
               />
             </View>
+
+            {isVideoLoading && !isVideoError && (
+              <View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                <ActivityIndicator size="large" color={COLORS.PRIMARY_DARK} />
+                <Text style={{ color: "grey" }}>Menunggu Video ...</Text>
+              </View>
+            )}
+
+            {isVideoError && (
+              <View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text>Error loading video</Text>
+              </View>
+            )}
+            {/* <Video
+              ref={videoRef}
+              source={{
+                uri: `${dataTips?.video}`,
+              }}
+              style={styles.video}
+              useNativeControls // Enable built-in controls
+              resizeMode="contain"
+              isLooping
+              onLoadStart={() => setIsPreloading(true)}
+              onReadyForDisplay={() => setIsPreloading(false)}
+            /> */}
           </View>
           <View style={{ marginBottom: ms(16) }}>
             <Text
@@ -280,9 +346,10 @@ const styles = StyleSheet.create({
     // paddingVertical: 8,
   },
   video: {
-    width: 300,
+    width: ms(340),
     height: 200,
     alignSelf: "center",
+    borderRadius: ms(10),
   },
   buttonContainer: {
     marginTop: 20,

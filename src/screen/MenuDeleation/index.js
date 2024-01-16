@@ -59,12 +59,13 @@ export default function MenuDelegation({ navigation }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res, "<===res");
+      console.log(res, "<===res data member");
       if (res.status == 200) {
         // test for status you want, etc
+        let memberActive = res?.data?.data?.filter((e) => e.isActive == true);
         console.log(res.data.data, "<===res data member");
 
-        setDdlMember(res.data.data);
+        setDdlMember(memberActive);
         // setDdlUom(res.data.masterUomsList);
         setIsLoadingGet(false);
         // console.log(res.data, "transit");
