@@ -73,18 +73,63 @@ const LoginPage = ({ navigation }) => {
   const [dataTok, setDataTok] = useState("");
   const [messageError, setMessageError] = useState("");
   const [dataConverToken, setDataConvertToken] = useState(null);
+  const [deviceId, setDeviceId] = useState("");
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
   };
 
+  async function updateDeviceId(userId) {
+    // setIsLoadingGet(true);
+    const body = {
+      deviceId: deviceId,
+      userId: userId,
+      lmby: userId,
+    };
+    try {
+      console.log(body);
+      let res = await axios({
+        url: `${baseUrl.URL}api/MobileNotification/InsertDeviceId`,
+        method: "POST",
+        timeout: 8000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res.data, "<==res");
+      if (res.data.code == "200") {
+        console.log(res.data.data, "<=== res berhasil update device id");
+        setIsLoading(false);
+
+        // test for status you want, etc
+        // setLoadingUpload(false);
+        // getTaskDetail(route.params.assignmentId);
+        console.log(res, "Success");
+
+        // setDataItem(res.data);
+        // setDataInfo(res.data);
+      } else {
+        setIsLoading(false);
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err, "error update device Id");
+
+      setIsLoading(false);
+    }
+  }
+
   const converToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
-      console.log(token);
+      console.log(decodedToken, "decode token");
       // You can access the payload data from the decoded token
       // For example, if your payload contains a 'userId' field
       dispatch(setUser(decodedToken));
+      updateDeviceId(parseInt(decodedToken?.UserId));
       // const userId = decodedToken.userId;
       // console.log("User ID:", userId);
     } catch (error) {
@@ -92,36 +137,19 @@ const LoginPage = ({ navigation }) => {
     }
   };
 
-  const storeToken = (data) => {
-    // Process the received locations as needed
-    AsyncStorage.setItem("token", data)
-      .then(() => {
-        console.log("Data stored successfully");
-      })
-      .catch((error) => {
-        console.error("Error storing data:", error);
-      });
-  };
-
-  async function getItemFromAsyncStorage(key) {
+  const getDeviceIdfromStorage = async () => {
     try {
-      const value = await AsyncStorage.getItem(key);
+      // Load the value from AsyncStorage
+      const value = await AsyncStorage.getItem("deviceId");
       if (value !== null) {
-        // Data found in AsyncStorage for the given key
-        console.log("Value:", value);
-        return value;
-      } else {
-        // No data found for the given key
-        console.log("Value not found.");
-        return null;
+        // Set the loaded value to the state
+        console.log(value, "devieId from storage");
+        setDeviceId(value);
       }
     } catch (error) {
-      // Error retrieving data
-      console.error("Error while fetching data:", error);
-      return null;
+      console.error("Error loading value from AsyncStorage:", error);
     }
-  }
-
+  };
   async function handleLogin() {
     // setLoadingUpload(true);
     setIsLoading(true);
@@ -199,6 +227,10 @@ const LoginPage = ({ navigation }) => {
 
   useEffect(() => {
     getContentDashboard();
+  }, []);
+
+  useEffect(() => {
+    getDeviceIdfromStorage();
   }, []);
 
   return (
@@ -576,3 +608,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+

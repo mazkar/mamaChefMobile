@@ -9,9 +9,20 @@ import store, { persistor } from "./src/store/index";
 import { NavigationContainer } from "@react-navigation/native";
 import Route from "./src/root/Route";
 import messaging from "@react-native-firebase/messaging";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import "./config";
 
 export default function App() {
+  const saveToAsyncStorage = async (token) => {
+    try {
+      // Save the input value to AsyncStorage
+      await AsyncStorage.setItem("deviceId", token);
+      // console.log("Value saved successfully!");
+    } catch (error) {
+      console.error("Error saving value to AsyncStorage:", error);
+    }
+  };
+
   const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -37,7 +48,7 @@ export default function App() {
         .getToken()
         .then((token) => {
           console.log(token, "ini token");
-          // storeToken(token);
+          saveToAsyncStorage(token);
         });
     } else {
       console.log("failed to get token", authStatus);
