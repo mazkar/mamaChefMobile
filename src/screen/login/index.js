@@ -91,7 +91,7 @@ const LoginPage = ({ navigation }) => {
       let res = await axios({
         url: `${baseUrl.URL}api/MobileNotification/InsertDeviceId`,
         method: "POST",
-        timeout: 8000,
+        timeout: 28000,
         data: body,
         headers: {
           "Content-Type": "application/json",
@@ -608,4 +608,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
