@@ -202,7 +202,7 @@ const LoginPage = ({ navigation }) => {
     // setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/ContentManagementMaster/getcontentbypage/Contact`,
+        url: `${baseUrl.URL}api/ContentManagementMaster/getcontentbypage/kontak(mobile apps)`,
         method: "get",
         timeout: 8000,
         headers: {
