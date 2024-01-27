@@ -46,12 +46,14 @@ export default function MenuDelegation({ navigation }) {
   const [modalSuccesVis2, setModalSuccessVis2] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [dataJadwal, setDataJadwal] = useState([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  const [valueMenu, setValueMenu] = useState("");
 
   async function getData(id) {
     setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/Member/getmemberbyuserid/${uid.UserId}`,
+        url: `${baseUrl.URL}api/Member/membermobile/${uid.UserId}`,
         method: "get",
         timeout: 38000,
         headers: {
@@ -62,10 +64,10 @@ export default function MenuDelegation({ navigation }) {
       console.log(res, "<===res data member");
       if (res.status == 200) {
         // test for status you want, etc
-        let memberActive = res?.data?.data?.filter((e) => e.isActive == true);
+
         console.log(res.data.data, "<===res data member");
 
-        setDdlMember(memberActive);
+        setDdlMember(res.data.data);
         // setDdlUom(res.data.masterUomsList);
         setIsLoadingGet(false);
         // console.log(res.data, "transit");
@@ -207,6 +209,7 @@ export default function MenuDelegation({ navigation }) {
         // dispatch(setUserId(res.data.data[0]?.userId));
         getDataJadwal();
         setModalSuccessVis2(true);
+        sendNotif();
 
         // test for status you want, etc
         // setLoadingUpload(false);
@@ -227,66 +230,6 @@ export default function MenuDelegation({ navigation }) {
     }
   };
 
-  const data = [
-    {
-      menuScheduleId: 1,
-      menuId: 1,
-      userId: 1,
-      memberId: 7,
-      memberName: "Sukirja",
-      menuName: "Ayam Bakar Madu",
-      menuDescription: "Ayam bakar dioles madu ",
-      menuNote: "test",
-      assignedDate: "2023-11-20T00:00:00",
-    },
-    {
-      menuScheduleId: 2,
-      menuId: 1,
-      userId: 1,
-      memberId: 7,
-      memberName: "Sukirja",
-      menuName: "Ayam Bakar Madu",
-      menuDescription: "Ayam bakar dioles madu ",
-      menuNote: "test",
-      assignedDate: "2023-11-12T03:31:08.706",
-    },
-    {
-      menuScheduleId: 4,
-      menuId: 13,
-      userId: 1,
-      memberId: 7,
-      memberName: "Sukirja",
-      menuName: "Dimsum",
-      menuDescription:
-        "Dimsum \n\nCara memasak :\n\n1. Rebus dimsum selama 15 menit\n\n2. Siap di sajikan",
-      menuNote: "Jangan overcook",
-      assignedDate: "2023-11-19T00:00:00",
-    },
-    {
-      menuScheduleId: 5,
-      menuId: 12,
-      userId: 1,
-      memberId: 7,
-      memberName: "Sukirja",
-      menuName: "Ikan Patin Fillet",
-      menuDescription: "tesss",
-      menuNote: "cobaaa",
-      assignedDate: "2023-11-18T00:00:00",
-    },
-    {
-      menuScheduleId: 6,
-      menuId: 13,
-      userId: 1,
-      memberId: 7,
-      memberName: "Sukirja",
-      menuName: "Dimsum",
-      menuDescription:
-        "Dimsum \n\nCara memasak :\n\n1. Rebus dimsum selama 15 menit\n\n2. Siap di sajikan",
-      menuNote: "Jangan overcook",
-      assignedDate: "2023-11-20T00:00:00",
-    },
-  ];
-
   useEffect(() => {
     getData();
     getMenu();
@@ -303,11 +246,67 @@ export default function MenuDelegation({ navigation }) {
       // Do something when the screen is focused
       console.log("Screen is focused");
       getDataJadwal();
+      getData();
       // Add your logic here to update the component or fetch new data
 
       // Example: Refresh data or update components
     }, [])
   );
+
+  const sendNotif = (installationId, arrRef) => {
+    // Set up the FCM API endpoint
+    const fcmEndpoint = "https://fcm.googleapis.com/fcm/send";
+
+    // Set up your FCM server key
+    const serverKey =
+      "AAAA93XPBk4:APA91bE_76zX05MFFxYwSGmzUKynIhMkUP3fa0i4ENTwmaGEN9-rhDhifsv5BkfLNw4subzaUKyFbhulqIPSOrJM3EK5yjL4z-OFVO_uejA0Yt6HFT500Sn5z7F0-ia7I4ntLSIw3Bu8";
+
+    // Set up the notification payload
+    const notification = {
+      title: `Kamu Punya Tugas Untuk Memasak ${valueMenu} `,
+      body: `Kamu Punya Tugas Untuk Memasak ${valueMenu} di Tanggal ${moment().format(
+        "DD-MMMM-YYYY"
+      )}`,
+      mutable_content: true,
+      sound: "Tri-tone",
+    };
+
+    // Set up the target device's FCM registration token
+    const registrationToken = selectedDeviceId;
+
+    // Set up the HTTP headers
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `key=${serverKey}`,
+    };
+
+    // Set up the request data
+    const data = {
+      notification: notification,
+      to: registrationToken,
+    };
+
+    // Send the POST request to the FCM API
+    axios
+      .post(fcmEndpoint, data, { headers })
+      .then((response) => {
+        console.log("Notification sent successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error sending notification:", error);
+      });
+  };
+
+  useEffect(() => {
+    var deviceId = ddlMember?.filter((e) => e.memberId == valueMemberId);
+    setSelectedDeviceId(deviceId[0]?.deviceId);
+    console.log(deviceId[0]?.deviceId, "deviceId");
+  }, [valueMemberId]);
+  useEffect(() => {
+    var menuName = ddlMenu?.filter((e) => e.menuId == valueNamaMenu);
+    setValueMenu(menuName[0]?.menuName);
+    console.log(menuName[0]?.menuName, "menu name");
+  }, [valueNamaMenu]);
 
   return (
     <ColorBgContainer style={{ paddingHorizontal: 24, paddingVertical: 72 }}>
