@@ -52,6 +52,7 @@ export default function App() {
         });
     } else {
       console.log("failed to get token", authStatus);
+      saveToAsyncStorage("Messaging Blocked");
     }
 
     // Check whether an initial notification is available
