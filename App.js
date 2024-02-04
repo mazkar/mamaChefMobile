@@ -10,6 +10,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import Route from "./src/root/Route";
 import messaging from "@react-native-firebase/messaging";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 // import "./config";
 
 export default function App() {
@@ -20,6 +21,16 @@ export default function App() {
       // console.log("Value saved successfully!");
     } catch (error) {
       console.error("Error saving value to AsyncStorage:", error);
+    }
+  };
+
+  const requestNotificationPermission = async () => {
+    const { granted } = await Notifications.requestPermissionsAsync();
+    if (granted) {
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      setNotificationToken(token);
+    } else {
+      console.log("Notification permissions denied");
     }
   };
 
@@ -91,6 +102,10 @@ export default function App() {
     });
 
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    requestNotificationPermission();
   }, []);
 
   return (
