@@ -33,6 +33,7 @@ import KelolaMenuAll from "../screen/kelolaMenu/KelolaMenuAll";
 import SubmitPembayaranInputEmail from "../screen/submitPembayaran/submitPembayaranInputEmail";
 import TambahIngridients from "../screen/kelolaMenu/TambahIngridients";
 import EditBahan from "../screen/kelolaMenu/EditBahan";
+import KeranjangMenu from "../screen/KeranjangMenu";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -169,6 +170,12 @@ export default function Route() {
       <Tab.Screen
         name="KelolaMenuAll"
         component={KelolaMenuAll}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="Keranjang"
+        component={KeranjangMenu}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

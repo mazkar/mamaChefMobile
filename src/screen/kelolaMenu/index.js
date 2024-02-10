@@ -21,6 +21,7 @@ import {
   Divider,
   Avatar,
   Card,
+  Modal,
   Paragraph,
   Searchbar,
 } from "react-native-paper";
@@ -47,9 +48,13 @@ import { setUser } from "../../store/models/auth/actions";
 import { baseUrl } from "../../utils/apiURL";
 import CardMenu from "./components/CardMenu";
 import _ from "lodash";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tab } from "@rneui/themed";
+import { setMenuCount } from "../../store/models/menu/action";
+import moment from "moment";
+import constants from "../../assets/constants/index.js";
 
 export default function KelolaMenu({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
@@ -64,6 +69,8 @@ export default function KelolaMenu({ navigation }) {
   const [index, setIndex] = React.useState(0);
   const [valueIsPublish, setValueIsPublish] = useState(true);
   const dispatch = useDispatch();
+  const [modalSuccesVis, setModalSuccessVis] = useState(false);
+  const [modalErroVis, setModalErrorVis] = useState(false);
 
   async function getMenu(userId) {
     setIsLoadingGet(true);
@@ -336,6 +343,101 @@ export default function KelolaMenu({ navigation }) {
     });
   };
 
+  async function getMenuInCarts(userId) {
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/BucketIngredients/getshopingcartbyuserid/${userId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "shoping carts");
+        // setDataMenu(res?.data?.data.length);
+        dispatch(setMenuCount(res?.data?.data));
+
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    getMenuInCarts(uid);
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Do something when the screen is focused
+      console.log("Screen is focused");
+
+      getMenuInCarts(uid);
+
+      // Add your logic here to update the component or fetch new data
+
+      // Example: Refresh data or update components
+    }, [])
+  );
+
+  async function insertMneuToChart(menuId, page, isPublish) {
+    // console.log(isPublish, "isPublish");
+
+    console.log(searchQuery, "page num");
+    const body = {
+      menuId: menuId,
+      quantity: 1,
+      reservedBy: parseInt(uid),
+      reservedDate: moment().format("YYYY-MM-DD"),
+      status: "booked",
+    };
+    // setIsLoadingGet(true);
+    // setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/BucketIngredients/addmenutoshopingcart`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        getMenuInCarts(uid);
+        setModalSuccessVis(true);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+      setModalErrorVis(true);
+    }
+  }
+
+  const hideModalSuccess = () => {
+    setModalSuccessVis(false);
+
+    // getTaskDetail(route.params.assignmentId);
+  };
+
+  const hideModalError = () => {
+    setModalErrorVis(false);
+
+    // getTaskDetail(route.params.assignmentId);
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -479,6 +581,7 @@ export default function KelolaMenu({ navigation }) {
                     desc={item?.description}
                     onPressNav={onPressNav}
                     isPublish={valueIsPublish}
+                    insertMneuToChart={insertMneuToChart}
                   />
                   <Divider style={{ marginTop: ms(24) }} />
                   {isLoading && (
@@ -671,6 +774,7 @@ export default function KelolaMenu({ navigation }) {
                         onPressNav={onPressNav}
                         isPublish={valueIsPublish}
                         recipeBy={item?.recipeBy}
+                        insertMneuToChart={insertMneuToChart}
                       />
                       <Divider style={{ marginTop: ms(24) }} />
                       {isLoading && (
@@ -856,6 +960,60 @@ export default function KelolaMenu({ navigation }) {
             )}
           /> */}
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalSuccesVis}
+          onRequestClose={hideModalSuccess}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <Ionicons
+                name="checkmark-circle"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.SUCCESS }}
+              />
+            </View>
+            <Text style={styles.modalText}>
+              Menu Berhasil di Tambahkan ke Keranjang
+            </Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalSuccess}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalErroVis}
+          onRequestClose={hideModalError}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <FontAwesome
+                name="close"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.RED_BG }}
+              />
+            </View>
+            <Text style={styles.modalText}>Error</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_MEDIUM }}
+              mode="contained"
+              onPress={hideModalError}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />
     </ColorBgContainer>
@@ -885,5 +1043,31 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
+  },
+  containermodalView: {
+    flexDirection: "column",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+  modalText: {
+    paddingTop: 20,
+    marginBottom: 28,
+    textAlign: "center",
+    alignSelf: "center",
+    fontSize: 17,
+    letterSpacing: 1,
+    lineHeight: 24,
+    width: constants.SCREEN_WIDTH * 0.7,
+    fontWeight: "600",
+  },
+  imgSubmit: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

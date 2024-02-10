@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Platform, StyleSheet, Text, View, Image } from "react-native";
 import { COLORS } from "../../../assets/theme";
-import { Button, Menu, Divider, Avatar, Card } from "react-native-paper";
+import { Button, Menu, Divider, Avatar, Card, Badge } from "react-native-paper";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Octicons from "react-native-vector-icons/Octicons";
 import FaIcons from "react-native-vector-icons/Ionicons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { ms } from "react-native-size-matters";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { baseUrl } from "../../../utils/apiURL";
 
 const AppBar = (props) => {
   const { title, onPressNav, icoRight } = props;
   const [notifVisible, setNotifVisible] = useState(false);
+  const uid = useSelector((state) => state?.auth?.user?.UserId);
   const user = useSelector((state) => state?.auth?.user?.FirstName);
+  const token = useSelector((state) => state.auth.token);
+  const keranjangCount = useSelector(
+    (state) => state?.menuReducer?.menuList?.length
+  );
 
   // Notification
 
@@ -97,6 +105,37 @@ const AppBar = (props) => {
       </View>
 
       <View style={styles.notif}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <FontAwesome5
+            onPress={() => props.navigation.navigate("Keranjang")}
+            style={{
+              fontSize: 20,
+              color: COLORS.PRIMARY_MEDIUM,
+              marginRight: 18,
+              color: COLORS.PRIMARY_DARK,
+            }}
+            name="shopping-cart"
+          />
+          {keranjangCount > 0 && (
+            <View
+              style={{
+                position: "absolute",
+                top: -4,
+                right: 10,
+
+                backgroundColor: "red", // You can change the badge color
+                borderRadius: 10, // Adjust the border radius to your liking
+                paddingVertical: 2,
+                paddingHorizontal: 6,
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 8 }}>
+                {keranjangCount}
+              </Text>
+            </View>
+          )}
+        </View>
+
         <View>
           <Menu
             visible={notifVisible}
@@ -145,7 +184,7 @@ const styles = StyleSheet.create({
     // flex: 1,
 
     alignItems: "center",
-    height: 110,
+    height: 70,
     elevation: 3,
     paddingVertical: 10,
     paddingHorizontal: 2,

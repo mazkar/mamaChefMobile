@@ -51,10 +51,12 @@ import { baseUrl } from "../../utils/apiURL";
 import { useFocusEffect } from "@react-navigation/native";
 import { Tab } from "@rneui/themed";
 import _ from "lodash";
+import { setMenuCount } from "../../store/models/menu/action";
 
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
   const [dataMenu, setDataMenu] = useState([]);
+
   const [dataMenu2, setDataMenu2] = useState([]);
   const [dataMenuPagination, setDataMenuPagination] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -256,9 +258,49 @@ export default function Dashboard({ navigation }) {
     }
   }
 
+  async function getMenuInCarts(userId) {
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/BucketIngredients/getshopingcartbyuserid/${userId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "shoping carts");
+        // setDataMenu(res?.data?.data.length);
+        dispatch(setMenuCount(res?.data?.data));
+
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   useEffect(() => {
     getContentDashboard();
+    getMenuInCarts(uid);
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Do something when the screen is focused
+      console.log("Screen is focused");
+
+      getMenuInCarts(uid);
+
+      // Add your logic here to update the component or fetch new data
+
+      // Example: Refresh data or update components
+    }, [])
+  );
 
   return (
     <ColorBgContainer>

@@ -3,6 +3,7 @@ import React from "react";
 import { ms } from "react-native-size-matters";
 import { COLORS, FONTS } from "../../../assets/theme";
 import { Card } from "react-native-paper";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function CardMenu({
   photoUrl,
@@ -13,6 +14,7 @@ export default function CardMenu({
   onPressNav,
   isPublish,
   recipeBy,
+  insertMneuToChart,
 }) {
   return (
     <View>
@@ -102,7 +104,7 @@ export default function CardMenu({
             </View>
           </View>
         </View>
-        <View style={{ alignSelf: "center" }}>
+        <View style={{ alignSelf: "center", flexDirection: "row" }}>
           <TouchableOpacity
             style={{
               backgroundColor: COLORS.PRIMARY_DARK,
@@ -114,6 +116,50 @@ export default function CardMenu({
           >
             <Text style={{ color: COLORS.WHITE }}>Lihat Resep</Text>
           </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {isPublish && (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: COLORS.WHITE,
+                  paddingHorizontal: ms(24),
+                  paddingVertical: ms(12),
+                  borderRadius: ms(8),
+
+                  marginLeft: ms(8),
+                  borderColor: COLORS.PRIMARY_DARK,
+                  borderWidth: 1,
+                }}
+                onPress={() => insertMneuToChart(menuId)}
+              >
+                <FontAwesome5
+                  // onPress={showNotif}
+                  style={{
+                    fontSize: 20,
+                    color: COLORS.PRIMARY_MEDIUM,
+
+                    color: COLORS.PRIMARY_DARK,
+                  }}
+                  name="shopping-cart"
+                />
+              </TouchableOpacity>
+            )}
+
+            <View
+              style={{
+                position: "absolute",
+                top: -0,
+                right: 9,
+
+                borderRadius: 10, // Adjust the border radius to your liking
+                paddingVertical: 2,
+                paddingHorizontal: 6,
+              }}
+            >
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontSize: 18 }}>
+                +
+              </Text>
+            </View>
+          </View>
         </View>
       </Card>
     </View>
