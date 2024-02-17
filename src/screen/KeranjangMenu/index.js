@@ -5,11 +5,18 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Linking,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import RootContainer from "../../component/RootContainer/index";
 import ColorBgContainer from "../../component/ColorBgContainer";
-import { IconButton, Card, Checkbox } from "react-native-paper";
+import {
+  IconButton,
+  Card,
+  Checkbox,
+  CheckBox,
+  Button,
+} from "react-native-paper";
 import {
   AppBar,
   GeneralButton,
@@ -116,7 +123,8 @@ export default function KeranjangMenu({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const token = useSelector((state) => state.auth.token);
-
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
   const handleLogut = () => {
     dispatch(resetReducer());
     navigation.reset({
@@ -195,6 +203,58 @@ export default function KeranjangMenu({ navigation }) {
     navigation.navigate("MenuDetail", { menuId: id, isEdit: false });
   };
 
+  const handleCheckboxChange = (selectedItem) => {
+    if (
+      selectedItems.some(
+        (item) => item.shopingCartId === selectedItem.shopingCartId
+      )
+    ) {
+      setSelectedItems((prevItems) =>
+        prevItems.filter(
+          (item) => item.shopingCartId !== selectedItem.shopingCartId
+        )
+      );
+    } else {
+      setSelectedItems((prevItems) => [
+        ...prevItems,
+        {
+          shopingCartId: selectedItem.shopingCartId,
+          menuId: selectedItem.menuId,
+        },
+      ]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    // Toggle the "Select All" status
+    setSelectAll((prevSelectAll) => !prevSelectAll);
+
+    // If "Select All" is enabled, select all items; otherwise, unselect all items
+    setSelectedItems((prevItems) =>
+      selectAll
+        ? []
+        : dataList.map((item) => ({
+            shopingCartId: item.shopingCartId,
+            menuId: item.menuId,
+          }))
+    );
+  };
+
+  const sendWhatsAppMessage = () => {
+    const phoneNumber = "+6289515552237";
+    const message = "test";
+
+    // Use the `Linking` API to create the WhatsApp URL with the phone number and message
+    const url = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(
+      message
+    )}`;
+
+    // Open the WhatsApp chat with the predefined message
+    Linking.openURL(url)
+      .then(() => console.log("WhatsApp opened successfully"))
+      .catch((err) => console.error("Error opening WhatsApp:", err));
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -204,7 +264,32 @@ export default function KeranjangMenu({ navigation }) {
           handleLogut={handleLogut}
           navigation={navigation}
         />
+
         <ScrollView style={styles.mainContainer}>
+          <View
+            style={{
+              width: "40%",
+              paddingHorizontal: ms(12),
+              marginTop: ms(20),
+            }}
+          >
+            <TouchableOpacity
+              onPress={handleSelectAll}
+              style={{
+                marginBottom: 10,
+                backgroundColor: COLORS.PRIMARY_DARK,
+                paddingHorizontal: ms(12),
+                paddingVertical: ms(10),
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ color: "white" }}>
+                {selectAll ? "Unselect All" : "Pilih Semua"}
+              </Text>
+            </TouchableOpacity>
+          </View>
           {dataList?.map((e) => (
             <Card
               style={{
@@ -223,6 +308,19 @@ export default function KeranjangMenu({ navigation }) {
                       }}
                     />
                   </View> */}
+                <View>
+                  <Checkbox.Android
+                    status={
+                      selectedItems.some(
+                        (selectedItem) =>
+                          selectedItem.shopingCartId === e.shopingCartId
+                      )
+                        ? "checked"
+                        : "unchecked"
+                    }
+                    onPress={() => handleCheckboxChange(e)}
+                  />
+                </View>
                 <View>
                   <Image
                     style={{
@@ -294,6 +392,26 @@ export default function KeranjangMenu({ navigation }) {
             </Card>
           ))}
         </ScrollView>
+        {selectedItems.length == 0 ? (
+          <></>
+        ) : (
+          <View style={{ paddingHorizontal: ms(12), marginTop: ms(20) }}>
+            <TouchableOpacity
+              onPress={sendWhatsAppMessage}
+              style={{
+                marginBottom: 10,
+                backgroundColor: COLORS.PRIMARY_DARK,
+                paddingHorizontal: ms(12),
+                paddingVertical: ms(10),
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ color: "white" }}>Lihat Rincian Resep</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </RootContainer>
     </ColorBgContainer>
   );
@@ -302,7 +420,7 @@ export default function KeranjangMenu({ navigation }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    paddingHorizontal: 14,
+    paddingHorizontal: 4,
     paddingVertical: 12,
   },
   btnAdd: {

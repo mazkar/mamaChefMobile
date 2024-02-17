@@ -34,6 +34,8 @@ import SubmitPembayaranInputEmail from "../screen/submitPembayaran/submitPembaya
 import TambahIngridients from "../screen/kelolaMenu/TambahIngridients";
 import EditBahan from "../screen/kelolaMenu/EditBahan";
 import KeranjangMenu from "../screen/KeranjangMenu";
+import OtpValidation from "../screen/Register/OtpValidation";
+import OnlinePayment from "../screen/submitPembayaran/OnlinePayment";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,6 +64,18 @@ export default function Route() {
       <Tab.Screen
         name="Login"
         component={LoginPage}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="OtpValidation"
+        component={OtpValidation}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="OnlinePayment"
+        component={OnlinePayment}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

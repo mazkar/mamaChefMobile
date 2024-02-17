@@ -56,6 +56,7 @@ import FaIcons from "react-native-vector-icons/FontAwesome5";
 import moment from "moment";
 import ImagePickerExample from "./components/ImagePicker.jsx";
 import PhotoTake from "./components/PhotoTake.js";
+import { WebView } from "react-native-webview";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 export default function SubmitPembayaranInputEmail({ route, navigation }) {
@@ -99,6 +100,15 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
   const [dataBank, setDataBank] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [modalPaymentVis, setModalPaymentVis] = useState(false);
+
+  const showModalPayment = () => {
+    setModalPaymentVis(true);
+    console.log(dataPayment?.midtrans?.redirect_url);
+  };
+  const hideModalPayment = () => {
+    setModalPaymentVis(false);
+  };
 
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
@@ -268,24 +278,12 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
   const handlePress = async () => {
     setIsLoading(true);
 
-    // const formData = new FormData();
-    // formData.append("MasterBankAccounts", null);
-    // formData.append("email", dataPayment.email);
-    // formData.append(
-    //   "subscriptionPeriodId",
-    //   route?.params?.subsctriptionPeriodsId
-    // );
-    // formData.append("transferBy", dataPayment?.email);
-    // formData.append("selectedBankId", valueBankId);
-    // formData.append("evidenceFile", image);
-    // console.log(formData, "console");
-
     const body = {
       masterBankAccounts: null,
       evidenceFile: image,
-      email: dataPayment[0]?.email,
-      subscriptionPeriodId: dataPayment[0]?.subsctriptionPeriodsId,
-      transferBy: dataPayment[0]?.email,
+      email: dataPayment?.pendingList[0]?.email,
+      subscriptionPeriodId: dataPayment?.pendingList[0]?.subsctriptionPeriodsId,
+      transferBy: dataPayment?.pendingList[0]?.email,
       selectedBankId: valueBankId,
     };
 
@@ -369,339 +367,442 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
   //   getDataPayment();
   // }, []);
 
+  const navigateMidtrans = (url) => {
+    console.log(url, "url");
+    navigation.navigate("OnlinePayment", {
+      url: url,
+    });
+  };
+
   return (
-    <RootContainer>
-      <AppBar title="Submit Pembayaran" />
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Image
-            style={{ width: ms(208), height: ms(182) }}
-            source={require("../../assets/images/mainLogo.png")}
-          />
-        </View>
-        <Card style={styles.mainContainer}>
-          <View>
-            <View style={styles.inputForm}>
-              {/* <Text style={styles.text}>Email</Text> */}
-
-              <GeneralTextInput
-                placeholder={dataPayment?.email}
-                mode="outlined"
-                // value={email}
-                title="Email"
-                // hasErrors={authFailed}
-                messageError="Wrong Username/Password"
-                onChangeText={(e) => setValueEmail(e)}
-                // style={styles.inputUserName}
-              />
-            </View>
+    <>
+      <RootContainer>
+        {/* <AppBar title="Submit Pembayaran" /> */}
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <View style={{ flex: 1, alignItems: "center" }}>
+            <Image
+              style={{ width: ms(208), height: ms(182) }}
+              source={require("../../assets/images/mainLogo.png")}
+            />
+          </View>
+          <Card style={styles.mainContainer}>
             <View>
-              <TouchableOpacity
-                style={styles.button2}
-                onPress={() => getDataPayment(valueEmail)}
-              >
-                <Text style={{ color: "white" }}>Cari User</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.inputForm}>
-              <Text style={styles.text}>Pilih Bank</Text>
+              <View style={styles.inputForm}>
+                {/* <Text style={styles.text}>Email</Text> */}
 
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "space-between",
-                  flexDirection: "row",
-                }}
-              >
-                <RadioButton.Group
-                  onValueChange={(newValue) => onChangeRadio(newValue)}
-                  value={value}
-                  style={{
-                    width: 200,
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
+                <GeneralTextInput
+                  placeholder={dataPayment?.email}
+                  mode="outlined"
+                  // value={email}
+                  title="Email"
+                  // hasErrors={authFailed}
+                  messageError="Wrong Username/Password"
+                  onChangeText={(e) => setValueEmail(e)}
+                />
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.button2}
+                  onPress={() => getDataPayment(valueEmail)}
                 >
-                  {dataBank.map((e, i) => (
+                  <Text style={{ color: "white" }}>Cari User</Text>
+                </TouchableOpacity>
+              </View>
+              {dataPayment.length == 0 ? (
+                <></>
+              ) : (
+                <>
+                  <View style={styles.inputForm}>
+                    <TouchableOpacity
+                      style={{
+                        borderRadius: 20,
+                        backgroundColor: "#E870A3",
+                        paddingHorizontal: ms(18),
+                        paddingVertical: ms(12),
+                        borderColor: "#E870A3",
+                      }}
+                      onPress={() => showModalPayment()}
+                    >
+                      <Text style={{ color: "white" }}>
+                        Pembayaran Menggunakan Virtual Account atau Dompet
+                        Digital
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 10,
+                      marginTop: 20,
+                      marginBottom: 20,
+                    }}
+                  >
                     <View
                       style={{
                         flex: 1,
-                        flexDirection: "row",
-                        alignItems: "center",
-
-                        border: "1px solid gray",
+                        height: 1,
+                        backgroundColor: "lightgray",
                       }}
-                    >
+                    />
+                    <View style={styles.txtRegister}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate("Register")}
+                      >
+                        <Text
+                          style={[
+                            styles.textWhite,
+                            { color: COLORS.PRIMARY_DARK },
+                          ]}
+                        >
+                          Atau
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <View
+                      style={{
+                        flex: 1,
+                        height: 1,
+                        backgroundColor: "lightgray",
+                      }}
+                    />
+                  </View>
+                </>
+              )}
+
+              <View style={styles.inputForm}>
+                <Text style={styles.text}>Pilih Bank</Text>
+
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "space-between",
+                    flexDirection: "row",
+                  }}
+                >
+                  <RadioButton.Group
+                    onValueChange={(newValue) => onChangeRadio(newValue)}
+                    value={value}
+                    style={{
+                      width: 200,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    {dataBank.map((e, i) => (
                       <View
                         style={{
+                          flex: 1,
                           flexDirection: "row",
                           alignItems: "center",
-                          marginBottom: ms(8),
-
-                          justifyContent: "space-between",
 
                           border: "1px solid gray",
-                          width: ms(292),
-                          borderWidth: 1,
-                          borderColor: "gray",
-                          borderRadius: 5,
-                          padding: 10,
                         }}
                       >
                         <View
                           style={{
-                            flex: 1,
                             flexDirection: "row",
                             alignItems: "center",
+                            marginBottom: ms(8),
+
+                            justifyContent: "space-between",
+
+                            border: "1px solid gray",
+                            width: ms(292),
+                            borderWidth: 1,
+                            borderColor: "gray",
+                            borderRadius: 5,
+                            padding: 10,
                           }}
                         >
-                          <RadioButton value={e} />
-                          <Text style={{ color: "gray" }}>{e.bankName}</Text>
-                        </View>
-                        <View>
-                          <Image
-                            style={{ width: ms(76), height: ms(22) }}
-                            source={ImageBank(e.bankName)}
-                          />
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            <RadioButton value={e} />
+                            <Text style={{ color: "gray" }}>{e.bankName}</Text>
+                          </View>
+                          <View>
+                            <Image
+                              style={{ width: ms(76), height: ms(22) }}
+                              source={ImageBank(e.bankName)}
+                            />
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  ))}
-                </RadioButton.Group>
-              </View>
-              <View style={styles.inputForm}>
-                {/* <Text style={styles.text}>No Rekening</Text> */}
+                    ))}
+                  </RadioButton.Group>
+                </View>
+                <View style={styles.inputForm}>
+                  {/* <Text style={styles.text}>No Rekening</Text> */}
 
-                <GeneralTextInput
-                  placeholder={valueRek}
-                  mode="outlined"
-                  //   value={email}
-                  disabled
-                  title="No Rekening"
-                  // hasErrors={authFailed}
-                  messageError="Wrong Username/Password"
-                  onChangeText={(e) => setEmail(e)}
-                  style={styles.inputUserName}
-                />
-              </View>
-              <View style={styles.inputForm}>
-                {/* <Text style={styles.text}>Nama Pemilik Rekening</Text> */}
-
-                <GeneralTextInput
-                  placeholder={valuePemilik}
-                  mode="outlined"
-                  disabled
-                  title="Nama Pemilik Rekening"
-                  //   value={email}
-                  // hasErrors={authFailed}
-                  messageError="Wrong Username/Password"
-                  onChangeText={(e) => setEmail(e)}
-                  style={styles.inputUserName}
-                />
-              </View>
-              <View style={{ marginTop: ms(24) }}>
-                <Text style={styles.text}>Upload Bukti Transfer</Text>
-                <ImagePickerExample
-                  image={image}
-                  setImage={setImage}
-                  setImageToShow={setImageToShow}
-                  imageToShow={imageToShow}
-                />
-              </View>
-              <View style={styles.inputForm}>
-                <PhotoTake
-                  image={image}
-                  setImage={setImage}
-                  setImageToShow={setImageToShow}
-                  imageToShow={imageToShow}
-                />
-              </View>
-              <View>
-                {imageToShow && (
-                  <Image
-                    source={{ uri: imageToShow }}
-                    style={{ width: 200, height: 200 }}
+                  <GeneralTextInput
+                    placeholder={valueRek}
+                    mode="outlined"
+                    //   value={email}
+                    disabled
+                    title="No Rekening"
+                    // hasErrors={authFailed}
+                    messageError="Wrong Username/Password"
+                    onChangeText={(e) => setEmail(e)}
+                    style={styles.inputUserName}
                   />
-                )}
-              </View>
-              {/* <View style={styles.inputForm}>
-                <Button onPress={() => console.log(dataPayment.email)}>
-                  Console
-                </Button>
-              </View> */}
-            </View>
+                </View>
+                <View style={styles.inputForm}>
+                  {/* <Text style={styles.text}>Nama Pemilik Rekening</Text> */}
 
-            {/* <TouchableOpacity
-                style={styles.button}
-                onPress={() => console.log(token.user?.UserId)}
-              >
-                <Text style={styles.textBtn}>Sign In</Text>
-              </TouchableOpacity> */}
-          </View>
-        </Card>
+                  <GeneralTextInput
+                    placeholder={valuePemilik}
+                    mode="outlined"
+                    disabled
+                    title="Nama Pemilik Rekening"
+                    //   value={email}
+                    // hasErrors={authFailed}
+                    messageError="Wrong Username/Password"
+                    onChangeText={(e) => setEmail(e)}
+                    style={styles.inputUserName}
+                  />
+                </View>
+                <View style={{ marginTop: ms(24) }}>
+                  <Text style={styles.text}>Upload Bukti Transfer</Text>
+                  <ImagePickerExample
+                    image={image}
+                    setImage={setImage}
+                    setImageToShow={setImageToShow}
+                    imageToShow={imageToShow}
+                  />
+                </View>
+                <View style={styles.inputForm}>
+                  <PhotoTake
+                    image={image}
+                    setImage={setImage}
+                    setImageToShow={setImageToShow}
+                    imageToShow={imageToShow}
+                  />
+                </View>
+                <View>
+                  {imageToShow && (
+                    <Image
+                      source={{ uri: imageToShow }}
+                      style={{ width: 200, height: 200 }}
+                    />
+                  )}
+                </View>
+                {/* <View style={styles.inputForm}>
+      <Button onPress={() => console.log(dataPayment.email)}>
+        Console
+      </Button>
+    </View> */}
+              </View>
 
-        {dataPayment?.length === 0 || dataPayment == "" ? (
-          <></>
-        ) : (
-          <Card style={styles.mainContainer2}>
-            <View style={styles.inputForm}>
-              <Text style={styles.text}>Menunggu Pembayaran</Text>
+              {/* <TouchableOpacity
+        style={styles.button}
+        onPress={() => console.log(token.user?.UserId)}
+      >
+        <Text style={styles.textBtn}>Sign In</Text>
+      </TouchableOpacity> */}
             </View>
-            <Divider />
-            <View>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Langganan : </Text>
-                <Text style={{ marginLeft: ms(24) }}>
-                  {dataPayment[0]?.packageName}
-                </Text>
+          </Card>
+
+          {dataPayment?.length === 0 || dataPayment == "" ? (
+            <></>
+          ) : (
+            <Card style={styles.mainContainer2}>
+              <View style={styles.inputForm}>
+                <Text style={styles.text}>Menunggu Pembayaran</Text>
               </View>
               <Divider />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Harga : </Text>
-                <Text style={{ marginLeft: ms(24) }}>
-                  {formatRupiah(dataPayment[0]?.amount)}
-                </Text>
-              </View>
-              <Divider />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>PPN : </Text>
-                <Text style={{ marginLeft: ms(24) }}>
-                  {formatRupiah(dataPayment[0]?.taxAmount)}
-                </Text>
-              </View>
-              <Divider />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Total : </Text>
-                <Text
+              <View>
+                <View
                   style={{
-                    marginLeft: ms(24),
-                    color: COLORS.PRIMARY_DARK,
-                    fontWeight: "600",
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
                 >
-                  {formatRupiah(dataPayment[0]?.totalAmount)}
-                </Text>
+                  <Text>Langganan : </Text>
+                  <Text style={{ marginLeft: ms(24) }}>
+                    {dataPayment?.pendingList[0]?.packageName}
+                  </Text>
+                </View>
+                <Divider />
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text>Harga : </Text>
+                  <Text style={{ marginLeft: ms(24) }}>
+                    {formatRupiah(dataPayment.pendingList[0]?.amount)}
+                  </Text>
+                </View>
+                <Divider />
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text>PPN : </Text>
+                  <Text style={{ marginLeft: ms(24) }}>
+                    {formatRupiah(dataPayment?.pendingList[0]?.taxAmount)}
+                  </Text>
+                </View>
+                <Divider />
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text>Total : </Text>
+                  <Text
+                    style={{
+                      marginLeft: ms(24),
+                      color: COLORS.PRIMARY_DARK,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {formatRupiah(dataPayment?.pendingList[0]?.totalAmount)}
+                  </Text>
+                </View>
               </View>
+              <TouchableOpacity style={styles.button} onPress={handlePress}>
+                <Text style={{ color: "white" }}>Daftar</Text>
+              </TouchableOpacity>
+            </Card>
+          )}
+
+          {isLoading ? (
+            <PopUpLoader visible={true} />
+          ) : (
+            <PopUpLoader visible={false} />
+          )}
+        </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalSuccesVis}
+          onRequestClose={hideModalSuccess}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <Ionicons
+                name="checkmark-circle"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.SUCCESS }}
+              />
             </View>
-            <TouchableOpacity style={styles.button} onPress={handlePress}>
-              <Text style={{ color: "white" }}>Daftar</Text>
-            </TouchableOpacity>
-          </Card>
-        )}
+            <Text style={styles.modalText}>{successMessage}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalSuccess}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
 
-        {isLoading ? (
-          <PopUpLoader visible={true} />
-        ) : (
-          <PopUpLoader visible={false} />
-        )}
-      </ScrollView>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalSuccesVis2}
+          onRequestClose={hideModalSuccess2}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <Ionicons
+                name="checkmark-circle"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.SUCCESS }}
+              />
+            </View>
+            <Text style={styles.modalText}>{successMessage}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalSuccess2}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalErroVis}
+          onRequestClose={hideModalError}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <FontAwesome
+                name="close"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.RED_BG }}
+              />
+            </View>
+
+            <Text style={styles.modalText}>{errorMessage}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalError}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
+      </RootContainer>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalSuccesVis}
-        onRequestClose={hideModalSuccess}
+        visible={modalPaymentVis}
+        onRequestClose={hideModalPayment}
       >
         {/* <View style={styles.centeredView}> */}
-        <View style={styles.containermodalView}>
-          <View style={styles.imgSubmit}>
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              style={{ fontSize: 72, color: COLORS.SUCCESS }}
-            />
+        <View style={styles.containermodalViewPayment}>
+          <WebView source={{ uri: dataPayment?.midtrans?.redirect_url }} />
+          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+            <GeneralButton
+              style={{
+                backgroundColor: COLORS.PRIMARY_DARK,
+                marginRight: ms(8),
+              }}
+              mode="contained"
+              onPress={hideModalPayment}
+            >
+              Batal
+            </GeneralButton>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalPayment}
+            >
+              Selesai
+            </GeneralButton>
           </View>
-          <Text style={styles.modalText}>{successMessage}</Text>
-          <GeneralButton
-            style={{ backgroundColor: COLORS.PRIMARY_DARK }}
-            mode="contained"
-            onPress={hideModalSuccess}
-          >
-            Close
-          </GeneralButton>
         </View>
+
         {/* </View> */}
       </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalSuccesVis2}
-        onRequestClose={hideModalSuccess2}
-      >
-        {/* <View style={styles.centeredView}> */}
-        <View style={styles.containermodalView}>
-          <View style={styles.imgSubmit}>
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              style={{ fontSize: 72, color: COLORS.SUCCESS }}
-            />
-          </View>
-          <Text style={styles.modalText}>{successMessage}</Text>
-          <GeneralButton
-            style={{ backgroundColor: COLORS.PRIMARY_DARK }}
-            mode="contained"
-            onPress={hideModalSuccess2}
-          >
-            Close
-          </GeneralButton>
-        </View>
-        {/* </View> */}
-      </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalErroVis}
-        onRequestClose={hideModalError}
-      >
-        {/* <View style={styles.centeredView}> */}
-        <View style={styles.containermodalView}>
-          <View style={styles.imgSubmit}>
-            <FontAwesome
-              name="close"
-              size={24}
-              style={{ fontSize: 72, color: COLORS.RED_BG }}
-            />
-          </View>
-
-          <Text style={styles.modalText}>{errorMessage}</Text>
-          <GeneralButton
-            style={{ backgroundColor: COLORS.PRIMARY_DARK }}
-            mode="contained"
-            onPress={hideModalError}
-          >
-            Close
-          </GeneralButton>
-        </View>
-        {/* </View> */}
-      </Modal>
-    </RootContainer>
+    </>
   );
 }
 
@@ -769,8 +870,8 @@ const styles = StyleSheet.create({
   },
   button2: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(35),
-    height: heightPercentageToDP(7),
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(12),
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,
@@ -784,6 +885,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     // position: "absolute",
     width: constants.SCREEN_WIDTH * 0.8,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+  containermodalViewPayment: {
+    flexDirection: "column",
+    alignSelf: "center",
+    height: constants.SCREEN_HEIGHT * 0.9,
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 1,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

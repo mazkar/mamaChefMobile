@@ -92,13 +92,15 @@ export default function PilihPaketPeriod({ navigation }) {
   const userId = useSelector((state) => state?.auth?.userId);
   const [dataBank, setDataBank] = useState([]);
   const [messageError, setMessageError] = useState("");
+  const [returnData, setReturnData] = useState([]);
   const [selectedSubsctriptionPeriodsId, setSelectedSubsctriptionPeriodsId] =
     useState(null);
 
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
-    navigation.push("SubmitPembayaran", {
-      subsctriptionPeriodsId: selectedSubsctriptionPeriodsId,
+    navigation.push("OtpValidation", {
+      userId: returnData[0]?.userId,
+      subscriptionId: returnData[0]?.subscriptionId,
     });
     // getTaskDetail(route.params.assignmentId);
   };
@@ -136,6 +138,7 @@ export default function PilihPaketPeriod({ navigation }) {
         // console.log(res.data, "meeeeeeeee");
         setIsLoading(false);
         setModalSuccessVis(true);
+        setReturnData(res.data.data);
         // setIsLoadingGet(false);
         // console.log(res.data, "transit");
       } else {
@@ -415,7 +418,9 @@ const styles = StyleSheet.create({
   },
   containermodalView: {
     flexDirection: "column",
-    alignSelf: "stretch",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

@@ -55,23 +55,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import moment from "moment";
 
-export default function Register({ navigation }) {
+export default function OtpValidation({ route, navigation }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [openDropDown, setOpenDropDown] = useState(false);
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
-  const [itemsDropDown, setItemDropDown] = useState([
-    { label: "Laki - laki", value: "Laki - laki" },
-    { label: "Perempuan", value: "Perempuan" },
-  ]);
-
-  const [openDropDown2, setOpenDropDown2] = useState(false);
-  const [itemsDropDown2, setItemDropDown2] = useState([
-    { label: "3 Bulan", value: 1 },
-    { label: "6 Bulan", value: 2 },
-    { label: "12 Bulan", value: 3 },
-  ]);
 
   //FORM
   const [email, setEmail] = useState("");
@@ -87,18 +75,19 @@ export default function Register({ navigation }) {
   const [biaya, setBiaya] = useState("");
   const [dataPeriode, setDataPeriode] = useState(null);
   const [messageError, setMessageError] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [showPassword2, setShowPassword2] = useState(true);
   const [checked, setChecked] = useState(false);
-
-  const handleCheckboxToggle = () => {
-    setChecked(!checked);
-  };
-  //   const [date, setDate] = useState("");
+  const [dataUser, setDataUser] = useState([]);
 
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
-    navigation.push("PilihPaket");
+    console.log(route?.params?.subscriptionId, "params ada");
+    navigation.push("SubmitPembayaran", {
+      subsctriptionPeriodsId: route?.params?.subscriptionId,
+      userId: route.params?.userId,
+    });
 
     // getTaskDetail(route.params.assignmentId);
   };
@@ -112,25 +101,18 @@ export default function Register({ navigation }) {
     console.log(value);
   };
 
-  async function handleDaftar() {
+  async function handleValidateOtp() {
     setIsLoading(true);
 
     const body = {
-      // firstName: namaDepan,
-      // lastName: namaBelakang,
-      email: email,
-      password: password,
-      // sex: selectedGender,
-      // education: Pendidikan,
-      // dateofBirth: moment(date).format("YYYY-MM-DD"),
-      referalCode: referal,
-      // subscriptionId: selectedPeriode,
+      userId: route?.params.userId,
+      otp: parseInt(email, 10),
     };
 
     try {
       console.log(body);
       let res = await axios({
-        url: `${baseUrl.URL}api/Auth/RegisterUser`,
+        url: `${baseUrl.URL}api/Auth/ValidateOTP`,
         method: "POST",
         timeout: 8000,
         data: body,
@@ -140,13 +122,12 @@ export default function Register({ navigation }) {
         },
       });
       console.log(res, "Success");
-      if (res.data.code == "200") {
-        console.log(res.data.data, "<= res");
+      if (res.data.code === "200") {
+        console.log(res.data, "<= res");
         setIsLoading(false);
-        dispatch(setUserId(res.data.data[0]?.userId));
 
         setModalSuccessVis(true);
-
+        setMessageSuccess(res.data.message);
         // test for status you want, etc
         // setLoadingUpload(false);
         // getTaskDetail(route.params.assignmentId);
@@ -165,6 +146,7 @@ export default function Register({ navigation }) {
       console.error(err, "error");
       setModalErrorVis(true);
       setIsLoading(false);
+      setMessageError(err.message);
     }
   }
 
@@ -197,6 +179,34 @@ export default function Register({ navigation }) {
     }
   }
 
+  async function getDataUser(id) {
+    // setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Auth/getuserdetail/getuserdetail/${id}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          //   Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        // console.log(res.data, "meeeeeeeee");
+        setDataUser(res.data.data);
+
+        // setIsLoadingGet(false);
+        console.log(res.data.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      //   setIsLoadingGet(false);
+    }
+  }
+
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
 
@@ -220,8 +230,12 @@ export default function Register({ navigation }) {
   };
 
   useEffect(() => {
-    getSubcriptionPrice(selectedPeriode);
+    getSubcriptionPrice(route.params?.subscriptionId);
   }, [selectedPeriode]);
+
+  useEffect(() => {
+    getDataUser(route.params?.userId);
+  }, []);
 
   return (
     <RootContainer>
@@ -240,7 +254,7 @@ export default function Register({ navigation }) {
             ]}
           >
             <Text style={[styles.welcomeText, { fontWeight: "bold" }]}>
-              Registrasi
+              Masukan One Time Password (OTP)
             </Text>
           </View>
 
@@ -249,10 +263,10 @@ export default function Register({ navigation }) {
               {/* <Text style={styles.text}>Email</Text> */}
 
               <GeneralTextInput
-                placeholder="Email"
+                placeholder="Masukan OTP"
                 // label="Email"
                 mode="outlined"
-                title="Email"
+                title="OTP"
                 value={email}
                 // hasErrors={authFailed}
                 messageError="Wrong Username/Password"
@@ -260,123 +274,38 @@ export default function Register({ navigation }) {
                 style={styles.inputUserName}
               />
             </View>
-            <View style={styles.inputForm}>
-              <GeneralTextInput
-                placeholder="Kata Sandi"
-                mode="outlined"
-                value={password}
-                title="Kata Sandi"
-                // hasErrors={authFailed}
-                secureTextEntry={showPassword}
-                // messageError="Wrong Username/Password"
-                // icoPress={() => {
-                //   setHidePassword(!hidePassword);
-                //   return false;
-                // }}
-                right={
-                  <TextInput.Icon
-                    icon={showPassword ? "eye" : "eye-off"}
-                    color={COLORS.PRIMARY_DARK}
-                    onPress={togglePassword}
-                  />
-                }
-                onChangeText={(e) => setPassword(e)}
-                style={styles.inputUserName}
-              />
-            </View>
-            <View style={styles.inputForm}>
-              <GeneralTextInput
-                placeholder="Ulangi Kata Sandi"
-                mode="outlined"
-                value={password}
-                title="Ulangi Kata Sandi"
-                // hasErrors={authFailed}
-                secureTextEntry={showPassword2}
-                // messageError="Wrong Username/Password"
-                // icoPress={() => {
-                //   setHidePassword(!hidePassword);
-                //   return false;
-                // }}
-                right={
-                  <TextInput.Icon
-                    icon={showPassword2 ? "eye" : "eye-off"}
-                    color={COLORS.PRIMARY_DARK}
-                    onPress={togglePassword2}
-                  />
-                }
-                onChangeText={(e) => setPassword2(e)}
-                style={styles.inputUserName}
-              />
-              {password == password2 && password != "" ? (
-                <Text style={{ color: COLORS.SUCCESS }} t>
-                  Kata Sandi Sesuai
-                </Text>
-              ) : password2 != "" ? (
-                <Text style={{ color: COLORS.RED_BG }}>
-                  Kata Sandi Tidak Sesuai
-                </Text>
-              ) : null}
-
-              {/* <Text>Kata Sandi Minimal 8 Karakter</Text> */}
-            </View>
-
-            <View style={styles.inputForm}>
-              <GeneralTextInput
-                placeholder="Referal"
-                mode="outlined"
-                title="referal"
-                value={referal}
-                // hasErrors={authFailed}
-                messageError="Wrong Username/Password"
-                onChangeText={(e) => setReferal(e)}
-                style={styles.inputUserName}
-              />
-            </View>
             <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: ms(8),
-                paddingRight: ms(10),
-              }}
+              style={[
+                styles.container,
+                {
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  // backgroundColor: "red",
+                  flex: 1,
+                  alignItems: "center",
+                },
+              ]}
             >
-              <View style={{ alignSelf: "flex-start" }}>
-                <Checkbox.Android
-                  status={checked ? "checked" : "unchecked"}
-                  onPress={handleCheckboxToggle}
-                />
-              </View>
-
-              <Text>
-                <Text style={{ color: "gray" }}>
-                  Dengan Melakukan Pendafaran, berarti{" "}
-                </Text>
-                <Text style={{ color: "gray" }}>anda telah menyetujui </Text>
-                <Text style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}>
-                  Syarat Ketentuan{" "}
-                </Text>
-                <Text style={{ color: "gray" }}>dan </Text>
-                <Text style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}>
-                  Kebijakan Privasi
-                </Text>
-                <Text style={{ color: "gray" }}> Mama Chef</Text>
+              <Text style={[styles.welcomeText2, { fontWeight: "bold" }]}>
+                One Time Password (OTP) Telah dikirimkan ke Email
+                {dataUser?.email}, silahkan masukan kembali OTP
               </Text>
             </View>
 
             <TouchableOpacity
-              style={checked ? styles.button : styles.button2}
-              onPress={handleDaftar}
-              disabled={!checked}
+              style={email !== "" ? styles.button : styles.button2}
+              onPress={() => handleValidateOtp()}
+              disabled={email === ""}
             >
-              <Text style={{ color: COLORS.WHITE }}>Daftar</Text>
+              <Text style={{ color: COLORS.WHITE }}>Lanjutkan</Text>
             </TouchableOpacity>
 
             {/* <TouchableOpacity
-              style={styles.button}
-              onPress={() => console.log(token.user?.UserId)}
-            >
-              <Text style={styles.textBtn}>Sign In</Text>
-            </TouchableOpacity> */}
+                style={styles.button}
+                onPress={() => console.log(token.user?.UserId)}
+              >
+                <Text style={styles.textBtn}>Sign In</Text>
+              </TouchableOpacity> */}
           </View>
         </View>
         {isLoading ? (
@@ -395,16 +324,16 @@ export default function Register({ navigation }) {
         <View style={styles.containermodalView}>
           <View style={styles.imgSubmit}>
             {/* <FaIcons
-              name="check-underline-circle"
-              style={{ fontSize: 72, color: COLORS.SUCCESS }}
-            /> */}
+                name="check-underline-circle"
+                style={{ fontSize: 72, color: COLORS.SUCCESS }}
+              /> */}
             <Ionicons
               name="checkmark-circle"
               size={24}
               style={{ fontSize: 72, color: COLORS.SUCCESS }}
             />
           </View>
-          <Text style={styles.modalText}>Data Berhasil di Tambahkan</Text>
+          <Text style={styles.modalText}>{messageSuccess}</Text>
           <GeneralButton
             style={styles.gettingButton}
             mode="contained"
@@ -430,7 +359,7 @@ export default function Register({ navigation }) {
               style={{ fontSize: 72, color: COLORS.RED_BG }}
             />
           </View>
-          <Text style={styles.modalText}>{messageError}</Text>
+          <Text style={styles.modalText}>OTP Tidak Sesuai</Text>
           <GeneralButton
             style={styles.gettingButton}
             mode="contained"
@@ -477,6 +406,14 @@ const styles = StyleSheet.create({
     color: COLORS.GRAY_HARD,
     fontStyle: "Poppins",
     fontSize: moderateScale(20),
+    marginRight: moderateScale(8),
+    paddingBottom: moderateScale(10),
+    fontWeight: "bold",
+  },
+  welcomeText2: {
+    color: COLORS.GRAY_HARD,
+    fontStyle: "Poppins",
+    fontSize: moderateScale(11),
     marginRight: moderateScale(8),
     paddingBottom: moderateScale(10),
     fontWeight: "bold",
