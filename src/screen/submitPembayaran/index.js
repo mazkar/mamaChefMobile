@@ -94,7 +94,7 @@ export default function SubmitPembayaran({ route, navigation }) {
   const [dataPeriode, setDataPeriode] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   //   const [date, setDate] = useState("");
-  const userId = useSelector((state) => state.auth.userId);
+  const userId = useSelector((state) => state?.auth?.userId);
   const [dataBank, setDataBank] = useState([]);
   const [modalPaymentVis, setModalPaymentVis] = useState(false);
 
@@ -117,59 +117,6 @@ export default function SubmitPembayaran({ route, navigation }) {
 
     // getTaskDetail(route.params.assignmentId);
   };
-  const onChangePeriode = (value) => {
-    console.log(value);
-  };
-  async function handleDaftar() {
-    setIsLoading(true);
-
-    const body = {
-      firstName: namaDepan,
-      lastName: namaBelakang,
-      email: email,
-      password: password,
-      sex: selectedGender,
-      education: Pendidikan,
-      dateofBirth: moment(date).format("YYYY-MM-DD"),
-      referalCode: referal,
-      subscriptionId: selectedPeriode,
-    };
-
-    try {
-      console.log(body);
-      let res = await axios({
-        url: `${baseUrl.URL}api/Auth/RegisterUser`,
-        method: "POST",
-        timeout: 8000,
-        data: body,
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(res, "Success");
-      if (res.status == "200") {
-        console.log(res);
-        setIsLoading(false);
-        setModalSuccessVis(true);
-        // test for status you want, etc
-        // setLoadingUpload(false);
-        // getTaskDetail(route.params.assignmentId);
-        console.log(res, "Success");
-
-        // setDataItem(res.data);
-        // setDataInfo(res.data);
-      } else {
-        setIsLoading(false);
-      }
-      // Don't forget to return something
-      return res.data;
-    } catch (err) {
-      console.error(err, "error");
-      setModalErrorVis(true);
-      setIsLoading(false);
-    }
-  }
 
   // async function getSubcriptionPrice(id) {
   //   // setIsLoadingGet(true);
@@ -240,8 +187,9 @@ export default function SubmitPembayaran({ route, navigation }) {
           //   Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res.data, "<== res");
-      if (res.data.code == 200) {
+      if (res.data.code === "200") {
+        console.log(res.data, "<== res");
+
         // test for status you want, etc
         // console.log(res.data, "meeeeeeeee");
         setDataPayment(res?.data?.data);
@@ -318,18 +266,6 @@ export default function SubmitPembayaran({ route, navigation }) {
     }).format(number);
   }
 
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
-    setDate(currentDate);
-    // console.log(selectedDate);
-    // Use currentDate as needed, for example, you can pass it to a parent component or handle it in this component.
-  };
-
-  const showDatePicker = () => {
-    setShow(true);
-  };
-
   useEffect(() => {
     getBankList();
   }, []);
@@ -357,13 +293,12 @@ export default function SubmitPembayaran({ route, navigation }) {
   };
 
   useEffect(() => {
-    getDataPayment(route.params?.userId);
+    getDataPayment(route?.params?.userId);
   }, []);
 
   return (
     <>
       <RootContainer>
-        <AppBar title="Submit Pembayaran" />
         <ScrollView contentContainerStyle={styles.scroll}>
           <View style={{ flex: 1, alignItems: "center" }}>
             <Image
@@ -387,7 +322,7 @@ export default function SubmitPembayaran({ route, navigation }) {
                   onChangeText={(e) => setEmail(e)}
                 />
               </View>
-              {dataPayment?.length == 0 ? (
+              {dataPayment?.length === 0 || dataPayment == undefined ? (
                 <></>
               ) : (
                 <>
@@ -470,7 +405,7 @@ export default function SubmitPembayaran({ route, navigation }) {
                       alignItems: "center",
                     }}
                   >
-                    {dataBank.map((e, i) => (
+                    {dataBank?.map((e, i) => (
                       <View
                         style={{
                           flex: 1,
@@ -588,74 +523,80 @@ export default function SubmitPembayaran({ route, navigation }) {
             </View>
           </Card>
 
-          <Card style={styles.mainContainer2}>
-            <View style={styles.inputForm}>
-              <Text style={styles.text}>Menunggu Pembayaran</Text>
-            </View>
-            <Divider />
-            <View>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Langganan : </Text>
-                <Text style={{ marginLeft: ms(24) }}>
-                  {dataPayment?.pendingList[0]?.packageName}
-                </Text>
-              </View>
-              <Divider />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Harga : </Text>
-                <Text style={{ marginLeft: ms(24) }}>
-                  {formatRupiah(dataPayment?.pendingList[0]?.amount)}
-                </Text>
-              </View>
-              <Divider />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>PPN : </Text>
-                <Text style={{ marginLeft: ms(24) }}>
-                  {formatRupiah(dataPayment?.pendingList[0]?.taxAmount)}
-                </Text>
-              </View>
-              <Divider />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text>Total : </Text>
-                <Text
-                  style={{
-                    marginLeft: ms(24),
-                    color: COLORS.PRIMARY_DARK,
-                    fontWeight: "600",
-                  }}
-                >
-                  {formatRupiah(dataPayment?.pendingList[0]?.totalAmount)}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.button} onPress={handlePress}>
-              <Text style={{ color: "white" }}>Daftar</Text>
-            </TouchableOpacity>
-          </Card>
+          {dataPayment === undefined || dataPayment?.length === 0 ? (
+            <></>
+          ) : (
+            <>
+              <Card style={styles.mainContainer2}>
+                <View style={styles.inputForm}>
+                  <Text style={styles.text}>Menunggu Pembayaran</Text>
+                </View>
+                <Divider />
+                <View>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text>Langganan : </Text>
+                    <Text style={{ marginLeft: ms(24) }}>
+                      {dataPayment?.pendingList[0]?.packageName}
+                    </Text>
+                  </View>
+                  <Divider />
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text>Harga : </Text>
+                    <Text style={{ marginLeft: ms(24) }}>
+                      {formatRupiah(dataPayment?.pendingList[0]?.amount)}
+                    </Text>
+                  </View>
+                  <Divider />
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text>PPN : </Text>
+                    <Text style={{ marginLeft: ms(24) }}>
+                      {formatRupiah(dataPayment?.pendingList[0]?.taxAmount)}
+                    </Text>
+                  </View>
+                  <Divider />
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text>Total : </Text>
+                    <Text
+                      style={{
+                        marginLeft: ms(24),
+                        color: COLORS.PRIMARY_DARK,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {formatRupiah(dataPayment?.pendingList[0]?.totalAmount)}
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.button} onPress={handlePress}>
+                  <Text style={{ color: "white" }}>Daftar</Text>
+                </TouchableOpacity>
+              </Card>
+            </>
+          )}
 
           {isLoading ? (
             <PopUpLoader visible={true} />
@@ -717,6 +658,38 @@ export default function SubmitPembayaran({ route, navigation }) {
           {/* </View> */}
         </Modal>
       </RootContainer>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalPaymentVis}
+        onRequestClose={hideModalPayment}
+      >
+        {/* <View style={styles.centeredView}> */}
+        <View style={styles.containermodalViewPayment}>
+          <WebView source={{ uri: dataPayment?.midtrans?.redirect_url }} />
+          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+            <GeneralButton
+              style={{
+                backgroundColor: COLORS.PRIMARY_DARK,
+                marginRight: ms(8),
+              }}
+              mode="contained"
+              onPress={hideModalPayment}
+            >
+              Batal
+            </GeneralButton>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={() => navigation.navigate("Login")}
+            >
+              Selesai
+            </GeneralButton>
+          </View>
+        </View>
+
+        {/* </View> */}
+      </Modal>
     </>
   );
 }
@@ -785,20 +758,9 @@ const styles = StyleSheet.create({
   },
   containermodalView: {
     flexDirection: "column",
-    alignSelf: "stretch",
-    paddingHorizontal: 20,
-    width: constants.SCREEN_WIDTH * 0.7,
-    paddingTop: 10,
-    paddingBottom: 28,
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 10,
-  },
-  containermodalViewPayment: {
-    flexDirection: "column",
     alignSelf: "center",
-    height: constants.SCREEN_HEIGHT * 0.9,
     // position: "absolute",
-    width: constants.SCREEN_WIDTH * 1,
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,
@@ -819,5 +781,17 @@ const styles = StyleSheet.create({
   imgSubmit: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  containermodalViewPayment: {
+    flexDirection: "column",
+    alignSelf: "center",
+    height: constants.SCREEN_HEIGHT * 0.9,
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 1,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
   },
 });

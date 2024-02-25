@@ -36,6 +36,7 @@ import EditBahan from "../screen/kelolaMenu/EditBahan";
 import KeranjangMenu from "../screen/KeranjangMenu";
 import OtpValidation from "../screen/Register/OtpValidation";
 import OnlinePayment from "../screen/submitPembayaran/OnlinePayment";
+import BucketIngredients from "../screen/BucketIngredients";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -190,6 +191,12 @@ export default function Route() {
       <Tab.Screen
         name="Keranjang"
         component={KeranjangMenu}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="BucketIngredients"
+        component={BucketIngredients}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

@@ -42,37 +42,37 @@ import bgProfile from "../images/svg/bgProfile.svg";
 const fontConfig = {
   ios: {
     medium: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "500",
     },
     regular: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "400",
     },
     light: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "300",
     },
     thin: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "100",
     },
   },
   android: {
     medium: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "500",
     },
     regular: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "400",
     },
     light: {
-      fontFamily: "Sen",
+      fontFamily: "sans-serif",
       fontWeight: "300",
     },
     thin: {
-      fontFamily: "Barlow-Thin",
+      fontFamily: "sans-serif",
       fontWeight: "100",
     },
   },

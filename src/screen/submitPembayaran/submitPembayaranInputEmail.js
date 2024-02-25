@@ -793,7 +793,7 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
             <GeneralButton
               style={{ backgroundColor: COLORS.PRIMARY_DARK }}
               mode="contained"
-              onPress={hideModalPayment}
+              onPress={() => navigation.navigate("Login")}
             >
               Selesai
             </GeneralButton>
@@ -880,23 +880,23 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(5),
     marginTop: moderateScale(18),
   },
-  containermodalView: {
-    flexDirection: "column",
-    alignSelf: "center",
-    // position: "absolute",
-    width: constants.SCREEN_WIDTH * 0.8,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 28,
-    backgroundColor: COLORS.WHITE,
-    borderRadius: 10,
-  },
   containermodalViewPayment: {
     flexDirection: "column",
     alignSelf: "center",
     height: constants.SCREEN_HEIGHT * 0.9,
     // position: "absolute",
     width: constants.SCREEN_WIDTH * 1,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+  containermodalView: {
+    flexDirection: "column",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 28,

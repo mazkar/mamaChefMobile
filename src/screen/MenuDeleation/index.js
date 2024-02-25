@@ -339,6 +339,16 @@ export default function MenuDelegation({ navigation }) {
             ></View>
           </View>
           <View>
+            <View>
+              <TouchableOpacity
+                style={styles.btnAdd}
+                onPress={() => navigation.navigate("BucketIngredients")}
+              >
+                <Text style={{ color: "white", fontWeight: "700" }}>
+                  Keranjang Bahan
+                </Text>
+              </TouchableOpacity>
+            </View>
             <Card
               style={{
                 paddingHorizontal: ms(12),
@@ -798,13 +808,13 @@ const styles = StyleSheet.create({
   },
   btnAdd: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(46),
-    height: heightPercentageToDP(6),
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(14),
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "flex-end",
-    marginBottom: moderateScale(5),
+    marginBottom: moderateScale(8),
     marginTop: moderateScale(5),
     marginTop: moderateScale(10),
   },

@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     textTransform: "none",
     fontWeight: Platform.OS === "ios" ? "600" : "bold",
     // fontFamily: "Barlow",
+    color: "white",
   },
 });
 
