@@ -229,7 +229,7 @@ export default function PilihPaketPeriod({ navigation }) {
 
   return (
     <RootContainer>
-      <AppBar title="Pilih Paket" />
+      {/* <AppBar title="Pilih Paket" /> */}
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* <View style={{ flex: 1, alignItems: "center" }}>
           <Image

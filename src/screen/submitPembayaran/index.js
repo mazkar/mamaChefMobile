@@ -146,7 +146,6 @@ export default function SubmitPembayaran({ route, navigation }) {
   //     //   setIsLoadingGet(false);
   //   }
   // }
-
   async function getBankList(id) {
     // setIsLoadingGet(true);
     try {
@@ -163,9 +162,8 @@ export default function SubmitPembayaran({ route, navigation }) {
       if (res.status == 200) {
         // test for status you want, etc
         // console.log(res.data, "meeeeeeeee");
-        setDataBank(res.data);
-        console.log(res.data, "bank list");
-
+        setDataBank(res.data.data);
+        console.log(res.data);
         // setIsLoadingGet(false);
       }
       // Don't forget to return something
@@ -445,7 +443,9 @@ export default function SubmitPembayaran({ route, navigation }) {
                           <View>
                             <Image
                               style={{ width: ms(76), height: ms(22) }}
-                              source={ImageBank(e.bankName)}
+                              source={{
+                                uri: `${e.bankLogo}`,
+                              }}
                             />
                           </View>
                         </View>
