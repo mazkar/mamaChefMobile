@@ -343,7 +343,7 @@ export default function Profile({ navigation }) {
                 paddingVertical: 10,
               }}
             >
-              <View
+              <TouchableOpacity
                 style={{
                   justifyContent: "space-between",
                   // alignItems: "center",
@@ -351,6 +351,12 @@ export default function Profile({ navigation }) {
                   marginBottom: 12,
                   marginTop: 12,
                 }}
+                onPress={() =>
+                  navigation.navigate("ClaimRewards", {
+                    dataBonusUser:
+                      dataUser?.totalBonusReferal?.referalOwnerBonus,
+                  })
+                }
               >
                 <View style={{ flexDirection: "row" }}>
                   <View style={{ alignSelf: "center" }}>
@@ -384,7 +390,7 @@ export default function Profile({ navigation }) {
                 <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
                 <Text style={{ fontWeight: "300" }}>Mover</Text>
               </View> */}
-              </View>
+              </TouchableOpacity>
             </Card>
           </View>
         </View>

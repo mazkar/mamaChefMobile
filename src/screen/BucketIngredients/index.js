@@ -321,7 +321,7 @@ export default function BucketIngredients({ navigation, menuId, route }) {
   return (
     <RootContainer>
       <AppBar
-        title="Bucket Ingredients"
+        title="Keranjang Bahan"
         dataTaskPending={[]}
         navigation={navigation}
         handleLogut={handleLogut}
