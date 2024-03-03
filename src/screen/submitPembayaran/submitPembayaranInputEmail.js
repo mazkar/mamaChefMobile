@@ -213,7 +213,7 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
     // setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/bankaccount/true`,
+        url: `${baseUrl.URL}api/bankaccount/getbanklist/true`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -225,8 +225,8 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
       if (res.status == 200) {
         // test for status you want, etc
         // console.log(res.data, "meeeeeeeee");
-        setDataBank(res.data);
-
+        setDataBank(res.data.data);
+        console.log(res.data);
         // setIsLoadingGet(false);
       }
       // Don't forget to return something
@@ -497,7 +497,7 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
                           flex: 1,
                           flexDirection: "row",
                           alignItems: "center",
-
+                          borderRadius: 10,
                           border: "1px solid gray",
                         }}
                       >
@@ -512,8 +512,8 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
                             border: "1px solid gray",
                             width: ms(292),
                             borderWidth: 1,
-                            borderColor: "gray",
-                            borderRadius: 5,
+                            borderColor: COLORS.PRIMARY_DARK,
+                            borderRadius: 8,
                             padding: 10,
                           }}
                         >
@@ -530,14 +530,21 @@ export default function SubmitPembayaranInputEmail({ route, navigation }) {
                           <View>
                             <Image
                               style={{ width: ms(76), height: ms(22) }}
-                              source={ImageBank(e.bankName)}
+                              source={{
+                                uri: `${e.bankLogo}`,
+                              }}
                             />
+                            {/* <Image
+                              style={{ width: ms(76), height: ms(22) }}
+                              source={ImageBank(e.bankName)}
+                            /> */}
                           </View>
                         </View>
                       </View>
                     ))}
                   </RadioButton.Group>
                 </View>
+
                 <View style={styles.inputForm}>
                   {/* <Text style={styles.text}>No Rekening</Text> */}
 

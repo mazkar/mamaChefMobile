@@ -37,6 +37,7 @@ import KeranjangMenu from "../screen/KeranjangMenu";
 import OtpValidation from "../screen/Register/OtpValidation";
 import OnlinePayment from "../screen/submitPembayaran/OnlinePayment";
 import BucketIngredients from "../screen/BucketIngredients";
+import ClaimRewards from "../screen/ClaimRewards";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -197,6 +198,12 @@ export default function Route() {
       <Tab.Screen
         name="BucketIngredients"
         component={BucketIngredients}
+        // options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen
+        name="ClaimRewards"
+        component={ClaimRewards}
         // options={{headerShown: false}}
         options={{ headerShown: false }}
       />

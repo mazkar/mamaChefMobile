@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   ColorBgContainer,
@@ -14,12 +14,18 @@ import { ms } from "react-native-size-matters";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button, Menu, Divider, Avatar, Card } from "react-native-paper";
 import { baseUrl } from "../../utils/apiURL";
+import axios from "axios";
 
 export default function Profile({ navigation }) {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("Azka");
   // const user = useSelector((state) => state.auth.userData);
   const user = useSelector((state) => state?.auth?.user);
+  const uid = useSelector((state) => state?.auth?.user?.UserId);
+  const [dataUser, setDataUser] = useState([]);
+  const [isLoadingGet, setIsLoadingGet] = useState(false);
+
+  const token = useSelector((state) => state.auth.token);
 
   const handleLogut = () => {
     dispatch(resetReducer());
@@ -28,6 +34,46 @@ export default function Profile({ navigation }) {
       routes: [{ name: "Login" }],
     });
   };
+
+  async function getDataUser(userId) {
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Auth/GetSummaryUser/getsummaryuser/${userId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "data user get");
+        setDataUser(res.data.data);
+        setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoadingGet(false);
+    }
+  }
+
+  useEffect(() => {
+    // getSummaryClaim();
+    getDataUser(uid);
+  }, []);
+
+  function formatRupiah(number) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 2,
+    }).format(number);
+  }
 
   return (
     <ColorBgContainer style={{ paddingHorizontal: 24, paddingVertical: 72 }}>
@@ -276,10 +322,10 @@ export default function Profile({ navigation }) {
               </TouchableOpacity>
             </Card>
           </View>
-          {/* KONTAK
+          {/* Rewards Claim */}
           <View style={{ marginTop: ms(32) }}>
             <View style={{ flexDirection: "row", marginBottom: ms(8) }}>
-              <Image source={require("../../assets/images/Kontak.png")} />
+              <Image source={require("../../assets/images/wallet.png")} />
               <Text
                 style={{
                   marginLeft: ms(4),
@@ -287,7 +333,7 @@ export default function Profile({ navigation }) {
                   fontWeight: "600",
                 }}
               >
-                TENTANG KAMI
+                Bonus Referal
               </Text>
             </View>
             <Card
@@ -306,29 +352,41 @@ export default function Profile({ navigation }) {
                   marginTop: 12,
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("AboutUs")}
-                  style={{ flexDirection: "row" }}
-                >
+                <View style={{ flexDirection: "row" }}>
                   <View style={{ alignSelf: "center" }}>
-                    <Image source={require("../../assets/images/Kontak.png")} />
+                    <Image source={require("../../assets/images/wallet.png")} />
                   </View>
+
                   <View style={{ alignSelf: "center", marginLeft: ms(6) }}>
                     <Text style={{ color: COLORS.GRAY_HARD }}>
-                      Tentang Kami
+                      {formatRupiah(
+                        dataUser.totalBonusReferal?.referalOwnerBonus
+                      )}
                     </Text>
                   </View>
-                </TouchableOpacity>
+                </View>
                 <View style={{ alignSelf: "center" }}>
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("ClaimRewards", {
+                        dataBonusUser:
+                          dataUser?.totalBonusReferal?.referalOwnerBonus,
+                      })
+                    }
+                  >
                     <Image
                       source={require("../../assets/images/ArrowRight.png")}
                     />
                   </TouchableOpacity>
                 </View>
+
+                {/* <View style={{ marginLeft: ms(12) }}>
+                <Text style={{ fontWeight: "600" }}>{user?.fullname}</Text>
+                <Text style={{ fontWeight: "300" }}>Mover</Text>
+              </View> */}
               </View>
             </Card>
-          </View> */}
+          </View>
         </View>
       </RootContainer>
     </ColorBgContainer>

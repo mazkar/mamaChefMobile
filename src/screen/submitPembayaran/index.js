@@ -151,7 +151,7 @@ export default function SubmitPembayaran({ route, navigation }) {
     // setIsLoadingGet(true);
     try {
       let res = await axios({
-        url: `${baseUrl.URL}api/bankaccount/true`,
+        url: `${baseUrl.URL}api/bankaccount/getbanklist/true`,
         method: "get",
         timeout: 8000,
         headers: {
@@ -164,6 +164,7 @@ export default function SubmitPembayaran({ route, navigation }) {
         // test for status you want, etc
         // console.log(res.data, "meeeeeeeee");
         setDataBank(res.data);
+        console.log(res.data, "bank list");
 
         // setIsLoadingGet(false);
       }

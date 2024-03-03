@@ -621,23 +621,7 @@ export default function EditBahan({ navigation, menuId, route }) {
                         {dataMenu?.lmby}
                       </Text>
                     </Text>
-                    <View style={{ paddingRight: ms(26) }}>
-                      <Text>
-                        <Text
-                          style={{
-                            color: COLORS.GRAY_HARD,
-                            fontWeight: "600",
-                            fontSize: 11,
-                          }}
-                        >
-                          Deskripsi:
-                        </Text>
-                        {"\n"}
-                        <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                          {dataMenu?.description}
-                        </Text>
-                      </Text>
-                    </View>
+
                     <View style={{ paddingRight: ms(26) }}>
                       <Text>
                         <Text
@@ -656,6 +640,23 @@ export default function EditBahan({ navigation, menuId, route }) {
                       </Text>
                     </View>
                   </View>
+                </View>
+                <View style={{ paddingRight: ms(8), marginLeft: ms(12) }}>
+                  <Text>
+                    <Text
+                      style={{
+                        color: COLORS.GRAY_HARD,
+                        fontWeight: "600",
+                        fontSize: 11,
+                      }}
+                    >
+                      Deskripsi:
+                    </Text>
+                    {"\n"}
+                    <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                      {dataMenu?.description}
+                    </Text>
+                  </Text>
                 </View>
               </Card.Content>
               <View
