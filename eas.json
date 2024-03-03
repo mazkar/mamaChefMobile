@@ -7,11 +7,7 @@
       "developmentClient": true,
       "distribution": "internal"
     },
-    "config": {
-      "expo": {
-        "jsonFile": "app.live.json"
-      }
-    },
+
     "preview": {
       "distribution": "internal"
     },

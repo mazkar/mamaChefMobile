@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mamachef.mamachef",
+      "package": "com.mamachef.mamachef.prod",
       "permissions": ["INTERNET"],
       "networkSecurityConfig": "path/to/network_security_config.xml"
     },
