@@ -50,11 +50,19 @@ import _ from "lodash";
 import CardMenu from "./components/CardMenu";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+const tabFilter = [
+  { id: 1, type: "all", label: "Semua Tips" },
+  { id: 2, type: "userId", label: "Tips Saya" },
+  { id: 3, type: "draft", label: "Draft tips" },
+];
+
 export default function TipsAndTrick({ navigation }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
   const token = useSelector((state) => state.auth.token);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
   const [dataTips, setDataTips] = useState([]);
+  const [dataTipsUid, setDataTipsUid] = useState([]);
+  const [dataTipsDraft, setDataTipsDraft] = useState([]);
   const [dataTipsSearch, setDataTipsSearch] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -62,6 +70,7 @@ export default function TipsAndTrick({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [searchState, setSeacrchState] = useState(false);
+  const [selecteTab, setSelectedTab] = useState("all");
 
   // async function getTips(userId) {
   //   setIsLoadingGet(true);
@@ -93,16 +102,18 @@ export default function TipsAndTrick({ navigation }) {
 
   const [pageSize, setPageSize] = useState(3);
   const [sumAllData, setAllSumData] = useState(0);
+  const [sumAllDataUid, setAllSumDataUid] = useState(0);
+  const [sumAllDataDraft, setAllSumDataDraft] = useState(0);
   const [pageNume, setPageNum] = useState(1);
   async function getTips(userId, page) {
     setPageNum(pageNume + 1);
     console.log(searchQuery, "page num");
     const body = {
-      pageSize: 10,
+      pageSize: 15,
       currentPage: pageNume,
       isPhoto: false,
       isVideo: false,
-      userId: userId,
+      userId: 0,
       // keyword: "garpit",
     };
     setIsLoadingGet(true);
@@ -127,6 +138,93 @@ export default function TipsAndTrick({ navigation }) {
         setIsLoadingGet(false);
         setPageSize(pageSize);
         setAllSumData(parseInt(res.data.message));
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+  async function getTipsDraft(userId, page) {
+    setPageNum(pageNume + 1);
+    console.log(searchQuery, "page num");
+    const body = {
+      pageSize: 15,
+      currentPage: pageNume,
+      isPhoto: false,
+      isVideo: false,
+      status: false,
+      userId: parseInt(userId),
+      // keyword: "garpit",
+    };
+    setIsLoadingGet(true);
+    setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickall`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        const newArray = [...dataTipsDraft, ...res.data.data];
+        setDataTipsDraft(newArray);
+        setIsLoading(false);
+        setIsLoadingGet(false);
+        setPageSize(pageSize);
+        setAllSumDataDraft(parseInt(res.data.message));
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
+  async function getTipsUid(userId, page) {
+    setPageNum(pageNume + 1);
+    console.log(searchQuery, "page num");
+    const body = {
+      pageSize: 15,
+      currentPage: pageNume,
+      isPhoto: false,
+      isVideo: false,
+      status: true,
+      userId: parseInt(userId),
+      // keyword: "garpit",
+    };
+    setIsLoadingGet(true);
+    setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/TipsTricks/gettipsandtrickall`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        const newArray = [...dataTipsUid, ...res.data.data];
+        setDataTipsUid(newArray);
+        setIsLoading(false);
+        setIsLoadingGet(false);
+        setPageSize(pageSize);
+        setAllSumDataUid(parseInt(res.data.message));
         // console.log(res.data, "transit");
       }
       // Don't forget to return something
@@ -186,7 +284,9 @@ export default function TipsAndTrick({ navigation }) {
       id: id,
       name: name,
       desc: description,
+      tab: selecteTab,
     });
+    setSelectedTab("all");
   };
 
   const onChangeSearch = (query) => setSearchQuery(query);
@@ -236,6 +336,26 @@ export default function TipsAndTrick({ navigation }) {
     setDataTipsSearch([]);
   };
 
+  const handleChangeTab = (tab) => {
+    setSelectedTab(tab.type);
+    if (tab.type == "all") {
+      getTips(0, 1);
+      setPageNum(1);
+      setDataTipsUid([]);
+      setDataTipsDraft([]);
+    } else if (tab.type == "userId") {
+      getTipsUid(uid, 1);
+      setPageNum(1);
+      setDataTips([]);
+      setDataTipsDraft([]);
+    } else if (tab.type == "draft") {
+      getTipsDraft(uid, 1);
+      setPageNum(1);
+      setDataTipsUid([]);
+      setDataTips([]);
+    }
+  };
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -247,26 +367,27 @@ export default function TipsAndTrick({ navigation }) {
         />
 
         <View style={styles.mainContainer}>
-          {/* <View style={{ marginBottom: ms(16) }}>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: COLORS.PRIMARY_DARK,
-              }}
-            >
-              Menu Kamu
-            </Text>
+          <View style={{ flexDirection: "row", marginBottom: ms(32) }}>
+            {tabFilter?.map((e) => (
+              <TouchableOpacity
+                style={
+                  e.type == selecteTab ? styles.tabActive : styles.tabInactive
+                }
+                onPress={() => handleChangeTab(e)}
+              >
+                <Text
+                  style={
+                    e.type == selecteTab
+                      ? { color: "white" }
+                      : { color: COLORS.PRIMARY_DARK }
+                  }
+                >
+                  {e.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-            <View
-              style={{
-                backgroundColor: "black",
-                borderBottomColor: COLORS.PRIMARY_DARK,
-                borderBottomWidth: 4,
-                width: 24,
-              }}
-            ></View>
-          </View> */}
           <View>
             <View style={styles.continerSearch}>
               <Searchbar
@@ -274,6 +395,9 @@ export default function TipsAndTrick({ navigation }) {
                 onChangeText={onChangeSearch}
                 value={searchQuery}
                 style={{
+                  backgroundColor: "white",
+                  borderWidth: 1,
+                  borderColor: COLORS.PRIMARY_DARK,
                   // flexDirection: "row-reverse",
                   // paddingRight: ms(12),
                   flex: 1,
@@ -362,6 +486,7 @@ export default function TipsAndTrick({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
+
           {searchState ? (
             <ScrollView
               // onMomentumScrollEnd={() =>
@@ -385,8 +510,8 @@ export default function TipsAndTrick({ navigation }) {
                 </>
               ))}
             </ScrollView>
-          ) : (
-            <ScrollView onMomentumScrollEnd={() => handleMomentumScrollEnd()}>
+          ) : selecteTab == "all" ? (
+            <ScrollView>
               {dataTips?.map((item) => (
                 <>
                   <CardMenu
@@ -402,6 +527,99 @@ export default function TipsAndTrick({ navigation }) {
                   <Divider />
                 </>
               ))}
+              {sumAllData == dataTips?.length ? null : (
+                <View style={{ marginTop: ms(18) }}>
+                  <TouchableOpacity
+                    onPress={() => getTips(uid, 1)}
+                    style={{
+                      justifyContent: "center",
+                      alignSelf: "center",
+                      flex: 1,
+                      backgroundColor: "blue",
+                      backgroundColor: COLORS.PRIMARY_DARK,
+                      paddingHorizontal: ms(8),
+                      paddingVertical: ms(8),
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Text style={{ color: "white" }}>Lihat Lebih Banyak</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </ScrollView>
+          ) : selecteTab == "userId" ? (
+            <ScrollView>
+              {dataTipsUid?.map((item) => (
+                <>
+                  <CardMenu
+                    // photoUrl={item?.photoURL}
+                    namaMenu={item.name}
+                    // notes={item?.note}
+                    id={item.tipstrickid}
+                    onPressDetail={onPressDetail}
+                    desc={item?.description}
+                    selectedId={selectedId}
+                    setSelectedId={setSelectedId}
+                  />
+                  <Divider />
+                </>
+              ))}
+              {sumAllDataUid == dataTipsUid?.length ? null : (
+                <View style={{ marginTop: ms(18) }}>
+                  <TouchableOpacity
+                    onPress={() => getTipsUid(uid, 1)}
+                    style={{
+                      justifyContent: "center",
+                      alignSelf: "center",
+                      flex: 1,
+                      backgroundColor: "blue",
+                      backgroundColor: COLORS.PRIMARY_DARK,
+                      paddingHorizontal: ms(8),
+                      paddingVertical: ms(8),
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Text style={{ color: "white" }}>Lihat Lebih Banyak</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </ScrollView>
+          ) : (
+            <ScrollView>
+              {dataTipsDraft?.map((item) => (
+                <>
+                  <CardMenu
+                    // photoUrl={item?.photoURL}
+                    namaMenu={item.name}
+                    // notes={item?.note}
+                    id={item.tipstrickid}
+                    onPressDetail={onPressDetail}
+                    desc={item?.description}
+                    selectedId={selectedId}
+                    setSelectedId={setSelectedId}
+                  />
+                  <Divider />
+                </>
+              ))}
+              {sumAllDataDraft == dataTipsDraft?.length ? null : (
+                <View style={{ marginTop: ms(18) }}>
+                  <TouchableOpacity
+                    onPress={() => getTipsDraft(uid, 1)}
+                    style={{
+                      justifyContent: "center",
+                      alignSelf: "center",
+                      flex: 1,
+                      backgroundColor: "blue",
+                      backgroundColor: COLORS.PRIMARY_DARK,
+                      paddingHorizontal: ms(8),
+                      paddingVertical: ms(8),
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Text style={{ color: "white" }}>Lihat Lebih Banyak</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </ScrollView>
           )}
 
@@ -437,4 +655,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  tabInactive: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY_DARK,
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(6),
+    borderRadius: 10,
+    marginRight: ms(12),
+  },
+  tabActive: {
+    backgroundColor: COLORS.PRIMARY_DARK,
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY_DARK,
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(6),
+    borderRadius: 10,
+    marginRight: ms(12),
+  },
 });
+
