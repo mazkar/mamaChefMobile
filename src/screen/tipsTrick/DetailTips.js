@@ -23,6 +23,7 @@ import {
   Card,
   Paragraph,
   Searchbar,
+  Modal,
 } from "react-native-paper";
 import { ms, moderateScale } from "react-native-size-matters";
 import {
@@ -50,8 +51,10 @@ import { decode } from "base-64";
 
 import * as FileSystem from "expo-file-system";
 import moment from "moment/moment";
-// import RNFS from "react-native-fs";
+import constants from "../../assets/constants/index.js";
 import LazyLoad from "react-lazyload";
+import PopUpConfirm from "./components/PopUpConfirm";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 export default function DetailTips({ navigation, route }) {
   const uid = useSelector((state) => state?.auth?.user?.UserId);
@@ -60,13 +63,27 @@ export default function DetailTips({ navigation, route }) {
   const [dataTips, setDataTips] = useState([]);
   const [dataTanggal, setDataTangal] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+
   const [base64, setBase64] = useState(null);
   const dispatch = useDispatch();
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [isVideoError, setIsVideoError] = useState(false);
+  const [popUpConfirmVis, setPopUpConfirmVis] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [modalSuccesVis, setModalSuccessVis] = useState(false);
+  const [modalSuccesVis2, setModalSuccessVis2] = useState(false);
+  const [modalErroVis, setModalErrorVis] = useState(false);
+
+  const showPopUpConfirm = () => {
+    setPopUpConfirmVis(true);
+  };
+
+  const hidePopUp = () => {
+    setPopUpConfirmVis(false);
+  };
 
   const handleLoadStart = () => {
     setIsVideoLoading(true);
@@ -81,6 +98,22 @@ export default function DetailTips({ navigation, route }) {
   const handleError = () => {
     setIsVideoLoading(false);
     setIsVideoError(true);
+  };
+
+  const hideModalError = () => {
+    setModalErrorVis(false);
+
+    // getTaskDetail(route.params.assignmentId);
+  };
+
+  const hideModalSuccess2 = () => {
+    setModalSuccessVis(false);
+    // setModalEditDescVisible(false);
+    // setModalEditNoteVisible(false);
+    navigation.goBack();
+
+    // handleNext(menuId);
+    // getTaskDetail(route.params.assignmentId);
   };
 
   const togglePlay = () => {
@@ -134,6 +167,60 @@ export default function DetailTips({ navigation, route }) {
     }
   }
 
+  async function handlePublished(stat) {
+    setIsLoadingGet(true);
+
+    const body = {
+      tipsTrickId: route.params.id,
+      status: stat,
+      description: dataTips?.description,
+      userId: uid,
+    };
+
+    try {
+      console.log(body);
+      let res = await axios({
+        url: `${baseUrl.URL}api/TipsTricks/updatetipstrickstatus`,
+        method: "POST",
+        timeout: 8000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res, "Success");
+      console.log(res, "<= res");
+      if (res.status == "200") {
+        console.log(res.data.data, "<= res");
+        setIsLoadingGet(false);
+        // dispatch(setUserId(res.data.data[0]?.userId));
+
+        setModalSuccessVis2(true);
+        setPopUpConfirmVis(false);
+        setSuccessMsg(res.data.message);
+        // test for status you want, etc
+        // setLoadingUpload(false);
+        // getTaskDetail(route.params.assignmentId);
+        console.log(res, "Success");
+
+        // setDataItem(res.data);
+        // setDataInfo(res.data);
+      } else {
+        setIsLoadingGet(false);
+        setPopUpConfirmVis(false);
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err, "error");
+      setModalErrorVis(true);
+      setPopUpConfirmVis(false);
+      setIsLoadingGet(false);
+      setErrorMsg(err.message);
+    }
+  }
+
   useEffect(() => {
     getTips();
   }, []);
@@ -174,7 +261,7 @@ export default function DetailTips({ navigation, route }) {
           handleLogut={handleLogut}
         />
 
-        <View style={styles.mainContainer}>
+        <ScrollView style={styles.mainContainer}>
           <View style={{ marginTop: ms(12) }}>
             {/* <View style={{ marginBottom: ms(22) }}>
               <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
@@ -259,7 +346,6 @@ export default function DetailTips({ navigation, route }) {
               }}
             ></View>
           </View>
-
           {/* <View
             style={{
               flexDirection: "row",
@@ -306,17 +392,140 @@ export default function DetailTips({ navigation, route }) {
               <Text style={{ color: "gray" }}>{dataTips?.description}</Text>
             </View>
           </View>
-
-          {/* <View
-                    style={{
-                      backgroundColor: "black",
-                      borderBottomColor: COLORS.PRIMARY_DARK,
-                      borderBottomWidth: 4,
-                      width: 24,
-                    }}
-                  />
-                </View> */}
+        </ScrollView>
+        <View
+          style={{
+            marginBottom: 28,
+            flexDirection: "row",
+            alignContent: "center",
+            alignSelf: "center",
+          }}
+        >
+          {route?.params?.tab != "all" && route?.params?.tab == "userId" ? (
+            <>
+              <TouchableOpacity
+                onPress={() => showPopUpConfirm()}
+                style={{
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  // flex: 1,
+                  backgroundColor: "blue",
+                  backgroundColor: COLORS.PRIMARY_DARK,
+                  paddingHorizontal: ms(12),
+                  paddingVertical: ms(8),
+                  borderRadius: 10,
+                  marginRight: ms(4),
+                }}
+              >
+                <Text style={{ color: "white" }}>Sembunyikan Tips</Text>
+              </TouchableOpacity>
+            </>
+          ) : null}
+          {route?.params?.tab != "all" && route?.params?.tab == "draft" ? (
+            <>
+              <TouchableOpacity
+                // onPress={() => getTips(uid, 1)}
+                style={{
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  // flex: 1,
+                  backgroundColor: "blue",
+                  backgroundColor: COLORS.PRIMARY_DARK,
+                  paddingHorizontal: ms(12),
+                  paddingVertical: ms(8),
+                  borderRadius: 10,
+                  marginRight: ms(4),
+                }}
+              >
+                <Text
+                  style={{ color: "white" }}
+                  onPress={() => showPopUpConfirm()}
+                >
+                  Terbitkan Tips
+                </Text>
+              </TouchableOpacity>
+              {/* <TouchableOpacity
+                // onPress={() => getTips(uid, 1)}
+                style={{
+                  justifyContent: "center",
+                  alignSelf: "center",
+                  // flex: 1,
+                  backgroundColor: "white",
+                  borderWidth: 1,
+                  borderColor: COLORS.PRIMARY_DARK,
+                  paddingHorizontal: ms(12),
+                  paddingVertical: ms(8),
+                  borderRadius: 10,
+                }}
+              >
+                <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                  Perbarui Tips
+                </Text>
+              </TouchableOpacity> */}
+            </>
+          ) : null}
         </View>
+        <PopUpConfirm
+          popUpVisible={popUpConfirmVis}
+          hidePopUp={hidePopUp}
+          stat={route?.params?.tab == "userId" ? "active" : "inActive"}
+          handleClick={handlePublished}
+          name={dataTips?.namaTipsTricks}
+        />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalSuccesVis2}
+          onRequestClose={hideModalSuccess2}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <Ionicons
+                name="checkmark-circle"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.SUCCESS }}
+              />
+            </View>
+            <Text style={styles.modalText}>{successMsg}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+              mode="contained"
+              onPress={hideModalSuccess2}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalErroVis}
+          onRequestClose={hideModalError}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            <View style={styles.imgSubmit}>
+              <FontAwesome
+                name="close"
+                size={24}
+                style={{ fontSize: 72, color: COLORS.RED_BG }}
+              />
+            </View>
+            <Text style={styles.modalText}>{errorMsg}</Text>
+            <GeneralButton
+              style={{ backgroundColor: COLORS.PRIMARY_MEDIUM }}
+              mode="contained"
+              onPress={hideModalError}
+            >
+              Close
+            </GeneralButton>
+          </View>
+          {/* </View> */}
+        </Modal>
       </RootContainer>
       <PopUpLoader visible={isLoadingGet} />
     </ColorBgContainer>
@@ -354,4 +563,31 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 20,
   },
+  containermodalView: {
+    flexDirection: "column",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.8,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+  modalText: {
+    paddingTop: 20,
+    marginBottom: 28,
+    textAlign: "center",
+    alignSelf: "center",
+    fontSize: 17,
+    letterSpacing: 1,
+    lineHeight: 24,
+    width: constants.SCREEN_WIDTH * 0.7,
+    fontWeight: "600",
+  },
+  imgSubmit: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
+
