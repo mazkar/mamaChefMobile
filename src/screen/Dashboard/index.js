@@ -7,6 +7,7 @@ import {
   RefreshControl,
   StyleSheet,
   ImageBackground,
+  Linking,
   FlatList,
   ActivityIndicator,
 } from "react-native";
@@ -56,7 +57,7 @@ import { setMenuCount } from "../../store/models/menu/action";
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
   const [dataMenu, setDataMenu] = useState([]);
-
+  const currentVersion = "1.0.0";
   const [dataMenu2, setDataMenu2] = useState([]);
   const [dataMenuPagination, setDataMenuPagination] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -70,6 +71,9 @@ export default function Dashboard({ navigation }) {
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [index, setIndex] = React.useState(0);
+  const [dataVersion, setDataVersion] = useState([]);
+  const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
+
   const hideModalError = () => {
     setModalErrorVis(false);
 
@@ -301,6 +305,57 @@ export default function Dashboard({ navigation }) {
       // Example: Refresh data or update components
     }, [])
   );
+
+  async function getApkVersion() {
+    // setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MobileNotification/mobileVersion`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        // setApkVersion(res?.data[0]);
+        console.log(res.data, "version apk");
+        if (res?.data?.data[0]?.versionNo != currentVersion) {
+          setIsModalUpdateVisible(true);
+        }
+        setDataVersion(res?.data?.data);
+        // setDataContent(res.data.data);
+        // setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      // setIsLoadingGet(false);
+    }
+  }
+
+  const handleDownload = async () => {
+    const urls = `${baseUrl.URL}${dataVersion[0].url}`;
+
+    // Open the link using Linking
+    const supported = await Linking.canOpenURL(urls);
+
+    console.log(urls, "url download");
+
+    if (supported) {
+      await Linking.openURL(urls);
+    } else {
+      console.error("Don't know how to open URI: " + urls);
+    }
+  };
+
+  useEffect(() => {
+    getApkVersion();
+  }, []);
 
   return (
     <ColorBgContainer>
@@ -665,6 +720,47 @@ export default function Dashboard({ navigation }) {
           </View>
         </Modal>
 
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalUpdateVisible}
+          onRequestClose={() => setIsModalUpdateVisible(false)}
+        >
+          {/* <View style={styles.centeredView}> */}
+          <View style={styles.containermodalView}>
+            {/* <View style={styles.imgSubmit}>
+            <FontAwesome
+              name="close"
+              size={24}
+              style={{ fontSize: 72, color: COLORS.RED_BG }}
+            />
+          </View> */}
+            <Text style={styles.modalTextWarning}>
+              Aplikasi Mamachef Versi {dataVersion[0]?.versionNo} Tersedia
+              Silahkan Download Aplikasi Terbaru
+            </Text>
+            <TouchableOpacity
+              style={{
+                justifyContent: "center",
+                alignSelf: "center",
+                flex: 1,
+              }}
+              onPress={() => handleDownload()}
+            >
+              <Image
+                source={require("../../assets/images/BrowserDownload.png")}
+              />
+            </TouchableOpacity>
+            {/* <GeneralButton
+            style={styles.gettingButton}
+            mode="contained"
+            onPress={hideModalError}
+          >
+            Close
+          </GeneralButton> */}
+          </View>
+          {/* </View> */}
+        </Modal>
         <PopUpLoader visible={isLoadingGet} />
       </RootContainer>
     </ColorBgContainer>
@@ -801,6 +897,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: ms(24),
     //
+  },
+  modalTextWarning: {
+    paddingTop: 20,
+    marginBottom: 28,
+    textAlign: "center",
+    alignSelf: "center",
+    fontSize: 15,
+    letterSpacing: 1,
+    lineHeight: 24,
+    width: constants.SCREEN_WIDTH * 0.7,
+    fontWeight: "500",
+    color: "gray",
   },
   text2: {
     color: "white",

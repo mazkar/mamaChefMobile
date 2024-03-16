@@ -8,6 +8,7 @@ const initialState = {
   user: null,
   deviceID: null,
   userId: null,
+  apkVersion: [],
 };
 
 const authReducer = (state = initialState, action) => {
@@ -34,6 +35,11 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         userId: action.payload,
+      };
+    case "SET_APK_VERSION":
+      return {
+        ...state,
+        apkVersion: action.payload,
       };
     default:
       return state;

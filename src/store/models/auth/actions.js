@@ -25,3 +25,9 @@ export const setUserId = (payload) => {
     payload,
   };
 };
+export const setApkVersion = (payload) => {
+  return {
+    type: "SET_APK_VERSION",
+    payload,
+  };
+};
