@@ -461,7 +461,17 @@ const LoginPage = ({ navigation }) => {
                   </Text>
                 </View>
               </View>
-              <Text>&copy; 2023 MamaChef</Text>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                  &copy; 2024 MamaChef - Versi {currentVersion}
+                </Text>
+              </View>
             </View>
           </View>
 

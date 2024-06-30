@@ -72,11 +72,11 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
                 size={11}
                 style={{
                   fontSize: 16,
-                  color: COLORS.WHITE,
+                  color: COLORS.PRIMARY_DARK,
                   marginRight: ms(4),
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "700" }}>
                 Pilih Video
               </Text>
             </>
@@ -87,11 +87,11 @@ const ImagePickerVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
                 size={11}
                 style={{
                   fontSize: 16,
-                  color: COLORS.WHITE,
+                  color: COLORS.PRIMARY_DARK,
                   marginRight: ms(4),
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "700" }}>
                 Pilih Ulang Video
               </Text>
             </>
@@ -111,7 +111,9 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP(6),
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.PRIMARY_DARK,
+    backgroundColor: COLORS.WHITE,
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY_DARK,
     alignSelf: "flex-start",
     marginBottom: moderateScale(5),
     marginTop: moderateScale(5),

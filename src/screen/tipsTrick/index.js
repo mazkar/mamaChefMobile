@@ -391,7 +391,7 @@ export default function TipsAndTrick({ navigation }) {
           <View>
             <View style={styles.continerSearch}>
               <Searchbar
-                placeholder="Cari Tips"
+                placeholder="Pencarian Tips & Trick"
                 onChangeText={onChangeSearch}
                 value={searchQuery}
                 style={{
@@ -674,4 +674,3 @@ const styles = StyleSheet.create({
     marginRight: ms(12),
   },
 });
-

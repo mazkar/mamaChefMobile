@@ -634,9 +634,13 @@ export default function EditBahan({ navigation, menuId, route }) {
                           Catatan:
                         </Text>
                         {"\n"}
-                        <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                          {dataMenu?.note}
-                        </Text>
+                        {dataMenu?.note != "null" ? (
+                          <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                            {dataMenu?.note}
+                          </Text>
+                        ) : (
+                          <Text style={{ color: COLORS.PRIMARY_DARK }}>-</Text>
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -653,9 +657,13 @@ export default function EditBahan({ navigation, menuId, route }) {
                       Deskripsi:
                     </Text>
                     {"\n"}
-                    <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                      {dataMenu?.description}
-                    </Text>
+                    {dataMenu?.description != "null" ? (
+                      <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                        {dataMenu.description}
+                      </Text>
+                    ) : (
+                      <Text style={{ color: COLORS.PRIMARY_DARK }}>-</Text>
+                    )}
                   </Text>
                 </View>
               </Card.Content>
@@ -723,8 +731,9 @@ export default function EditBahan({ navigation, menuId, route }) {
               <DataTable>
                 <DataTable.Header>
                   <DataTable.Title>Bahan</DataTable.Title>
-                  <DataTable.Title>Jumlah</DataTable.Title>
+
                   <DataTable.Title>Satuan</DataTable.Title>
+                  <DataTable.Title>Jumlah</DataTable.Title>
                   <DataTable.Title>status</DataTable.Title>
                   <DataTable.Title></DataTable.Title>
                 </DataTable.Header>
@@ -739,13 +748,14 @@ export default function EditBahan({ navigation, menuId, route }) {
                     <DataTable.Cell
                       style={{ alignItems: "center", justifyContent: "center" }}
                     >
-                      <Text style={styles.textBahan}>{item.quantity}</Text>
+                      <Text style={styles.textBahan}>{item.uom}</Text>
                     </DataTable.Cell>
                     <DataTable.Cell
                       style={{ alignItems: "center", justifyContent: "center" }}
                     >
-                      <Text style={styles.textBahan}>{item.uom}</Text>
+                      <Text style={styles.textBahan}>{item.quantity}</Text>
                     </DataTable.Cell>
+
                     <DataTable.Cell
                       style={{ alignItems: "center", justifyContent: "center" }}
                     >
@@ -943,7 +953,7 @@ export default function EditBahan({ navigation, menuId, route }) {
               <Text style={styles.text}>Bahan</Text>
 
               <DropDownPicker
-                placeholder="Pilih Bahan"
+                placeholder="Pilih Bahan Makanan"
                 open={openDropDown}
                 value={selectedIng}
                 zIndex={3}
@@ -964,6 +974,16 @@ export default function EditBahan({ navigation, menuId, route }) {
                 listMode="SCROLLVIEW"
                 itemKey="ingredientsId"
                 label="name"
+                searchable={true} // Tambahkan properti searchable
+                searchTextInputProps={{
+                  placeholder: "Cari bahan...", // Placeholder untuk pencarian
+                  placeholderTextColor: "#999", // Warna placeholder (opsional)
+                }}
+                searchableError={() => <Text>Data tidak ditemukan</Text>}
+                style={{
+                  borderColor: "gray", // Warna border
+                  borderWidth: 1, // Lebar border
+                }}
                 //   style={{
                 //     borderWidth: open ? 2 : 1,
                 //     borderColor: open
@@ -1009,24 +1029,10 @@ export default function EditBahan({ navigation, menuId, route }) {
             )}
 
             <View style={styles.inputForm}>
-              <Text style={styles.text}>Kuantiti Bahan</Text>
-
-              <GeneralTextInput2
-                placeholder="Kuantiti Bahan"
-                mode="outlined"
-                value={qty}
-                keyboardType="numeric"
-                // hasErrors={authFailed}
-                messageError="Wrong Username/Password"
-                onChangeText={(e) => setQty(e)}
-                style={styles.inputUserName}
-              />
-            </View>
-            <View style={styles.inputForm}>
               <Text style={styles.text}>Satuan</Text>
 
               <DropDownPicker
-                placeholder="Pilih Bahan"
+                placeholder="Pilih Satuan Bahan Makanan"
                 open={openDropDown2}
                 value={selectedUom}
                 zIndex={2}
@@ -1040,6 +1046,24 @@ export default function EditBahan({ navigation, menuId, route }) {
                 setOpen={setOpenDropDown2}
                 setValue={setSelectedUom}
                 listMode="SCROLLVIEW"
+                style={{
+                  borderColor: "gray", // Warna border
+                  borderWidth: 1, // Lebar border
+                }}
+              />
+            </View>
+            <View style={styles.inputForm}>
+              <Text style={styles.text}>Kuantiti Bahan</Text>
+
+              <GeneralTextInput2
+                placeholder="Kuantiti Bahan"
+                mode="outlined"
+                value={qty}
+                keyboardType="numeric"
+                // hasErrors={authFailed}
+                messageError="Wrong Username/Password"
+                onChangeText={(e) => setQty(e)}
+                style={styles.inputUserName}
               />
             </View>
             <View
@@ -1228,7 +1252,7 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(95),
+    width: widthPercentageToDP(86),
     height: heightPercentageToDP(7),
     justifyContent: "center",
     alignItems: "center",
@@ -1240,7 +1264,7 @@ const styles = StyleSheet.create({
   },
   button2: {
     borderRadius: moderateScale(10),
-    width: widthPercentageToDP(95),
+    width: widthPercentageToDP(86),
     height: heightPercentageToDP(7),
     justifyContent: "center",
     alignItems: "center",
@@ -1315,5 +1339,8 @@ const styles = StyleSheet.create({
   textBahan: {
     color: "gray",
     fontSize: ms(10),
+  },
+  inputUserName: {
+    borderColor: "gray",
   },
 });

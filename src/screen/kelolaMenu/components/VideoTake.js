@@ -66,11 +66,11 @@ const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
                 size={11}
                 style={{
                   fontSize: 16,
-                  color: COLORS.WHITE,
+                  color: COLORS.PRIMARY_DARK,
                   marginRight: ms(4),
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "700" }}>
                 Rekam Video
               </Text>
             </>
@@ -81,11 +81,11 @@ const RekamVideo = ({ video, setVideo, videoToShow, setVideoToShow }) => {
                 size={11}
                 style={{
                   fontSize: 16,
-                  color: COLORS.WHITE,
+                  color: COLORS.PRIMARY_DARK,
                   marginRight: ms(4),
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "700" }}>
                 Rekam Ulang
               </Text>
             </>
@@ -104,7 +104,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.PRIMARY_DARK,
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY_DARK,
+    // backgroundColor: COLORS.PRIMARY_DARK,
     alignSelf: "flex-start",
     marginBottom: moderateScale(5),
     marginTop: moderateScale(5),

@@ -51,12 +51,12 @@ import moment from "moment";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import PhotoTake from "./components/PhotoTake.js";
 import RekamVideo from "./components/VideoTake.js";
+import { Tab } from "@rneui/themed";
 
 export default function TambahMenu({ handleNext, navigation }) {
-  const [valueNamaMenu, setValueNamaMenu] = useState("");
-  const [valueDesc, setValueDesc] = useState("");
-  const [valuNote, setValeNote] = useState("");
-  const [valueGambar, setValueGambar] = useState(null);
+  const [valueNamaMenu, setValueNamaMenu] = useState(null);
+  const [valueDesc, setValueDesc] = useState(null);
+  const [valuNote, setValeNote] = useState(null);
   const [image, setImage] = useState(null);
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
@@ -67,6 +67,21 @@ export default function TambahMenu({ handleNext, navigation }) {
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
   const [menuId, setMenuId] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isPhoto, setIsPhoto] = useState(true);
+  const [index, setIndex] = useState(0);
+
+  const handlerDoneTab = (val) => {
+    console.log(index);
+    if (val === 0) {
+      setIsPhoto(true);
+    } else {
+      // setDataMenuNyPublish([]);
+
+      setIsPhoto(true);
+    }
+    setIndex(val);
+  };
 
   const handleLogut = () => {
     dispatch(resetReducer());
@@ -91,56 +106,38 @@ export default function TambahMenu({ handleNext, navigation }) {
 
   const handlePress = async () => {
     setIsLoading(true);
-    // const body = {
-    //   MenuName: valueNamaMenu,
-    //   Description: "no nte",
-    //   Note: valuNote,
-    //   PhotoFile: image,
-    //   VideoFile: video,
-    //   LMBY: user.Email,
-    //   IsPublished: 0,
-    //   LMDT: `${moment().format("YYYY-MM-DD")}`,
-    //   CreatedBy: parseInt(user.UserId),
-    // };
-    const imageUri = image.replace("file://", ""); // Remove 'file://' from the URI
-    const videoUri = video.replace("file://", ""); // Remove 'file://' from the URI
+
+    if (!valueNamaMenu || (!image && !video)) {
+      setErrorMessage(
+        "Silahkan Isi Semua Form dan Lampirkan Foto dan Video Resep Anda"
+      );
+      setIsLoading(false);
+    }
 
     const formData = new FormData();
     formData.append("MenuName", valueNamaMenu);
     formData.append("Description", valueDesc);
     formData.append("Note", valuNote);
-    formData.append("PhotoFile", {
-      uri: image,
-      name: "photo.jpg",
-      type: "image/jpg",
-    });
+    if (image) {
+      formData.append("PhotoFile", {
+        uri: image,
+        name: "photo.jpg",
+        type: "image/jpg",
+      });
+    }
 
-    formData.append("VideoFile", {
-      uri: video,
-      name: "video.mp4",
-      type: "video/mp4",
-    });
+    if (video) {
+      formData.append("VideoFile", {
+        uri: video,
+        name: "video.mp4",
+        type: "video/mp4",
+      });
+    }
     formData.append("LMBY", user.Email);
     formData.append("IsPublished", false);
     formData.append("LMDT", `${moment().format("YYYY-MM-DD")}`);
     formData.append("CreatedBy", parseInt(user.UserId));
-    // console.log(imageUri, "foto");
-    // console.log(videoUri, "video");
-    // formData.append("myFile", {
-    //   uri: `${image}`, // Replace with the actual file path
-    //   name: "evidenceFile",
-    //   type: "image/jpg", // Adjust the MIME type according to your file
-    // });
-    // console.log(formData, "form");
-    // let res = await axios({
-    //   url: `${baseUrl.URL}api/Menu/RegisterMenuMobile`,
-    //   method: "POST",
-    //   timeout: 280000,
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
+
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -163,6 +160,7 @@ export default function TambahMenu({ handleNext, navigation }) {
         console.error("Error uploading the file", error);
         setIsLoading(false);
         setModalErrorVis(true);
+        setErrorMessage("Gagal Menambahkan Resep, Silahkan Hubungi Admin");
       });
   };
 
@@ -237,70 +235,133 @@ export default function TambahMenu({ handleNext, navigation }) {
                   style={styles.inputUserName}
                 />
               </View>
-
-              <View style={styles.inputForm}>
-                <Text style={styles.text}>Upload Gambar</Text>
-                <ImagePickerExample
-                  image={image}
-                  setImage={setImage}
-                  imagetoShow={imagetoShow}
-                  setImageToShow={setImageToShow}
-                />
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Divider style={{ flex: 1 }} />
-                <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
-                  Atau
-                </Text>
-                <Divider style={{ flex: 1 }} />
-              </View>
-              <View style={styles.inputForm}>
-                {/* <Text style={styles.text}>Upload Gambar</Text> */}
-                <PhotoTake
-                  image={image}
-                  setImage={setImage}
-                  imagetoShow={imagetoShow}
-                  setImageToShow={setImageToShow}
-                />
-              </View>
-
-              <View>
-                {imagetoShow && (
-                  <Image
-                    source={{ uri: imagetoShow }}
-                    style={{ width: 200, height: 200 }}
+              <Tab
+                disableIndicator={true}
+                value={index}
+                onChange={handlerDoneTab}
+                dense
+                style={{ marginTop: ms(22) }}
+              >
+                <Tab.Item
+                  containerStyle={(active) => ({
+                    paddingVertical: 8,
+                    backgroundColor: active
+                      ? COLORS.PRIMARY_DARK
+                      : COLORS.WHITE,
+                    borderRadius: 16,
+                    width: ms(12),
+                  })}
+                  titleStyle={(active) => ({
+                    color: active ? COLORS.WHITE : "black",
+                    fontSize: 11,
+                    textDecorationLine: active ? "underline" : "none",
+                  })}
+                >
+                  {`Unggah foto`}
+                </Tab.Item>
+                <Tab.Item
+                  containerStyle={(active) => ({
+                    paddingVertical: 8,
+                    backgroundColor: active
+                      ? COLORS.PRIMARY_DARK
+                      : COLORS.WHITE,
+                    borderRadius: 16,
+                    width: ms(12),
+                  })}
+                  titleStyle={(active) => ({
+                    color: active ? COLORS.WHITE : "black",
+                    fontSize: 11,
+                    textDecorationLine: active ? "underline" : "none",
+                  })}
+                >{`Unggah Video`}</Tab.Item>
+              </Tab>
+              {index == 0 ? (
+                <>
+                  <View style={styles.inputForm}>
+                    <Text style={styles.text}>Unggah Gambar</Text>
+                    <ImagePickerExample
+                      image={image}
+                      setImage={setImage}
+                      imagetoShow={imagetoShow}
+                      setImageToShow={setImageToShow}
+                    />
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Divider style={{ flex: 1 }} />
+                    <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
+                      Atau
+                    </Text>
+                    <Divider style={{ flex: 1 }} />
+                  </View>
+                  <View style={styles.inputForm}>
+                    {/* <Text style={styles.text}>Upload Gambar</Text> */}
+                    <PhotoTake
+                      image={image}
+                      setImage={setImage}
+                      imagetoShow={imagetoShow}
+                      setImageToShow={setImageToShow}
+                    />
+                  </View>
+                  <View style={{ marginTop: 8 }}>
+                    {imagetoShow && (
+                      <Image
+                        source={{ uri: imagetoShow }}
+                        style={{
+                          width: 200,
+                          height: 200,
+                          borderRadius: ms(10),
+                        }}
+                      />
+                    )}
+                  </View>
+                </>
+              ) : (
+                <View style={styles.inputForm}>
+                  <Text style={styles.text}>Unggah Video</Text>
+                  <ImagePickerVideo
+                    video={video}
+                    setVideo={setVideo}
+                    videoToShow={videoToShow}
+                    setVideoToShow={setVideoToShow}
                   />
-                )}
-              </View>
-              <View style={styles.inputForm}>
-                <Text style={styles.text}>Upload Video</Text>
-                <ImagePickerVideo
-                  video={video}
-                  setVideo={setVideo}
-                  videoToShow={videoToShow}
-                  setVideoToShow={setVideoToShow}
-                />
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Divider style={{ flex: 1 }} />
-                  <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
-                    Atau
-                  </Text>
-                  <Divider style={{ flex: 1 }} />
-                </View>
-                <RekamVideo
-                  video={video}
-                  setVideo={setVideo}
-                  videoToShow={videoToShow}
-                  setVideoToShow={setVideoToShow}
-                />
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Divider style={{ flex: 1 }} />
+                    <Text style={{ marginHorizontal: 10, fontWeight: "200" }}>
+                      Atau
+                    </Text>
+                    <Divider style={{ flex: 1 }} />
+                  </View>
+                  <RekamVideo
+                    video={video}
+                    setVideo={setVideo}
+                    videoToShow={videoToShow}
+                    setVideoToShow={setVideoToShow}
+                  />
 
-                <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                  {videoToShow}
-                </Text>
-              </View>
+                  <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                    {videoToShow}
+                  </Text>
+                </View>
+              )}
 
               <View>
-                <TouchableOpacity style={styles.button} onPress={handlePress}>
+                {!valueNamaMenu || (!image && !video) ? (
+                  <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                    * Masukkan gambar atau video untuk dapat menambahkan resep
+                  </Text>
+                ) : (
+                  <></>
+                )}
+
+                <TouchableOpacity
+                  disabled={!valueNamaMenu || (!image && !video)}
+                  style={
+                    !valueNamaMenu || (!image && !video)
+                      ? styles.buttonDisabled
+                      : styles.button
+                  }
+                  onPress={handlePress}
+                >
                   <FontAwesome
                     name="pencil-square-o"
                     size={11}
@@ -313,6 +374,7 @@ export default function TambahMenu({ handleNext, navigation }) {
                   <Text style={{ color: "white" }}>Tambah Resep</Text>
                 </TouchableOpacity>
               </View>
+
               {/* <View>
               <TouchableOpacity
                 style={styles.button}
@@ -340,7 +402,7 @@ export default function TambahMenu({ handleNext, navigation }) {
                 style={{ fontSize: 72, color: COLORS.SUCCESS }}
               />
             </View>
-            <Text style={styles.modalText}>Data Berhasil di Tambahkan</Text>
+            <Text style={styles.modalText}>Resep Berhasil di Tambahkan</Text>
             <GeneralButton
               style={{ backgroundColor: COLORS.PRIMARY_DARK }}
               mode="contained"
@@ -366,13 +428,13 @@ export default function TambahMenu({ handleNext, navigation }) {
                 style={{ fontSize: 72, color: COLORS.RED_BG }}
               />
             </View>
-            <Text style={styles.modalText}>Error</Text>
+            <Text style={styles.modalText}>{errorMessage}</Text>
             <GeneralButton
-              style={{ backgroundColor: COLORS.PRIMARY_MEDIUM }}
+              style={{ backgroundColor: COLORS.PRIMARY_DARK }}
               mode="contained"
               onPress={hideModalError}
             >
-              Close
+              Keluar
             </GeneralButton>
           </View>
           {/* </View> */}
@@ -403,7 +465,19 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     flexDirection: "row",
     marginBottom: moderateScale(32),
-    marginTop: moderateScale(18),
+    marginTop: moderateScale(4),
+  },
+  buttonDisabled: {
+    borderRadius: moderateScale(10),
+    width: widthPercentageToDP(86),
+    height: heightPercentageToDP(7),
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "gray",
+    alignSelf: "center",
+    flexDirection: "row",
+    marginBottom: moderateScale(32),
+    marginTop: moderateScale(4),
   },
   btnAdd: {
     borderRadius: moderateScale(10),

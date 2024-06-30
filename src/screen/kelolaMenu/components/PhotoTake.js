@@ -29,16 +29,17 @@ export default function PhotoTake({
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+      // allowsEditing: true,
+      // aspect: [4, 7],
       quality: 1,
       base64: true,
+      allowsEditing: true,
       bitrateMultiplier: 0.3,
     });
 
     if (!result.cancelled) {
-      setImageToShow(result.uri);
-      setImage(result.uri);
+      setImageToShow(result?.uri);
+      setImage(result?.uri);
     }
   };
 
@@ -53,11 +54,11 @@ export default function PhotoTake({
                 size={11}
                 style={{
                   fontSize: 16,
-                  color: COLORS.WHITE,
+                  color: COLORS.PRIMARY_DARK,
                   marginRight: ms(4),
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "700" }}>
                 Ambil Foto
               </Text>
             </>
@@ -68,11 +69,11 @@ export default function PhotoTake({
                 size={11}
                 style={{
                   fontSize: 16,
-                  color: COLORS.WHITE,
+                  color: COLORS.PRIMARY_DARK,
                   marginRight: ms(4),
                 }}
               />
-              <Text style={{ color: "white", fontWeight: "700" }}>
+              <Text style={{ color: COLORS.PRIMARY_DARK, fontWeight: "700" }}>
                 Ambil Ulang Foto
               </Text>
             </>
@@ -91,7 +92,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: COLORS.PRIMARY_DARK,
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY_DARK,
+    backgroundColor: COLORS.WHITE,
     alignSelf: "flex-start",
     marginBottom: moderateScale(5),
     marginTop: moderateScale(5),
