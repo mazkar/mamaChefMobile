@@ -66,7 +66,7 @@ export default function EditBahan({ navigation, menuId, route }) {
   const [openDropDown2, setOpenDropDown2] = useState(false);
   const [ddlUom, setDdlUom] = useState([]);
   const [selectedIng, setSelectedIng] = useState(null);
-  const [selectedUom, setSelectedUom] = useState(null);
+  const [selectedUom, setSelectedUom] = useState(1);
   const [qty, setQty] = useState(null);
   const [data, setData] = useState([]);
   const [isLoadingGet, setIsLoadingGet] = useState(false);
@@ -114,15 +114,13 @@ export default function EditBahan({ navigation, menuId, route }) {
       });
       console.log(res, "<===res");
       if (res.status == 200) {
-        // test for status you want, etc
-        console.log(res.data, "<===res");
         setData(res.data);
 
         let option = res?.data?.masterIngredientsList?.map((item, idx) => {
           return {
             ingredientsId: item?.ingredientsId,
             name: item?.name,
-            uom: item?.uom,
+            uom: item?.uoM,
             qty: item?.qty,
             isActive: item?.isActive,
             lmby: item?.lmby,
@@ -509,6 +507,14 @@ export default function EditBahan({ navigation, menuId, route }) {
       setValueOther(null);
       setValueRemark(null);
     }
+  }, [selectedIng]);
+
+  useEffect(() => {
+    setSelectedUom(
+      ddlIngridients.filter(
+        (ingredient) => ingredient.ingredientsId === selectedIng
+      )[0]?.uom
+    );
   }, [selectedIng]);
 
   return (

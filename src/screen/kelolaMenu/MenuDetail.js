@@ -113,6 +113,11 @@ export default function MenuDetail({ navigation, route }) {
   const [popUpConfirmVis, setPopUpConfirmVis] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [isVideoError, setIsVideoError] = useState(false);
+  const [dataMenuStep, setDataMenuStep] = useState([]);
+  const [editStepState, setEditStateStep] = useState([]);
+  const [insertStepState, setInsertStateStep] = useState([]);
+  const [selectedMenuStepId, setSelectedStepMenuId] = useState(0);
+  const [valueStep, setValueStep] = useState(null);
 
   const handleLoadStart = () => {
     setIsVideoLoading(true);
@@ -454,6 +459,39 @@ export default function MenuDetail({ navigation, route }) {
     { key: "third", title: "Profil" },
   ]);
 
+  async function getMenuStep(id) {
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/GetMenuStep/${route.params.menuId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "=======> menu step");
+        setDataMenuStep(res.data);
+
+        setIsLoadingGet(false);
+
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoadingGet(false);
+    }
+  }
+
+  useEffect(() => {
+    getMenuStep();
+  }, []);
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -672,8 +710,27 @@ export default function MenuDetail({ navigation, route }) {
                     </Text>
                   </View>
                   <Text style={{ color: COLORS.PRIMARY_DARK }}>
-                    {dataMenu.note}
+                    {dataMenu.note === "null" ? (
+                      <Text>Tidak Ada Catatan</Text>
+                    ) : (
+                      <>
+                        <Text>{dataMenu?.note}</Text>
+                      </>
+                    )}
                   </Text>
+
+                  <View style={{ marginBottom: ms(22), flexDirection: "row" }}>
+                    <Text style={{ fontSize: ms(22), color: COLORS.GRAY_HARD }}>
+                      Langkah Memasak
+                    </Text>
+                  </View>
+                  {dataMenuStep?.map((e) => (
+                    <View index={e.menuStepId}>
+                      <Text style={{ color: COLORS.PRIMARY_DARK }}>
+                        {e?.stepInformation}
+                      </Text>
+                    </View>
+                  ))}
                 </View>
 
                 <Divider style={{ height: ms(2), marginTop: ms(24) }} />
@@ -767,6 +824,9 @@ export default function MenuDetail({ navigation, route }) {
                     >
                       <Text style={{ color: COLORS.WHITE }}>Publish Resep</Text>
                     </TouchableOpacity>
+                    <Button onPress={() => console.log(dataMenuStep)}>
+                      {dataMenu?.note}
+                    </Button>
                     <TouchableOpacity
                       onPress={() =>
                         navigation.navigate("EditBahan", {

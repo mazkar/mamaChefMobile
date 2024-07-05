@@ -89,6 +89,7 @@ export default function EditBahan({ navigation, menuId, route }) {
   const [modalEditDesc, setModalEditDesc] = useState(false);
   const [valueNote, setValueNote] = useState("");
   const [valueDesc, setValueDesc] = useState("");
+  const [selectedUomObject, setSelectedUomObject] = useState({});
 
   async function getData(id) {
     setIsLoadingGet(true);
@@ -112,17 +113,17 @@ export default function EditBahan({ navigation, menuId, route }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res, "<===res");
+      // console.log(res, "<===res");
       if (res.status == 200) {
         // test for status you want, etc
-        console.log(res.data, "<===res");
+        // console.log(res.data, "<===res");
         setData(res.data);
 
         let option = res?.data?.masterIngredientsList?.map((item, idx) => {
           return {
             ingredientsId: item?.ingredientsId,
             name: item?.name,
-            uom: item?.uom,
+            uom: item?.uoM,
             qty: item?.qty,
             isActive: item?.isActive,
             lmby: item?.lmby,
@@ -131,6 +132,7 @@ export default function EditBahan({ navigation, menuId, route }) {
         });
 
         setDdlIngridients([newIngredient, ...option]);
+        console.log(option, "<==ing");
 
         // setDdlIngridients(res.data.masterIngredientsList.push(newIngredient));
         setDdlUom(res.data.masterUomsList);
@@ -509,6 +511,14 @@ export default function EditBahan({ navigation, menuId, route }) {
       setValueOther(null);
       setValueRemark(null);
     }
+  }, [selectedIng]);
+
+  useEffect(() => {
+    setSelectedUom(
+      ddlIngridients.filter(
+        (ingredient) => ingredient.ingredientsId === selectedIng
+      )[0]?.uom
+    );
   }, [selectedIng]);
 
   return (
@@ -1090,6 +1100,19 @@ export default function EditBahan({ navigation, menuId, route }) {
               >
                 Tambah
               </GeneralButton>
+              {/* <GeneralButton
+                style={{ backgroundColor: COLORS.PRIMARY_DARK }}
+                mode="contained"
+                onPress={() =>
+                  console.log(
+                    ddlIngridients.filter(
+                      (ingredient) => ingredient.ingredientsId === 2
+                    )[0]?.uom
+                  )
+                }
+              >
+                test
+              </GeneralButton> */}
             </View>
           </View>
           {/* </View> */}
