@@ -23,6 +23,7 @@ const TextInput = ({
       style={{
         paddingHorizontal: 9,
         backgroundColor: "white",
+
         // paddingVertical: ms(6),
         // paddingHorizontal: ms(12),
       }}

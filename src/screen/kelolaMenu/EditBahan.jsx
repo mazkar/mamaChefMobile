@@ -1144,9 +1144,9 @@ export default function EditBahan({ navigation, menuId, route }) {
               <GeneralTextInput
                 // placeholder={valueDesc}
                 mode="outlined"
-                value={valueDesc}
+                value={valueDesc === "null" ? "" : valueDesc}
                 // hasErrors={authFailed}
-                defaultValue={valueDesc}
+                defaultValue={valueDesc === "null" ? "" : valueDesc}
                 title="Deskripsi"
                 multiline
                 numberOfLines={10}
@@ -1199,9 +1199,9 @@ export default function EditBahan({ navigation, menuId, route }) {
 
               <GeneralTextInput
                 // placeholder={valueNote}
-                defaultValue={valueNote}
+                defaultValue={valueNote === "null" ? "" : valueNote}
                 mode="outlined"
-                value={valueNote}
+                value={valueNote === "null" ? "" : valueNote}
                 // hasErrors={authFailed}
                 title="Catatan"
                 multiline
