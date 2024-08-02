@@ -36,7 +36,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-
+import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // iCONS
 import FaIcons from "react-native-vector-icons/Ionicons";
@@ -66,6 +66,7 @@ export default function KelolaMenuAll({ navigation }) {
   const dispatch = useDispatch();
   const [modalSuccesVis, setModalSuccessVis] = useState(false);
   const [modalErroVis, setModalErrorVis] = useState(false);
+  const [openDropDown, setOpenDropDown] = useState(false);
 
   async function getMenu(userId) {
     setIsLoadingGet(true);
@@ -101,7 +102,7 @@ export default function KelolaMenuAll({ navigation }) {
     setPageNum(pageNume + 1);
     // console.log(pageNume, "page num");
     const body = {
-      pageSize: 4,
+      pageSize: 15,
       currentPage: pageNume,
       isPhoto: true,
       isVideo: false,
@@ -183,6 +184,52 @@ export default function KelolaMenuAll({ navigation }) {
     }
   }
 
+  async function getMenuPaginationSearchUser() {
+    // setPageNum(pageNume + page);
+    // console.log(searchQuery, "page num");
+
+    setIsLoadingGet(true);
+    // setIsLoading(false);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/menubyusername/${searchQuery}`,
+        method: "GET",
+        timeout: 20000,
+        // data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data, "menu pagination");
+        // const newArray = [...dataMenu, ...res.data.data];
+        setDataMenuSearch(res.data.data);
+        setIsLoading(false);
+        setIsLoadingGet(false);
+        setSeacrchState(true);
+        // setPageSize(pageSize);
+        // setAllSumData(parseInt(res.data.message));
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
+  const handleSearch = (uid, page) => {
+    console.log(selectedIng);
+    if (selectedIng === "Menu") {
+      getMenuPaginationSearch(uid, page);
+    } else {
+      getMenuPaginationSearchUser();
+    }
+  };
+
   const onChangeSearch = (query) => setSearchQuery(query);
 
   const onPressNav = (id) => {
@@ -207,13 +254,15 @@ export default function KelolaMenuAll({ navigation }) {
 
   const handleMomentumScrollEnd = _.debounce(() => {
     console.log("Scroll momentum ended");
-    sumAllData == dataMenu?.length ? null : getMenuPagination(0, 1);
+    sumAllData == dataMenu?.length || sumAllData <= dataMenu.length
+      ? null
+      : getMenuPagination(0, 1);
     // Your custom logic here
   }, 1000);
 
   const handleReset = () => {
     setSeacrchState(false);
-    setSearchQuery("");
+    // setSearchQuery("");
     getMenuPagination(0, 1);
   };
 
@@ -330,6 +379,9 @@ export default function KelolaMenuAll({ navigation }) {
     // getTaskDetail(route.params.assignmentId);
   };
 
+  const [selectedIng, setSelectedIng] = useState("Menu");
+  const [ddlIngridients, setDdlIngridients] = useState([]);
+
   return (
     <ColorBgContainer>
       <RootContainer>
@@ -360,24 +412,10 @@ export default function KelolaMenuAll({ navigation }) {
               <Searchbar
                 placeholder="Cari Resep"
                 onChangeText={onChangeSearch}
-                value={searchQuery}
-                // icon={() => (
-                //   <TouchableOpacity
-                //     style={{
-                //       padding: ms(8),
-                //       borderRadius: ms(0),
-                //     }}
-                //   >
-                //     <MaterialCommunityIcons
-                //       name="close"
-                //       size={24}
-                //       color="black"
-                //     />
-                //   </TouchableOpacity>
-                // )}
                 style={{
                   // flexDirection: "row-reverse",
                   // paddingRight: ms(12),
+                  // backgroundColor: "white",
                   flex: 1,
                 }}
               />
@@ -413,7 +451,8 @@ export default function KelolaMenuAll({ navigation }) {
                       marginLeft: ms(6),
                       flexDirection: "row",
                     }}
-                    onPress={() => getMenuPaginationSearch(0, 0)}
+                    disabled={searchQuery === ""}
+                    onPress={() => handleSearch(uid, 0)}
                   >
                     <MaterialCommunityIcons
                       name="magnify"
@@ -424,6 +463,7 @@ export default function KelolaMenuAll({ navigation }) {
                 </>
               ) : (
                 <TouchableOpacity
+                  disabled={searchQuery === ""}
                   style={{
                     width: widthPercentageToDP(14),
                     backgroundColor: COLORS.PRIMARY_DARK,
@@ -434,7 +474,7 @@ export default function KelolaMenuAll({ navigation }) {
                     marginLeft: ms(6),
                     flexDirection: "row",
                   }}
-                  onPress={() => getMenuPaginationSearch(uid, 0)}
+                  onPress={() => handleSearch(uid, 0)}
                 >
                   <MaterialCommunityIcons
                     name="magnify"
@@ -443,6 +483,37 @@ export default function KelolaMenuAll({ navigation }) {
                   />
                 </TouchableOpacity>
               )}
+            </View>
+            <View style={{ marginTop: 16 }}>
+              <Text style={styles.text}>Cari Resep Berdasarkan </Text>
+
+              <DropDownPicker
+                placeholder="Pilih Bahan Makanan"
+                open={openDropDown}
+                value={selectedIng}
+                zIndex={3}
+                items={[
+                  {
+                    value: "Menu",
+                    label: "Resep",
+                  },
+                  {
+                    value: "User",
+                    label: "Resep Kreator",
+                  },
+                ]}
+                setItems={setDdlIngridients}
+                setOpen={setOpenDropDown}
+                setValue={setSelectedIng}
+                listMode="SCROLLVIEW"
+                itemKey="ingredientsId"
+                label="name"
+                style={{
+                  borderColor: "gray", // Warna border
+                  borderWidth: 1, // Lebar border
+                  width: widthPercentageToDP(40),
+                }}
+              />
             </View>
           </View>
 
@@ -510,7 +581,8 @@ export default function KelolaMenuAll({ navigation }) {
                   )} */}
                 </>
               ))}
-              {sumAllData === dataMenu?.length ? (
+              {sumAllData === dataMenu?.length ||
+              sumAllData <= dataMenu.length ? (
                 <View style={{ alignSelf: "center", marginTop: ms(8) }}>
                   <Text style={{ fontWeight: "300", color: COLORS.GRAY_HARD }}>
                     Semua Menu Sudah di Tampilkan
@@ -659,5 +731,10 @@ const styles = StyleSheet.create({
   imgSubmit: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.PRIMARY_DARK,
   },
 });

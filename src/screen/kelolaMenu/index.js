@@ -156,7 +156,7 @@ export default function KelolaMenu({ navigation }) {
     setPageNumNyPulish(pageNumeNyPulish + 1);
     console.log(searchQuery, "page num");
     const body = {
-      pageSize: 4,
+      pageSize: 5,
       currentPage: pageNumeNyPulish,
       isPhoto: true,
       isVideo: false,
@@ -289,7 +289,7 @@ export default function KelolaMenu({ navigation }) {
 
   const handleMomentumScrollEnd = _.debounce(() => {
     console.log("Scroll momentum ended");
-    sumAllData == dataMenu?.length
+    sumAllData == dataMenu?.length || sumAllData <= dataMenu.length
       ? null
       : getMenuPagination(uid, 1, valueIsPublish);
     // Your custom logic here
@@ -297,7 +297,8 @@ export default function KelolaMenu({ navigation }) {
 
   const handleMomentumScrollEndNyPulish = _.debounce(() => {
     console.log("Scroll momentum ended");
-    sumAllDataNyPulish == dataMenuNyPublish?.length
+    sumAllDataNyPulish == dataMenuNyPublish?.length ||
+    sumAllDataNyPulish <= dataMenuNyPublish?.length
       ? null
       : getMenuPaginationNyPulish(uid, 1, valueIsPublish);
     // Your custom logic here
@@ -777,14 +778,10 @@ export default function KelolaMenu({ navigation }) {
                         insertMneuToChart={insertMneuToChart}
                       />
                       <Divider style={{ marginTop: ms(24) }} />
-                      {isLoading && (
-                        <View style={{ padding: 16 }}>
-                          <ActivityIndicator size="small" color="#0000ff" />
-                        </View>
-                      )}
                     </>
                   ))}
-                  {sumAllData === dataMenu?.length ? (
+                  {sumAllData === dataMenu?.length ||
+                  sumAllData <= dataMenu?.length ? (
                     <View style={{ alignSelf: "center", marginTop: ms(8) }}>
                       <Text
                         style={{ fontWeight: "300", color: COLORS.GRAY_HARD }}
@@ -909,14 +906,10 @@ export default function KelolaMenu({ navigation }) {
                         recipeBy={item?.recipeBy}
                       />
                       <Divider style={{ marginTop: ms(24) }} />
-                      {isLoading && (
-                        <View style={{ padding: 16 }}>
-                          <ActivityIndicator size="small" color="#0000ff" />
-                        </View>
-                      )}
                     </>
                   ))}
-                  {sumAllData === dataMenu?.length ? (
+                  {sumAllDataNyPulish === dataMenuNyPublish?.length ||
+                  sumAllDataNyPulish <= dataMenuNyPublish.length ? (
                     <View style={{ alignSelf: "center", marginTop: ms(8) }}>
                       <Text
                         style={{ fontWeight: "300", color: COLORS.GRAY_HARD }}

@@ -90,6 +90,8 @@ export default function EditBahan({ navigation, menuId, route }) {
   const [valueNote, setValueNote] = useState("");
   const [valueDesc, setValueDesc] = useState("");
   const [selectedUomObject, setSelectedUomObject] = useState({});
+  const [error, setError] = useState(false);
+  const [errorItems, setErrorItem] = useState([]);
 
   async function getData(id) {
     setIsLoadingGet(true);
@@ -97,7 +99,7 @@ export default function EditBahan({ navigation, menuId, route }) {
     const newIngredient = {
       ingredientsId: 0,
       name: "Bahan Lain",
-      uom: "sdt",
+      uom: null,
       qty: "0",
       isActive: "1",
       lmby: 1,
@@ -152,6 +154,66 @@ export default function EditBahan({ navigation, menuId, route }) {
     }
   }
 
+  // async function handleDaftar() {
+  //   setIsLoadingGet(true);
+
+  //   const body = {
+  //     menuIngredientId: 0,
+  //     menuId: route?.params?.menuId,
+  //     ingredientsId: selectedIng,
+  //     quantity: qty,
+  //     otherIngridients: valueOther,
+  //     note: valueRemark,
+  //     uomId: selectedUom,
+  //     lmdt: `${moment().format("YYYY-MM-DD")}`,
+  //     lmby: uid.UserId,
+  //   };
+
+  //   try {
+  //     console.log(body);
+  //     let res = await axios({
+  //       url: `${baseUrl.URL}api/Menu/InsertMenuIng`,
+  //       method: "POST",
+  //       timeout: 8000,
+  //       data: body,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         // Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log(res, "Success");
+  //     console.log(res, "<= res");
+  //     if (res.status == "200") {
+  //       console.log(res.data.data, "<= res");
+  //       setIsLoadingGet(false);
+  //       // dispatch(setUserId(res.data.data[0]?.userId));
+  //       setModalAddBahan(false);
+  //       setModalSuccessVis(true);
+  //       setSuccessMessage(res?.data?.message);
+  //       // test for status you want, etc
+  //       // setLoadingUpload(false);
+  //       // getTaskDetail(route.params.assignmentId);
+  //       console.log(res, "Success");
+
+  //       // setDataItem(res.data);
+  //       // setDataInfo(res.data);
+  //     } else {
+  //       setIsLoadingGet(false);
+  //       setModalErrorVis(true);
+  //       setModalAddBahan(false);
+  //       setErrorMessage(res?.data?.message);
+  //     }
+  //     // Don't forget to return something
+  //     return res.data;
+  //   } catch (err) {
+  //     console.error(err, "error");
+  //     setModalErrorVis(true);
+  //     setIsLoadingGet(false);
+  //     setModalAddBahan(false);
+  //     setErrorMessage(err?.message);
+  //   }
+  // }
+
   async function handleDaftar() {
     setIsLoadingGet(true);
 
@@ -167,6 +229,25 @@ export default function EditBahan({ navigation, menuId, route }) {
       lmby: uid.UserId,
     };
 
+    // Check for null values
+    let errorItems = [];
+    if (!body.ingredientsId && body.ingredientsId != 0)
+      errorItems.push("Bahan");
+    if (!body.quantity) errorItems.push("Kuantiti Bahan");
+    if (!body.uomId) errorItems.push("Satuan");
+    if (!body.otherIngridients && body.ingredientsId == 0)
+      errorItems.push("Bahan Lainnya");
+
+    if (errorItems.length > 0) {
+      setError(true);
+      setErrorItem(errorItems);
+      setIsLoadingGet(false);
+      setModalErrorVis(true);
+      setModalAddBahan(false);
+      setErrorMessage(`${errorItems.join(", ")} wajib di isi!`);
+      return;
+    }
+    console.log(body, "body");
     try {
       console.log(body);
       let res = await axios({
@@ -181,12 +262,12 @@ export default function EditBahan({ navigation, menuId, route }) {
       });
       console.log(res, "Success");
       console.log(res, "<= res");
-      if (res.status == "200") {
+      if (res.status == 200) {
         console.log(res.data.data, "<= res");
         setIsLoadingGet(false);
-        // dispatch(setUserId(res.data.data[0]?.userId));
         setModalAddBahan(false);
         setModalSuccessVis(true);
+        resetValues();
         setSuccessMessage(res?.data?.message);
         // test for status you want, etc
         // setLoadingUpload(false);
@@ -374,8 +455,23 @@ export default function EditBahan({ navigation, menuId, route }) {
     setModalAddBahan(true);
   };
 
+  const resetValues = () => {
+    setValueNamaMenu("");
+    setSelectedIng(null);
+    setValueOther("");
+    setValueRemark("");
+    setSelectedUom(null);
+    setQty("");
+    setOpenDropDown(false);
+    setOpenDropDown2(false);
+  };
+
   const hideModalAddBahan = () => {
     setModalAddBahan(false);
+    setQty(null);
+    setSelectedIng(null);
+    resetValues();
+    setSelectedUom(null);
   };
 
   const showModalEditNote = () => {

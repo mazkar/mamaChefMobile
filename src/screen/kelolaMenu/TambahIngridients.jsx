@@ -89,6 +89,8 @@ export default function EditBahan({ navigation, menuId, route }) {
   const [modalEditDesc, setModalEditDesc] = useState(false);
   const [valueNote, setValueNote] = useState("");
   const [valueDesc, setValueDesc] = useState("");
+  const [error, setError] = useState(false);
+  const [errorItems, setErrorItem] = useState([]);
 
   async function getData(id) {
     setIsLoadingGet(true);
@@ -96,7 +98,7 @@ export default function EditBahan({ navigation, menuId, route }) {
     const newIngredient = {
       ingredientsId: 0,
       name: "Bahan Lain",
-      uom: "sdt",
+      uom: null,
       qty: "0",
       isActive: "1",
       lmby: 1,
@@ -148,6 +150,17 @@ export default function EditBahan({ navigation, menuId, route }) {
     }
   }
 
+  const resetValues = () => {
+    setValueNamaMenu("");
+    setSelectedIng(null);
+    setValueOther("");
+    setValueRemark("");
+    setSelectedUom(null);
+    setQty("");
+    setOpenDropDown(false);
+    setOpenDropDown2(false);
+  };
+
   async function handleDaftar() {
     setIsLoadingGet(true);
 
@@ -163,6 +176,26 @@ export default function EditBahan({ navigation, menuId, route }) {
       lmby: uid.UserId,
     };
 
+    // Check for null values
+    let errorItems = [];
+    if (!body.ingredientsId && body.ingredientsId != 0)
+      errorItems.push("Bahan");
+    if (!body.quantity) errorItems.push("Kuantiti Bahan");
+    if (!body.uomId) errorItems.push("Satuan");
+    if (!body.otherIngridients && body.ingredientsId == 0)
+      errorItems.push("Bahan Lainnya");
+
+    if (errorItems.length > 0) {
+      setError(true);
+      setErrorItem(errorItems);
+      setIsLoadingGet(false);
+      setModalErrorVis(true);
+      setModalAddBahan(false);
+      setErrorMessage(`${errorItems.join(", ")} wajib di isi!`);
+      return;
+    }
+    console.log(body, "body");
+
     try {
       console.log(body);
       let res = await axios({
@@ -177,12 +210,12 @@ export default function EditBahan({ navigation, menuId, route }) {
       });
       console.log(res, "Success");
       console.log(res, "<= res");
-      if (res.status == "200") {
+      if (res.status == 200) {
         console.log(res.data.data, "<= res");
         setIsLoadingGet(false);
-        // dispatch(setUserId(res.data.data[0]?.userId));
         setModalAddBahan(false);
         setModalSuccessVis(true);
+        resetValues();
         setSuccessMessage(res?.data?.message);
         // test for status you want, etc
         // setLoadingUpload(false);
@@ -372,6 +405,7 @@ export default function EditBahan({ navigation, menuId, route }) {
 
   const hideModalAddBahan = () => {
     setModalAddBahan(false);
+    resetValues();
   };
 
   const showModalEditNote = () => {

@@ -10,12 +10,15 @@ import {
   Linking,
   FlatList,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
 import RootContainer from "../../component/RootContainer/index";
 import { useNavigation } from "@react-navigation/core";
 import ColorBgContainer from "../../component/ColorBgContainer";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { COLORS, FONTS } from "../../assets/theme";
+import moment from "moment";
 import {
   Button,
   Menu,
@@ -25,6 +28,7 @@ import {
   Paragraph,
   Modal,
   Searchbar,
+  IconButton,
 } from "react-native-paper";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { ms, moderateScale } from "react-native-size-matters";
@@ -157,7 +161,7 @@ export default function Dashboard({ navigation }) {
     setPageNum(pageNume + 1);
     // console.log(pageNume, "page num");
     const body = {
-      pageSize: 1,
+      pageSize: 3,
       currentPage: pageNume,
       isPhoto: true,
       isVideo: false,
@@ -353,6 +357,127 @@ export default function Dashboard({ navigation }) {
     }
   };
 
+  const [comments, setComments] = useState([
+    { username: "user1", text: "Nice post!" },
+    { username: "user2", text: "Amazing!" },
+  ]);
+  const [newComment, setNewComment] = useState("");
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      setComments([...comments, { username: "currentUser", text: newComment }]);
+      setNewComment("");
+    }
+  };
+
+  const [dataComment, setDataComment] = useState([]);
+  const [isModalCommentVisible, setIsModalCommentVissible] = useState();
+  const [selectedMenuId, setSelectedMenuId] = useState(0);
+
+  const showModalComment = (menuId) => {
+    setIsModalCommentVissible(true);
+    getComment(menuId);
+    setSelectedMenuId(menuId);
+  };
+
+  const hideModalComment = () => {
+    setIsModalCommentVissible(false);
+    setNewComment("");
+  };
+
+  async function getComment(menuId) {
+    // setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MenuComment/commentbymenuid/${menuId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        // setApkVersion(res?.data[0]);
+        setDataComment(res?.data?.data);
+        // setDataContent(res.data.data);
+        // setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      // setIsLoadingGet(false);
+    }
+  }
+
+  async function insertComment(userId, page) {
+    // console.log(pageNume, "page num");
+    const body = {
+      menuId: selectedMenuId,
+      userId: uid,
+      comment: newComment,
+    };
+    // setIsLoadingGet(true);
+    // setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MenuComment/insertcomment`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        getComment(selectedMenuId);
+        setNewComment("");
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
+  async function deletetComment(id) {
+    // console.log(pageNume, "page num");
+    const body = {
+      menuCommentId: id,
+    };
+    // setIsLoadingGet(true);
+    // setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MenuComment/deletecomment`,
+        method: "DELETE",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        getComment(selectedMenuId);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
     getApkVersion();
   }, []);
@@ -458,25 +583,24 @@ export default function Dashboard({ navigation }) {
                       style={{
                         borderRadius: 8,
                         width: ms(148),
-                        height: ms(178),
+                        height: ms(198),
                         marginLeft: ms(12),
                         borderTopStartRadius: 10,
                         borderTopEndRadius: 10,
                         backgroundColor: COLORS.WHITE,
                         paddingBottom: ms(38),
+                        position: "relative", // Make sure the card is relatively positioned
                       }}
                       onPress={() => onPressNav(item.menuId)}
                     >
                       <Card.Cover
                         style={{
                           width: "auto",
-                          height: "80%",
+                          height: "70%",
                           borderTopStartRadius: 10,
                           borderTopEndRadius: 10,
                         }}
-                        source={{
-                          uri: `${item?.photo}`,
-                        }}
+                        source={{ uri: `${item?.photo}` }}
                       />
                       <Card.Content
                         style={{
@@ -488,7 +612,6 @@ export default function Dashboard({ navigation }) {
                             backgroundColor: COLORS.PRIMARY_DARK,
                             borderRadius: ms(10),
                             alignContent: "center",
-
                             marginTop: ms(4),
                             width: "100%",
                             paddingHorizontal: ms(6),
@@ -513,7 +636,6 @@ export default function Dashboard({ navigation }) {
                           ellipsizeMode="tail"
                           style={{
                             fontSize: 11,
-
                             fontWeight: "500",
                             color: COLORS.PRIMARY_DARK,
                           }}
@@ -522,8 +644,18 @@ export default function Dashboard({ navigation }) {
                             Resep Oleh :
                           </Text>
                           {"\n"}
-                          <Text> {item?.recipeBy}</Text>
+                          <Text>{item?.recipeBy}</Text>
                         </Text>
+                        <TouchableOpacity
+                          style={{ marginTop: 12, alignSelf: "flex-end" }}
+                          onPress={() => showModalComment(item?.menuId)}
+                        >
+                          <Icon
+                            name="comment"
+                            size={20}
+                            color={COLORS.PRIMARY_DARK}
+                          />
+                        </TouchableOpacity>
                       </Card.Content>
                     </Card>
                   )}
@@ -635,23 +767,6 @@ export default function Dashboard({ navigation }) {
                           >
                             {item.menuName}
                           </Text>
-
-                          <View style={{ flexDirection: "row" }}>
-                            <Text>(4)</Text>
-                            <StarRating
-                              disabled={true}
-                              maxStars={5}
-                              rating={rating}
-                              selectedStar={(rating) => setRating(rating)}
-                              fullStarColor={"gold"}
-                              starStyle={{
-                                marginTop: ms(4),
-                                marginLeft: ms(2),
-                              }}
-                              containerStyle={{ width: 80 }}
-                              starSize={14}
-                            />
-                          </View>
                           <Text>
                             <Text
                               style={{
@@ -667,6 +782,19 @@ export default function Dashboard({ navigation }) {
                               {item?.recipeBy}
                             </Text>
                           </Text>
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              style={{ marginTop: 12, alignSelf: "flex-end" }}
+                              onPress={() => showModalComment(item?.menuId)}
+                            >
+                              <Text
+                                name="comment"
+                                style={{ color: COLORS.PRIMARY_DARK }}
+                              >
+                                Lihat Komentar
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
                         </View>
                       </View>
                       <View
@@ -762,6 +890,100 @@ export default function Dashboard({ navigation }) {
           {/* </View> */}
         </Modal>
         <PopUpLoader visible={isLoadingGet} />
+        <Modal
+          visible={isModalCommentVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={hideModalComment}
+        >
+          <View style={styles.containermodalView3}>
+            <View style={styles.modalContainer}>
+              <IconButton
+                icon="close"
+                size={24}
+                onPress={hideModalComment}
+                style={styles.closeIcon}
+              />
+              <Text style={styles.header}>Tambah Komentar</Text>
+              {dataComment?.length === 0 ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    // backgroundColor: "red",
+                  }}
+                >
+                  <Icon
+                    name="comment"
+                    style={{ fontSize: 48, color: "gray" }}
+                  />
+                  <Text style={{ color: "gray" }}>Belum Ada Komentar ...</Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={dataComment}
+                  renderItem={({ item }) => (
+                    <View style={styles.commentContainer}>
+                      <View style={styles.avatarContainer}>
+                        <Text style={styles.avatar}>
+                          {item.commentBy.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                      <View style={styles.commentContent}>
+                        <Text style={styles.creatorName}>{item.commentBy}</Text>
+                        <Text style={styles.commentText}>{item.comment}</Text>
+                        <Text style={styles.date}>
+                          {moment(item.commentDate).format("YYYY-MM-DD")}
+                        </Text>
+                      </View>
+                      {item?.userId === parseInt(uid) ? (
+                        <View>
+                          <TouchableOpacity
+                            onPress={() => deletetComment(item?.commentId)}
+                          >
+                            <Icon
+                              name="delete-outline"
+                              style={{ color: "red", fontSize: 16 }}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        <></>
+                      )}
+                    </View>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                  style={styles.commentList}
+                />
+              )}
+
+              <TextInput
+                style={styles.textInput}
+                placeholder="Tulis Komentar..."
+                multiline
+                value={newComment}
+                onChangeText={setNewComment}
+              />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={hideModalComment}
+                >
+                  <Text style={styles.buttonText}>Batalkan</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.sendButton}
+                  onPress={() => {
+                    insertComment();
+                  }}
+                >
+                  <Text style={styles.buttonText}>Kirim</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </RootContainer>
     </ColorBgContainer>
   );
@@ -774,6 +996,18 @@ const styles = StyleSheet.create({
   continerSearch: {
     paddingHorizontal: 12,
     paddingVertical: 12,
+  },
+  containermodalView3: {
+    flexDirection: "column",
+    alignSelf: "center",
+    // position: "absolute",
+    width: constants.SCREEN_WIDTH * 0.9,
+    height: 700,
+    paddingHorizontal: 10,
+    paddingTop: 0,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
   },
   btnAdd: {
     borderRadius: moderateScale(10),
@@ -865,6 +1099,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.WHITE,
     borderRadius: 10,
   },
+
   modalText: {
     paddingTop: 20,
     marginBottom: 28,
@@ -915,5 +1150,109 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "400",
     marginLeft: ms(24),
+  },
+  containermodalView2: {
+    flexDirection: "column",
+    flex: 1,
+    alignSelf: "center",
+    position: "absolute",
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 0,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+    width: "90%",
+    height: 700,
+  },
+
+  modalContainer: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    position: "relative",
+    padding: 20,
+    maxHeight: "100%", // Ensures the modal doesn’t exceed screen height
+    flex: 1,
+    justifyContent: "space-between", // Ensure there's space for FlatList and buttons
+  },
+  header: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    marginTop: 32,
+  },
+  commentList: {
+    // flex: 1,
+    marginBottom: 10,
+  },
+
+  commentContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+  },
+  avatarContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.PRIMARY_DARK,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  avatar: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  commentContent: {
+    flex: 1,
+  },
+  creatorName: {
+    fontWeight: "bold",
+  },
+  commentText: {
+    fontSize: 13,
+  },
+  date: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 5,
+  },
+  textInput: {
+    height: 100,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    color: COLORS.PRIMARY_DARK,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  closeButton: {
+    backgroundColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  sendButton: {
+    backgroundColor: COLORS.PRIMARY_DARK,
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  closeIcon: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    marginLeft: 12,
   },
 });

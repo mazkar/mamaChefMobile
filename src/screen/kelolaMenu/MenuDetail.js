@@ -17,6 +17,7 @@ import RootContainer from "../../component/RootContainer/index";
 import { useNavigation } from "@react-navigation/core";
 import ColorBgContainer from "../../component/ColorBgContainer";
 import { COLORS, FONTS } from "../../assets/theme";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   Button,
   Menu,
@@ -25,7 +26,9 @@ import {
   Card,
   Paragraph,
   Searchbar,
+  TextInput,
   Modal,
+  IconButton,
 } from "react-native-paper";
 import { ms, moderateScale } from "react-native-size-matters";
 import {
@@ -79,6 +82,12 @@ const ThirdRoute = () => (
   </View>
 );
 
+const FourthRoute = () => (
+  <View style={[styles.scene, { backgroundColor: "#4caf50" }]}>
+    <Text style={styles.text}>Fourth Tab</Text>
+  </View>
+);
+
 // Combine routes
 const initialLayout = { width: 360 };
 
@@ -86,6 +95,7 @@ const renderScene = SceneMap({
   first: FirstRoute,
   second: SecondRoute,
   third: ThirdRoute,
+  fourth: FourthRoute,
 });
 
 const MenuEdit = ({ menuStepId, handleEditState, DeleteStep }) => {
@@ -502,9 +512,10 @@ export default function MenuDetail({ navigation, route }) {
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: "first", title: "Bahan-Bahan" },
+    { key: "first", title: "Bahan" },
     { key: "second", title: "Deskripsi" },
     { key: "third", title: "Profil" },
+    { key: "fourth", title: "Komentar" },
   ]);
 
   async function getMenuStep(id) {
@@ -693,8 +704,106 @@ export default function MenuDetail({ navigation, route }) {
     }
   }
 
+  const [dataComment, setDataComment] = useState([]);
+
+  async function getComment(menuId) {
+    // setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MenuComment/commentbymenuid/${menuId}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        // setApkVersion(res?.data[0]);
+        setDataComment(res?.data?.data);
+        // setDataContent(res.data.data);
+        // setIsLoadingGet(false);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      // setIsLoadingGet(false);
+    }
+  }
+
+  const [newComment, setNewComment] = useState("");
+
+  async function insertComment(userId, page) {
+    // console.log(pageNume, "page num");
+    const body = {
+      menuId: route?.params?.menuId,
+      userId: uid,
+      comment: newComment,
+    };
+    // setIsLoadingGet(true);
+    // setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MenuComment/insertcomment`,
+        method: "POST",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        getComment(route?.params?.menuId);
+        setNewComment("");
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      // setIsLoading(false);
+    }
+  }
+
+  async function deletetComment(id) {
+    // console.log(pageNume, "page num");
+    const body = {
+      menuCommentId: id,
+    };
+    // setIsLoadingGet(true);
+    // setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/MenuComment/deletecomment`,
+        method: "DELETE",
+        timeout: 20000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        getComment(route?.params?.menuId);
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
     getMenuStep();
+    getComment(route?.params?.menuId);
   }, []);
 
   return (
@@ -709,6 +818,7 @@ export default function MenuDetail({ navigation, route }) {
 
         <ScrollView
           style={styles.scrollView}
+          nestedScrollEnabled={true}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: false }
@@ -891,7 +1001,7 @@ export default function MenuDetail({ navigation, route }) {
                   ))}
                 </View>
               </>
-            ) : (
+            ) : index == 1 ? (
               <>
                 {/* Deskripsi */}
                 <View style={{ marginTop: ms(12) }}>
@@ -1233,6 +1343,95 @@ export default function MenuDetail({ navigation, route }) {
                   )}
                 </View>
               </>
+            ) : (
+              <>
+                <View style={styles.containermodalView3}>
+                  <View style={styles.modalContainer}>
+                    {dataComment?.length === 0 ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: 300,
+                          // backgroundColor: "red",
+                        }}
+                      >
+                        <Icon
+                          name="comment"
+                          style={{ fontSize: 48, color: "gray" }}
+                        />
+                        <Text style={{ color: "gray" }}>
+                          Belum Ada Komentar ...
+                        </Text>
+                      </View>
+                    ) : (
+                      <FlatList
+                        data={dataComment}
+                        nestedScrollEnabled={true}
+                        renderItem={({ item }) => (
+                          <View style={styles.commentContainer}>
+                            <View style={styles.avatarContainer}>
+                              <Text style={styles.avatar}>
+                                {item.commentBy.charAt(0).toUpperCase()}
+                              </Text>
+                            </View>
+                            <View style={styles.commentContent}>
+                              <Text style={styles.creatorName}>
+                                {item.commentBy}
+                              </Text>
+                              <Text style={styles.commentText}>
+                                {item.comment}
+                              </Text>
+                              <Text style={styles.date}>
+                                {moment(item.commentDate).format("YYYY-MM-DD")}
+                              </Text>
+                            </View>
+                            {item?.userId === parseInt(uid) ? (
+                              <View>
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    deletetComment(item?.commentId)
+                                  }
+                                >
+                                  <Icon
+                                    name="delete-outline"
+                                    style={{ color: "red", fontSize: 16 }}
+                                  />
+                                </TouchableOpacity>
+                              </View>
+                            ) : (
+                              <></>
+                            )}
+                          </View>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                        style={styles.commentList}
+                      />
+                    )}
+
+                    {/* <Text style={styles.header}>Tambah Komentar</Text> */}
+
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="Tulis Komentar..."
+                      multiline
+                      value={newComment}
+                      onChangeText={setNewComment}
+                    />
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={styles.sendButton}
+                        onPress={() => {
+                          insertComment();
+                        }}
+                      >
+                        <Text style={styles.buttonText}>Kirim</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </>
             )}
 
             {/* {indicator hide/show} */}
@@ -1306,6 +1505,7 @@ export default function MenuDetail({ navigation, route }) {
             </View>
           </View>
         </ScrollView>
+
         <Modal
           animationType="slide"
           transparent={true}
@@ -1554,5 +1754,106 @@ const styles = StyleSheet.create({
   imgSubmit: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  containermodalView3: {
+    flexDirection: "column",
+    alignSelf: "center",
+    width: constants.SCREEN_WIDTH * 1,
+    // height: 500,
+    paddingHorizontal: 10,
+    paddingTop: 0,
+    paddingBottom: 28,
+    backgroundColor: COLORS.WHITE,
+    borderRadius: 10,
+  },
+
+  header: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    marginTop: 32,
+  },
+  commentList: {
+    marginBottom: 10,
+    flexGrow: 0,
+    maxHeight: 300, // Adjust this value to fit your design
+  },
+  commentContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+  },
+  avatarContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.PRIMARY_DARK,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  avatar: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  commentContent: {
+    flex: 1,
+  },
+  creatorName: {
+    fontWeight: "bold",
+  },
+  commentText: {
+    fontSize: 13,
+  },
+  date: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 5,
+  },
+  textInput: {
+    height: 100,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 10,
+    color: COLORS.PRIMARY_DARK,
+    backgroundColor: "white",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  closeButton: {
+    backgroundColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  sendButton: {
+    backgroundColor: COLORS.PRIMARY_DARK,
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  closeIcon: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    marginLeft: 12,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingVertical: 10,
+  },
+  noCommentsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
