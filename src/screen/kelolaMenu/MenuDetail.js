@@ -1043,7 +1043,7 @@ export default function MenuDetail({ navigation, route }) {
                   <Text
                     style={{ color: COLORS.PRIMARY_DARK, fontWeight: "600" }}
                   >
-                    {dataMenu.note === "null" ? (
+                    {dataMenu?.note === "null" ? (
                       <Text>Tidak Ada Catatan</Text>
                     ) : (
                       <>
@@ -1063,85 +1063,110 @@ export default function MenuDetail({ navigation, route }) {
                       Cara Memasak
                     </Text>
                   </View>
-                  {dataMenuStep?.map((e, i) => (
-                    <>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        {selectedMenuStepId === e.menuStepId ? (
-                          <View style={{ maxWidth: "100%", flex: 1 }}>
-                            <GeneralTextInput
-                              // placeholder={valueDesc}
-                              mode="outlined"
-                              value={e.stepInformation}
-                              // hasErrors={authFailed}
-                              defaultValue={e.stepInformation}
-                              title="Perbarui Cara Memasak"
-                              multiline
-                              numberOfLines={10}
-                              messageError="Wrong Username/Password"
-                              onChangeText={(e) => setValueStep(e)}
-                              style={{ width: "100%" }}
-                            />
-                          </View>
-                        ) : (
-                          <>
-                            <View style={{ flexDirection: "row" }}>
-                              <View
-                                style={{
-                                  // backgroundColor: COLORS.PRIMARY_DARK,
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: 12,
-                                  alignItems: "center",
-                                  // justifyContent: "center",
-                                  // // marginRight: 8,
-                                  // textAlign: "center",
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    marginRight: ms(4),
-                                    fontSize: 14,
-                                    alignSelf: "center",
-                                    color: COLORS.PRIMARY_DARK,
-                                  }}
-                                >
-                                  {i + 1}.
-                                </Text>
-                              </View>
-                              <View style={{ maxWidth: "85%" }}>
-                                <Text
-                                  style={{
-                                    color: COLORS.PRIMARY_DARK,
-                                    fontSize: 14,
-                                    fontWeight: "600",
-                                  }}
-                                >
-                                  {e?.stepInformation}
-                                </Text>
-                              </View>
-                            </View>
-                            <View>
-                              {dataMenu?.isPublished ? (
-                                <></>
-                              ) : (
-                                <MenuEdit
-                                  handleEditState={handleEditState}
-                                  menuStepId={e.menuStepId}
-                                  DeleteStep={DeleteStep}
+                  {dataMenuStep?.length === 0 ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: 200,
+                        // backgroundColor: "red",
+                      }}
+                    >
+                      <Icon
+                        name="equal-box"
+                        style={{ fontSize: 48, color: "gray" }}
+                      />
+                      <Text style={{ color: "gray" }}>
+                        Belum Menambahkan Cara Memasak ...
+                      </Text>
+                    </View>
+                  ) : (
+                    <View>
+                      {dataMenuStep?.map((e, i) => (
+                        <>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {selectedMenuStepId === e.menuStepId ? (
+                              <View style={{ maxWidth: "100%", flex: 1 }}>
+                                <GeneralTextInput
+                                  // placeholder={valueDesc}
+                                  mode="outlined"
+                                  value={e.stepInformation}
+                                  // hasErrors={authFailed}
+                                  defaultValue={e.stepInformation}
+                                  title="Perbarui Cara Memasak"
+                                  multiline
+                                  numberOfLines={10}
+                                  messageError="Wrong Username/Password"
+                                  onChangeText={(e) => setValueStep(e)}
+                                  style={{ width: "100%" }}
                                 />
-                              )}
-                            </View>
-                          </>
-                        )}
-                      </View>
-                      <Divider style={{ marginTop: ms(6), marginBottom: 6 }} />
-                    </>
-                  ))}
+                              </View>
+                            ) : (
+                              <>
+                                <View style={{ flexDirection: "row" }}>
+                                  <View
+                                    style={{
+                                      // backgroundColor: COLORS.PRIMARY_DARK,
+                                      width: 24,
+                                      height: 24,
+                                      borderRadius: 12,
+                                      alignItems: "center",
+                                      // justifyContent: "center",
+                                      // // marginRight: 8,
+                                      // textAlign: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        marginRight: ms(4),
+                                        fontSize: 14,
+                                        alignSelf: "center",
+                                        color: COLORS.PRIMARY_DARK,
+                                      }}
+                                    >
+                                      {i + 1}.
+                                    </Text>
+                                  </View>
+                                  <View style={{ maxWidth: "85%" }}>
+                                    <Text
+                                      style={{
+                                        color: COLORS.PRIMARY_DARK,
+                                        fontSize: 14,
+                                        fontWeight: "600",
+                                      }}
+                                    >
+                                      {e?.stepInformation}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <View>
+                                  {dataMenu?.isPublished ? (
+                                    <></>
+                                  ) : (
+                                    <MenuEdit
+                                      handleEditState={handleEditState}
+                                      menuStepId={e.menuStepId}
+                                      DeleteStep={DeleteStep}
+                                    />
+                                  )}
+                                </View>
+                              </>
+                            )}
+                          </View>
+                          <Divider
+                            style={{ marginTop: ms(6), marginBottom: 6 }}
+                          />
+                        </>
+                      ))}
+                    </View>
+                  )}
+
                   <View>
                     {insertStepState ? (
                       <View style={{ maxWidth: "100%", flex: 1 }}>
@@ -1855,5 +1880,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  card2: {
+    margin: 16,
+    backgroundColor: COLORS.WHITE,
+    paddingHorizontal: 16,
+    paddingVertical: 21,
   },
 });

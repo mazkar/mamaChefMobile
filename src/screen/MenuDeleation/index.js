@@ -33,7 +33,9 @@ export default function MenuDelegation({ navigation }) {
   const user = useSelector((state) => state.auth.userData);
   const [openDropDown, setOpenDropDown] = useState(false);
   const [openDropDownMenu, setOpenDropDownMenu] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+    moment().format("YYYY-MM-DD")
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [valueNamaMenu, setValueNamaMenu] = useState("");
@@ -349,66 +351,40 @@ export default function MenuDelegation({ navigation }) {
                 </Text>
               </TouchableOpacity>
             </View>
-            <Card
-              style={{
-                paddingHorizontal: ms(12),
-                backgroundColor: COLORS.WHITE,
-              }}
-            >
-              <MyCalendar
-                data={dataJadwal}
-                selectedDate={selectedDate}
-                setSelectedEvents={setSelectedEvents}
-                setSelectedDate={setSelectedDate}
-                selectedEvents={selectedEvents}
-                // modalVisible={modalVisible}
-                // setModalVisible={setModalVisible}
-              />
-            </Card>
+            <View style={{ paddingHorizontal: 6 }}>
+              <Card
+                style={{
+                  paddingHorizontal: ms(12),
+                  backgroundColor: COLORS.WHITE,
+                }}
+              >
+                <MyCalendar
+                  data={dataJadwal}
+                  selectedDate={selectedDate}
+                  setSelectedEvents={setSelectedEvents}
+                  setSelectedDate={setSelectedDate}
+                  selectedEvents={selectedEvents}
+                  // modalVisible={modalVisible}
+                  // setModalVisible={setModalVisible}
+                />
+              </Card>
+            </View>
+
             {/* {selectedDate == null ? <Text>{selectedDate}</Text> : <></>} */}
-            <Card
-              style={{
-                paddingHorizontal: ms(12),
-                paddingTop: ms(12),
-                backgroundColor: COLORS.WHITE,
-                marginTop: ms(28),
-              }}
-            >
-              {selectedEvents?.length == 0 ? (
-                <>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: "700",
-                      color: COLORS.GRAY_HARD,
-                    }}
-                  >
-                    Jadwal Menu
-                  </Text>
-                  <Text>
-                    <Text style={{ color: "gray", fontWeight: "300" }}>
-                      Tanggal Di Pilih :
-                    </Text>
-                    <Text
-                      style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}
-                    >
-                      {selectedDate}
-                    </Text>
-                  </Text>
-                  <View>
-                    <TouchableOpacity
-                      style={styles.btnAdd}
-                      onPress={showModalAdd}
-                    >
-                      <Text style={{ color: "white", fontWeight: "700" }}>
-                        Tambah Jadwal Menu
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              ) : (
-                <>
-                  <View style={{ marginBottom: ms(8), marginTop: ms(24) }}>
+            <View style={{ paddingHorizontal: ms(4), marginBottom: 24 }}>
+              <Card
+                style={{
+                  paddingHorizontal: ms(12),
+                  paddingTop: ms(12),
+                  backgroundColor: COLORS.WHITE,
+                  marginTop: ms(28),
+                  // borderWidth: 1,
+                  // borderRadius: 10,
+                  // borderColor: COLORS.PRIMARY_DARK,
+                }}
+              >
+                {selectedEvents?.length == 0 ? (
+                  <>
                     <Text
                       style={{
                         fontSize: 18,
@@ -418,142 +394,183 @@ export default function MenuDelegation({ navigation }) {
                     >
                       Jadwal Menu
                     </Text>
-                  </View>
-                  <Text>
-                    <Text style={{ color: "gray", fontWeight: "300" }}>
-                      Tanggal Di Pilih :
-                    </Text>
-                    <Text
-                      style={{ fontWeight: "600", color: COLORS.PRIMARY_DARK }}
-                    >
-                      {" "}
-                      {selectedDate}
-                    </Text>
-                  </Text>
-                  <View>
-                    <TouchableOpacity
-                      style={styles.btnAdd}
-                      onPress={showModalAdd}
-                    >
-                      <Text style={{ color: "white", fontWeight: "700" }}>
-                        Tambah Jadwal Menu
+                    <Text>
+                      <Text style={{ color: "gray", fontWeight: "300" }}>
+                        Tanggal Di Pilih :
                       </Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              )}
-            </Card>
-
-            {/* <Button onPress={() => console.log(selectedEvents)}>Test</Button> */}
-            <View style={{ paddingVertical: 32, paddingHorizontal: ms(4) }}>
-              {selectedEvents?.map((e) => (
-                <Card
-                  style={{
-                    borderRadius: 8,
-                    width: "100%",
-                    borderLeftColor: COLORS.PRIMARY_DARK,
-                    borderLeftWidth: 4,
-                    height: ms(92),
-                    // paddingRight: ms(32),
-                    backgroundColor: COLORS.WHITE,
-                    borderTopStartRadius: 10,
-                    borderTopEndRadius: 10,
-                    borderStart: "1px solid red",
-                    marginBottom: ms(24),
-                    paddingHorizontal: ms(12),
-                    // backgroundColor: COLORS.WHITE,
-                    paddingBottom: ms(32),
-                  }}
-                  // onPress={() => onPressNav(item.menuId)}
-                >
-                  <Card.Content
-                    style={{
-                      // marginTop: ms(4),
-                      // width: "100%",
-                      // flex: 1,
-                      paddingHorizontal: ms(4),
-
-                      // backgroundColor: "red",
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <View>
-                        <Text
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                          style={{
-                            fontSize: 16,
-                            fontWeight: "700",
-                            color: COLORS.GRAY_HARD,
-                          }}
-                        >
-                          {e?.menuName}
-                        </Text>
-                        <Text
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                          style={{
-                            fontSize: 12,
-                            fontWeight: "400",
-                            color: COLORS.GRAY_HARD,
-                          }}
-                        >
-                          {e.memberName}
-                        </Text>
-                        <Text
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                          style={{
-                            fontSize: 12,
-                            fontWeight: "400",
-                            color: COLORS.PRIMARY_DARK,
-                          }}
-                        >
-                          tanggal: {moment(e.assignedDate).format("YYYY-MM-DD")}
-                        </Text>
-                      </View>
-                      <TouchableOpacity
-                        onPress={() => onPressNav(e.menuId)}
+                      <Text
                         style={{
-                          alignSelf: "center",
-                          justifyContent: "center",
-                          // backgroundColor: COLORS.PRIMARY_DARK,
-                          width: ms(72),
-
-                          height: ms(24),
+                          fontWeight: "600",
+                          color: COLORS.PRIMARY_DARK,
                         }}
                       >
-                        <Text
-                          style={{
-                            color: COLORS.PRIMARY_DARK,
-                            fontSize: 12,
-                            fontWeight: "600",
-                          }}
-                        >
-                          Lihat Resep
+                        {selectedDate}
+                      </Text>
+                    </Text>
+                    <View>
+                      <TouchableOpacity
+                        style={styles.btnAdd}
+                        onPress={showModalAdd}
+                      >
+                        <Text style={{ color: "white", fontWeight: "700" }}>
+                          Tambah Jadwal Resep
                         </Text>
                       </TouchableOpacity>
                     </View>
-                    <View
+                  </>
+                ) : (
+                  <>
+                    <View style={{ marginBottom: ms(8), marginTop: ms(24) }}>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: "700",
+                          color: COLORS.GRAY_HARD,
+                        }}
+                      >
+                        Jadwal Menu
+                      </Text>
+                    </View>
+                    <Text>
+                      <Text style={{ color: "gray", fontWeight: "300" }}>
+                        Tanggal Di Pilih :
+                      </Text>
+                      <Text
+                        style={{
+                          fontWeight: "600",
+                          color: COLORS.PRIMARY_DARK,
+                        }}
+                      >
+                        {" "}
+                        {selectedDate}
+                      </Text>
+                    </Text>
+                    <View>
+                      <TouchableOpacity
+                        style={styles.btnAdd}
+                        onPress={showModalAdd}
+                      >
+                        <Text style={{ color: "white", fontWeight: "700" }}>
+                          Tambah Jadwal Resep
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
+                <View style={{ paddingVertical: 32, paddingHorizontal: ms(2) }}>
+                  {selectedEvents?.map((e) => (
+                    <Card
                       style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        borderRadius: 8,
+                        width: "100%",
+                        borderLeftColor: COLORS.PRIMARY_DARK,
+                        borderLeftWidth: 4,
+                        // height: ms(92),
+                        // paddingRight: ms(32),
+                        backgroundColor: COLORS.WHITE,
+                        borderTopStartRadius: 10,
+                        borderTopEndRadius: 10,
+                        borderStart: "1px solid red",
+                        marginBottom: ms(16),
+                        paddingHorizontal: ms(12),
+                        // backgroundColor: COLORS.WHITE,
+                        paddingBottom: ms(12),
                       }}
-                    ></View>
+                      // onPress={() => onPressNav(item.menuId)}
+                    >
+                      <Card.Content
+                        style={{
+                          // marginTop: ms(4),
+                          // width: "100%",
+                          // flex: 1,
+                          paddingHorizontal: ms(4),
 
-                    {/* <Text numberOfLines={3} ellipsizeMode="tail">
+                          // backgroundColor: "red",
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <View>
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              style={{
+                                fontSize: 16,
+                                fontWeight: "700",
+                                color: COLORS.GRAY_HARD,
+                              }}
+                            >
+                              {e?.menuName}
+                            </Text>
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "400",
+                                color: COLORS.GRAY_HARD,
+                              }}
+                            >
+                              {e.memberName}
+                            </Text>
+                            <Text
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                              style={{
+                                fontSize: 12,
+                                fontWeight: "400",
+                                color: COLORS.PRIMARY_DARK,
+                              }}
+                            >
+                              tanggal:{" "}
+                              {moment(e.assignedDate).format("YYYY-MM-DD")}
+                            </Text>
+                          </View>
+                          <TouchableOpacity
+                            onPress={() => onPressNav(e.menuId)}
+                            style={{
+                              alignSelf: "center",
+                              justifyContent: "center",
+                              // backgroundColor: COLORS.PRIMARY_DARK,
+                              width: ms(72),
+
+                              height: ms(24),
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: COLORS.PRIMARY_DARK,
+                                fontSize: 12,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Lihat Resep
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        ></View>
+
+                        {/* <Text numberOfLines={3} ellipsizeMode="tail">
                           {item?.description}
                         </Text> */}
-                  </Card.Content>
-                </Card>
-              ))}
+                      </Card.Content>
+                    </Card>
+                  ))}
+                </View>
+              </Card>
             </View>
+
+            {/* <Button onPress={() => console.log(selectedEvents)}>Test</Button> */}
           </View>
           {isLoadingGet ? (
             <PopUpLoader visible={true} />

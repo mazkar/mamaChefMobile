@@ -243,7 +243,7 @@ export default function KeranjangMenu({ navigation }) {
   function mergeIngredients(data) {
     const mergedIngredients = {};
     // console.log(data, "merged");
-    data.forEach((item) => {
+    data?.forEach((item) => {
       const { ingredientsId, ingredientsName, qty, uom } = item;
 
       if (mergedIngredients[ingredientsId]) {
@@ -479,41 +479,71 @@ export default function KeranjangMenu({ navigation }) {
       />
 
       <ScrollView style={styles.mainContainer}>
-        <View
-          style={{
-            width: "40%",
-            paddingHorizontal: ms(12),
-            marginTop: ms(20),
-          }}
-        >
-          <TouchableOpacity
-            onPress={handleSelectAll}
+        {dataList?.length === 0 ? (
+          <View
             style={{
-              marginBottom: 10,
-              backgroundColor: COLORS.PRIMARY_DARK,
-              paddingHorizontal: ms(12),
-              paddingVertical: ms(10),
+              flex: 1,
               justifyContent: "center",
+              width: "20vw",
               alignItems: "center",
-              borderRadius: 10,
+              height: 500,
+              // backgroundColor: "red",
             }}
           >
-            <Text style={{ color: "white" }}>
-              {selectAll ? "Unselect All" : "Pilih Semua"}
+            <Image source={require("../../assets/images/empty_data.png")} />
+            <Text
+              style={{
+                marginTop: ms(8),
+                color: COLORS.GRAY_HARD,
+                fontSize: 18,
+              }}
+            >
+              Kamu Belum Memiliki Resep di Keranjang
             </Text>
-          </TouchableOpacity>
-        </View>
-        {dataList?.map((e) => (
-          <Card
+          </View>
+        ) : (
+          <View
             style={{
-              marginTop: ms(18),
-              paddingVertical: ms(18),
-              backgroundColor: "white",
-              paddingHorizontal: ms(18),
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+              marginBottom: 24,
             }}
           >
-            <View style={{ flexDirection: "row" }}>
-              {/* <View>
+            <View
+              style={{
+                width: "30%",
+                paddingHorizontal: ms(12),
+                marginTop: ms(4),
+              }}
+            >
+              <TouchableOpacity
+                onPress={handleSelectAll}
+                style={{
+                  marginBottom: 10,
+                  backgroundColor: COLORS.PRIMARY_DARK,
+                  paddingHorizontal: ms(12),
+                  paddingVertical: ms(10),
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 10,
+                }}
+              >
+                <Text style={{ color: "white" }}>
+                  {selectAll ? "Batal" : "Pilih Semua"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {dataList?.map((e) => (
+              <Card
+                style={{
+                  marginTop: ms(18),
+                  paddingVertical: ms(18),
+                  backgroundColor: "white",
+                  paddingHorizontal: ms(18),
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  {/* <View>
                     <Checkbox
                       status={checked ? "checked" : "unchecked"}
                       onPress={() => {
@@ -521,92 +551,93 @@ export default function KeranjangMenu({ navigation }) {
                       }}
                     />
                   </View> */}
-              <View>
-                <Checkbox.Android
-                  status={
-                    selectedItems.some(
-                      (selectedItem) =>
-                        selectedItem.shopingCartId === e.shopingCartId
-                    )
-                      ? "checked"
-                      : "unchecked"
-                  }
-                  onPress={() => handleCheckboxChange(e)}
-                />
-              </View>
-              <View>
-                <Image
+                  <View>
+                    <Checkbox.Android
+                      status={
+                        selectedItems.some(
+                          (selectedItem) =>
+                            selectedItem.shopingCartId === e.shopingCartId
+                        )
+                          ? "checked"
+                          : "unchecked"
+                      }
+                      onPress={() => handleCheckboxChange(e)}
+                    />
+                  </View>
+                  <View>
+                    <Image
+                      style={{
+                        width: ms(96),
+                        height: ms(96),
+                        borderRadius: ms(10),
+                      }}
+                      source={
+                        e.photo == undefined
+                          ? require("./../../assets/images/NoImage.jpeg")
+                          : {
+                              uri: `${e?.photo}`,
+                            }
+                      }
+                    />
+                  </View>
+                  <View style={{ marginLeft: ms(12) }}>
+                    <Text style={{ fontWeight: "600" }}>{e.menuName}</Text>
+                    <Text style={{ fontSize: 10, color: "gray" }} t>
+                      Resep Oleh :{" "}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: "gray" }} t>
+                      {e.email}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => onPressNav(e.menuId)}
+                      style={{}}
+                    >
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          color: COLORS.PRIMARY_DARK,
+                          marginTop: 12,
+                        }}
+                      >
+                        Lihat Resep
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <View
                   style={{
-                    width: ms(96),
-                    height: ms(96),
-                    borderRadius: ms(10),
+                    alignItems: "flex-end",
+                    flexDirection: "row",
+
+                    justifyContent: "flex-end",
                   }}
-                  source={
-                    e.photo == undefined
-                      ? require("./../../assets/images/NoImage.jpeg")
-                      : {
-                          uri: `${e?.photo}`,
-                        }
-                  }
-                />
-              </View>
-              <View style={{ marginLeft: ms(12) }}>
-                <Text style={{ fontWeight: "600" }}>{e.menuName}</Text>
-                <Text style={{ fontSize: 10, color: "gray" }} t>
-                  Resep Oleh :{" "}
-                </Text>
-                <Text style={{ fontSize: 11, color: "gray" }} t>
-                  {e.email}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => onPressNav(e.menuId)}
-                  style={{}}
                 >
-                  <Text
+                  <MaterialIcons
+                    name="delete-outline"
+                    size={18}
+                    onPress={() => deleteMenu(e)}
                     style={{
-                      fontWeight: "500",
+                      fontSize: 28,
                       color: COLORS.PRIMARY_DARK,
-                      marginTop: 12,
+                      marginRight: ms(4),
+                      alignSelf: "center",
                     }}
-                  >
-                    Lihat Resep
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+                  />
 
-            <View
-              style={{
-                alignItems: "flex-end",
-                flexDirection: "row",
-
-                justifyContent: "flex-end",
-              }}
-            >
-              <MaterialIcons
-                name="delete-outline"
-                size={18}
-                onPress={() => deleteMenu(e)}
-                style={{
-                  fontSize: 28,
-                  color: COLORS.PRIMARY_DARK,
-                  marginRight: ms(4),
-                  alignSelf: "center",
-                }}
-              />
-
-              <NumberInput
-                quantity={e.quantity}
-                uid={uid}
-                setSelectedItems={setSelectedItems}
-                getMenuInCarts={getMenuInCarts}
-                shopingCartId={e.shopingCartId}
-              />
-            </View>
-          </Card>
-        ))}
+                  <NumberInput
+                    quantity={e.quantity}
+                    uid={uid}
+                    setSelectedItems={setSelectedItems}
+                    getMenuInCarts={getMenuInCarts}
+                    shopingCartId={e.shopingCartId}
+                  />
+                </View>
+              </Card>
+            ))}
+          </View>
+        )}
       </ScrollView>
-      {selectedItems.length == 0 ? (
+      {selectedItems?.length == 0 ? (
         <></>
       ) : (
         <View

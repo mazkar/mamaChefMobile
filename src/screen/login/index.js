@@ -58,7 +58,7 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons";
 
 const LoginPage = ({ navigation }) => {
   const dispatch = useDispatch();
-  const currentVersion = "1.0.0";
+  const currentVersion = "1.3";
   const [showPassword, setShowPassword] = useState(true);
   const [dataContent, setDataContent] = useState([]);
   const [modalErroVis, setModalErrorVis] = useState(false);
@@ -165,8 +165,22 @@ const LoginPage = ({ navigation }) => {
       userName: email,
       password: password,
     };
-    console.log(`${baseUrl.URL}api/Auth/Login`);
-    console.log(body);
+
+    let errorItems = [];
+    if (!body.userName || body.userName == "") errorItems.push("Email");
+    if (!body.password || body.password == "") errorItems.push("Password");
+
+    if (errorItems.length > 0) {
+      // setError(true);
+      setIsLoading(false);
+      // setIsLoadingGet(false);
+      setModalErrorVis(true);
+      // setModalAddBahan(false);
+      setMessageError(`Silahkan Masukan ${errorItems.join(", ")}`);
+      return;
+    }
+    console.log(body, "body");
+
     try {
       // console.log(body);
       let res = await axios({
@@ -201,7 +215,9 @@ const LoginPage = ({ navigation }) => {
     } catch (err) {
       console.error(err, "error");
       setIsLoading(false);
-      setMessageError(err.message);
+      setMessageError(
+        "Email atau Password Salah, Silahkan Masukan Email atau Password Kembali"
+      );
       setModalErrorVis(true);
     }
   }
@@ -503,7 +519,7 @@ const LoginPage = ({ navigation }) => {
             mode="contained"
             onPress={hideModalError}
           >
-            Close
+            Kembali
           </GeneralButton>
         </View>
         {/* </View> */}

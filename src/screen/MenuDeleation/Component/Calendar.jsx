@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, LocaleConfig } from "react-native-calendars";
-import { View, Text, Modal, Button, StyleSheet, FlatList } from "react-native";
-import { ms } from "react-native-size-matters";
+import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "../../../assets/theme";
-import { Card } from "react-native-paper";
 
 LocaleConfig.locales["en"] = {
   monthNames: [
@@ -71,33 +69,7 @@ const MyCalendar = ({
     const events = organizedData[date] || [];
     setSelectedDate(date);
     setSelectedEvents(events);
-    // setModalVisible(true);
     console.log(events);
-  };
-
-  const CustomDay = ({ date, state, children }) => {
-    // Customize the style of the day based on its state
-    let dayStyle = {
-      selected: {
-        backgroundColor: "#FF0000", // Red color when selected
-      },
-      selectedText: {
-        color: "#FFFFFF", // White text when selected
-      },
-    };
-
-    return (
-      <View style={{ flex: 1, alignItems: "center" }}>
-        <Text
-          style={[
-            { color: state === "disabled" ? "gray" : "black" },
-            state === "selected" && dayStyle.selectedText,
-          ]}
-        >
-          {String(children)}
-        </Text>
-      </View>
-    );
   };
 
   const markedDates = {};
@@ -106,19 +78,24 @@ const MyCalendar = ({
     markedDates[date] = { marked: true };
   });
 
+  if (selectedDate) {
+    markedDates[selectedDate] = {
+      selected: true,
+      marked: markedDates[selectedDate]?.marked,
+    };
+  }
+
   return (
     <>
       <Calendar
         markedDates={markedDates}
-        // onDayPress={(day) => handleDatePress(day)}
-        // dayComponent={CustomDay}
         onDayPress={(day) => handleDatePress(day)}
         theme={{
           calendarBackground: "#ffffff",
           textSectionTitleColor: "#b6c1cd",
-          selectedDayBackgroundColor: "#00adf5",
-          selectedDayTextColor: "#ffffff",
-          todayTextColor: "#00adf5",
+          selectedDayBackgroundColor: "pink", // Changed to pink
+          selectedDayTextColor: "#ffffff", // Text color remains white
+          todayTextColor: COLORS.PRIMARY_DARK,
           dayTextColor: "#2d4150",
           textDisabledColor: "#d9e1e8",
           dotColor: COLORS.PRIMARY_DARK,
@@ -130,7 +107,7 @@ const MyCalendar = ({
           textDayFontFamily: "monospace",
           textMonthFontFamily: "monospace",
           textDayHeaderFontFamily: "monospace",
-          textDayFontWeight: "00",
+          textDayFontWeight: "300",
           textMonthFontWeight: "bold",
           textDayHeaderFontWeight: "300",
           textDayFontSize: 16,
@@ -138,83 +115,6 @@ const MyCalendar = ({
           textDayHeaderFontSize: 16,
         }}
       />
-
-      {/* <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedDate}</Text>
-            <View style={{ paddingVertical: 32 }}>
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listData} // center emptyData component
-                data={selectedEvents}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item.menuId}
-                renderItem={({ item, index }) => (
-                  <Card
-                    style={{
-                      borderRadius: 8,
-                      width: ms(138),
-                      height: ms(168),
-                      marginLeft: ms(12),
-                      borderTopStartRadius: 10,
-                      borderTopEndRadius: 10,
-                      backgroundColor: COLORS.WHITE,
-                      paddingBottom: ms(32),
-                    }}
-                    onPress={() => onPressNav(item.menuId)}
-                  >
-                    <Card.Content
-                      style={{
-                        paddingHorizontal: ms(4),
-                      }}
-                    >
-                      <View
-                        style={{
-                          backgroundColor: COLORS.PRIMARY_DARK,
-                          borderRadius: ms(10),
-                          alignContent: "center",
-
-                          marginTop: ms(4),
-                          width: "100%",
-                          paddingHorizontal: ms(6),
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            alignSelf: "center",
-                            fontWeight: "600",
-                            color: COLORS.WHITE,
-                          }}
-                        >
-                          {item?.menuName}
-                        </Text>
-                      </View>
-
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "500",
-                          color: COLORS.PRIMARY_DARK,
-                        }}
-                      >
-                        Oleh : Budi
-                      </Text>
-                    </Card.Content>
-                  </Card>
-                )}
-              />
-            </View>
-            <Button title="Close" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal> */}
     </>
   );
 };
@@ -241,4 +141,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
 export default MyCalendar;

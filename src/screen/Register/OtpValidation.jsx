@@ -80,6 +80,7 @@ export default function OtpValidation({ route, navigation }) {
   const [showPassword2, setShowPassword2] = useState(true);
   const [checked, setChecked] = useState(false);
   const [dataUser, setDataUser] = useState([]);
+  const [time, setTime] = useState(60);
 
   const hideModalSuccess = () => {
     setModalSuccessVis(false);
@@ -207,8 +208,41 @@ export default function OtpValidation({ route, navigation }) {
     }
   }
 
+  async function resendOtp(id) {
+    setIsLoading(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Auth/resendotp/resendotp/${id}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          //   Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res, "res");
+      if (res?.status === 200) {
+        // test for status you want, etc
+        setIsLoading(false);
+        // console.log(res.data, "meeeeeeeee");
+        setIsFinished(false);
+        // setLoadingSendOTP(false);
+        setTime(60);
+
+        // setIsLoadingGet(false);
+        console.log(res.data.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      //   setIsLoadingGet(false);
+    }
+  }
+
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
 
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -236,6 +270,27 @@ export default function OtpValidation({ route, navigation }) {
   useEffect(() => {
     getDataUser(route.params?.userId);
   }, []);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
+  useEffect(() => {
+    if (time === 0) {
+      setIsFinished(true);
+      return; // Jika waktu habis, hentikan useEffect
+    }
+
+    // Mengatur interval yang berfungsi untuk mengurangi waktu setiap detik
+    const timer = setInterval(() => {
+      setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
+
+    // Membersihkan interval ketika komponen di-unmount atau waktu habis
+    return () => clearInterval(timer);
+  }, [time]);
 
   return (
     <RootContainer>
@@ -287,9 +342,22 @@ export default function OtpValidation({ route, navigation }) {
               ]}
             >
               <Text style={[styles.welcomeText2, { fontWeight: "bold" }]}>
-                One Time Password (OTP) Telah dikirimkan ke Email
+                One Time Password (OTP) Telah dikirimkan ke Email {""}
                 {dataUser?.email}, silahkan masukan kembali OTP
               </Text>
+              {isFinished ? (
+                <TouchableOpacity
+                  onPress={() => resendOtp(route.params?.userId)}
+                >
+                  <Text style={[styles.welcomeText3, { fontWeight: "bold" }]}>
+                    Kirim ulang OTP
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <Text style={[styles.welcomeText2, { fontWeight: "bold" }]}>
+                  Kirim ulang OTP dalam {formatTime(time)}
+                </Text>
+              )}
             </View>
 
             <TouchableOpacity
@@ -412,6 +480,14 @@ const styles = StyleSheet.create({
   },
   welcomeText2: {
     color: COLORS.GRAY_HARD,
+    fontStyle: "Poppins",
+    fontSize: moderateScale(11),
+    marginRight: moderateScale(8),
+    paddingBottom: moderateScale(10),
+    fontWeight: "bold",
+  },
+  welcomeText3: {
+    color: COLORS.PRIMARY_DARK,
     fontStyle: "Poppins",
     fontSize: moderateScale(11),
     marginRight: moderateScale(8),

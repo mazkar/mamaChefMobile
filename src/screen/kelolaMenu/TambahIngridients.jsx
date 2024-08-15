@@ -54,6 +54,55 @@ import DropDownPicker from "react-native-dropdown-picker";
 import moment from "moment";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import PopUpConfirm from "./components/PopUpConfirm.jsx";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
+const MenuEdit = ({ menuStepId, handleEditState, DeleteStep }) => {
+  const [notifVisible, setNotifVisible] = useState(false);
+
+  const showNotif = () => {
+    setNotifVisible(true);
+  };
+
+  const closeNotif = () => {
+    setNotifVisible(false);
+  };
+  return (
+    <Menu
+      visible={notifVisible}
+      onDismiss={closeNotif}
+      anchor={
+        <TouchableOpacity onPress={() => setNotifVisible(!notifVisible)}>
+          <FontAwesome
+            name="align-justify"
+            size={10}
+            style={{
+              fontSize: 24,
+              color: COLORS.PRIMARY_DARK,
+            }}
+          />
+        </TouchableOpacity>
+      }
+    >
+      <>
+        <Menu.Item
+          onPress={() => handleEditState(menuStepId)}
+          title="Perbarui Cara Memasak"
+        />
+        <Menu.Item
+          onPress={() => DeleteStep(menuStepId)}
+          title="Hapus Cara Memasak"
+        />
+        <Menu.Item
+          onPress={() => setNotifVisible(false)}
+          title="Batalkan"
+          titleStyle={{ color: COLORS.PRIMARY_DARK, fontWeight: "800" }}
+        />
+
+        <Divider />
+      </>
+    </Menu>
+  );
+};
 
 export default function EditBahan({ navigation, menuId, route }) {
   const [valueNamaMenu, setValueNamaMenu] = useState("");
@@ -91,6 +140,202 @@ export default function EditBahan({ navigation, menuId, route }) {
   const [valueDesc, setValueDesc] = useState("");
   const [error, setError] = useState(false);
   const [errorItems, setErrorItem] = useState([]);
+
+  // CARA MEMASAK
+  const [dataMenuStep, setDataMenuStep] = useState([]);
+  const [editStepState, setEditStateStep] = useState([]);
+  const [insertStepState, setInsertStateStep] = useState(false);
+  const [selectedMenuStepId, setSelectedStepMenuId] = useState(0);
+  const [valueStep, setValueStep] = useState(null);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleEditState = (ids) => {
+    setSelectedStepMenuId(ids);
+    setInsertStateStep(false);
+  };
+
+  const cancelEditState = (ids) => {
+    setSelectedStepMenuId(0);
+  };
+
+  const handleInssertState = (ids) => {
+    setInsertStateStep(true);
+    setSelectedStepMenuId(0);
+  };
+
+  const cancelInsertState = (ids) => {
+    setInsertStateStep(false);
+  };
+
+  async function handleEditStep() {
+    setIsLoadingGet(true);
+
+    const body = {
+      menuStepId: selectedMenuStepId,
+      stepInformation: valueStep,
+      userId: parseInt(uid?.UserId),
+      isValid: true,
+    };
+
+    try {
+      console.log(body);
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/UpdateMenuStep`,
+        method: "PUT",
+        timeout: 8000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status == "200") {
+        console.log(res.data.data, "<= res");
+        setIsLoadingGet(false);
+        // dispatch(setUserId(res.data.data[0]?.userId));
+        setSuccessMessage(res.data.message);
+        setSelectedStepMenuId(0);
+        getMenuStep(menuId);
+        setModalSuccessVis(true);
+
+        // test for status you want, etc
+        // setLoadingUpload(false);
+        // getTaskDetail(route.params.assignmentId);
+        console.log(res, "Success");
+
+        // setDataItem(res.data);
+        // setDataInfo(res.data);
+      } else {
+        setIsLoadingGet(false);
+        // setModalEditDescVisible(false);
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err, "error");
+      setModalErrorVis(true);
+      setIsLoadingGet(false);
+      setErrorMessage(err.message);
+      // setModalEditDescVisible(false);
+    }
+  }
+
+  async function handleInsertStep() {
+    setIsLoadingGet(true);
+
+    const body = {
+      menuId: menuId,
+      stepInformation: valueStep,
+      userId: parseInt(uid?.UserId),
+      isValid: true,
+    };
+    try {
+      console.log(body);
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/InsertMenuStep`,
+        method: "POST",
+        timeout: 8000,
+        data: body,
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status == "200") {
+        console.log(res.data.data, "<= res");
+        setIsLoadingGet(false);
+        // dispatch(setUserId(res.data.data[0]?.userId));
+        setSuccessMessage(res.data.message);
+        setInsertStateStep(false);
+        // getMenu(uid);
+        getMenuStep(menuId);
+        setModalSuccessVis(true);
+
+        // test for status you want, etc
+        // setLoadingUpload(false);
+        // getTaskDetail(route.params.assignmentId);
+        console.log(res, "Success");
+
+        // setDataItem(res.data);
+        // setDataInfo(res.data);
+      } else {
+        setIsLoadingGet(false);
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err, "error");
+      setModalErrorVis(true);
+      setIsLoadingGet(false);
+      setErrorMessage(err.message);
+    }
+  }
+
+  async function DeleteStep(id) {
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/DeleteMenuStep/${id}`,
+        method: "DELETE",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data.data, "=======> menu step");
+        getMenuStep(menuId);
+        setModalSuccessVis(true);
+        setSuccessMessage("Cara Memasak Berhasil di Hapus");
+        setIsLoadingGet(false);
+
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err, "error");
+      setModalErrorVis(true);
+      setIsLoadingGet(false);
+      setErrorMsg(err.message);
+    }
+  }
+
+  async function getMenuStep(id) {
+    setIsLoadingGet(true);
+    try {
+      let res = await axios({
+        url: `${baseUrl.URL}api/Menu/GetMenuStep/${id}`,
+        method: "get",
+        timeout: 8000,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status == 200) {
+        // test for status you want, etc
+        console.log(res.data.data, "=======> menu step");
+        setDataMenuStep(res.data.data);
+
+        setIsLoadingGet(false);
+
+        // console.log(res.data, "transit");
+      }
+      // Don't forget to return something
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      setIsLoadingGet(false);
+    }
+  }
+
+  // END Cara memasak
 
   async function getData(id) {
     setIsLoadingGet(true);
@@ -378,6 +623,7 @@ export default function EditBahan({ navigation, menuId, route }) {
 
   useEffect(() => {
     getData(menuId);
+    getMenuStep(menuId);
   }, []);
 
   const handleLogut = () => {
@@ -826,6 +1072,264 @@ export default function EditBahan({ navigation, menuId, route }) {
                   </DataTable.Row>
                 ))}
               </DataTable>
+            </Card>
+          </View>
+
+          {/* Langkah Memasak */}
+          <View>
+            <View style={{ marginBottom: ms(16) }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "700",
+                  color: "gray",
+                }}
+              >
+                Cara Memasak
+              </Text>
+
+              <View
+                style={{
+                  backgroundColor: "black",
+                  borderBottomColor: COLORS.PRIMARY_DARK,
+                  borderBottomWidth: 4,
+                  width: 24,
+                }}
+              ></View>
+            </View>
+
+            <View style={{ alignSelf: "flex-end" }}>
+              <TouchableOpacity
+                style={styles.button3}
+                onPress={handleInssertState}
+              >
+                <Text style={{ color: "white" }}>Tambah Cara Memasak</Text>
+              </TouchableOpacity>
+            </View>
+            <Card style={styles.card2}>
+              {dataMenuStep?.length === 0 ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: 200,
+                    // backgroundColor: "red",
+                  }}
+                >
+                  <Icon
+                    name="equal-box"
+                    style={{ fontSize: 48, color: "gray" }}
+                  />
+                  <Text style={{ color: "gray" }}>
+                    Belum Menambahkan Cara Memasak ...
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  {dataMenuStep?.map((e, i) => (
+                    <>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {selectedMenuStepId === e.menuStepId ? (
+                          <View style={{ maxWidth: "100%", flex: 1 }}>
+                            <GeneralTextInput
+                              // placeholder={valueDesc}
+                              mode="outlined"
+                              value={e.stepInformation}
+                              // hasErrors={authFailed}
+                              defaultValue={e.stepInformation}
+                              title="Perbarui Cara Memasak"
+                              multiline
+                              numberOfLines={10}
+                              messageError="Wrong Username/Password"
+                              onChangeText={(e) => setValueStep(e)}
+                              style={{ width: "100%" }}
+                            />
+                          </View>
+                        ) : (
+                          <>
+                            <View style={{ flexDirection: "row" }}>
+                              <View
+                                style={{
+                                  // backgroundColor: COLORS.PRIMARY_DARK,
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: 12,
+                                  alignItems: "center",
+                                  // justifyContent: "center",
+                                  // // marginRight: 8,
+                                  // textAlign: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    marginRight: ms(4),
+                                    fontSize: 14,
+                                    alignSelf: "center",
+                                    color: COLORS.PRIMARY_DARK,
+                                  }}
+                                >
+                                  {i + 1}.
+                                </Text>
+                              </View>
+                              <View style={{ maxWidth: "85%" }}>
+                                <Text
+                                  style={{
+                                    color: COLORS.PRIMARY_DARK,
+                                    fontSize: 14,
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  {e?.stepInformation}
+                                </Text>
+                              </View>
+                            </View>
+                            <View>
+                              {dataMenu?.isPublished ? (
+                                <></>
+                              ) : (
+                                <MenuEdit
+                                  handleEditState={handleEditState}
+                                  menuStepId={e.menuStepId}
+                                  DeleteStep={DeleteStep}
+                                />
+                              )}
+                            </View>
+                          </>
+                        )}
+                      </View>
+                      <Divider style={{ marginTop: ms(6), marginBottom: 6 }} />
+                    </>
+                  ))}
+                </View>
+              )}
+
+              <View>
+                {insertStepState ? (
+                  <View style={{ maxWidth: "100%", flex: 1 }}>
+                    <GeneralTextInput
+                      // placeholder={valueDesc}
+                      mode="outlined"
+                      // hasErrors={authFailed}
+
+                      title="Tambah Cara Memasak"
+                      multiline
+                      numberOfLines={10}
+                      messageError="Wrong Username/Password"
+                      onChangeText={(e) => setValueStep(e)}
+                      style={{ width: "100%" }}
+                    />
+                  </View>
+                ) : (
+                  <></>
+                )}
+              </View>
+              {selectedMenuStepId !== 0 ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    marginTop: 18,
+                  }}
+                >
+                  <View>
+                    <TouchableOpacity
+                      onPress={handleEditStep}
+                      style={{
+                        alignSelf: "center",
+                        backgroundColor: "green",
+                        width: ms(126),
+                        height: ms(40),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 12,
+                        marginBottom: ms(32),
+                        marginRight: ms(8),
+                      }}
+                    >
+                      <Text style={{ color: COLORS.WHITE }}>Simpan</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View>
+                    <TouchableOpacity
+                      onPress={cancelEditState}
+                      style={{
+                        alignSelf: "center",
+                        backgroundColor: "orange",
+                        width: ms(126),
+                        height: ms(40),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 12,
+                        marginBottom: ms(32),
+                      }}
+                    >
+                      <Text style={{ color: COLORS.WHITE }}>Batalkan</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    marginTop: 18,
+                  }}
+                >
+                  {insertStepState ? (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        marginTop: 18,
+                      }}
+                    >
+                      <View>
+                        <TouchableOpacity
+                          onPress={handleInsertStep}
+                          style={{
+                            alignSelf: "center",
+                            backgroundColor: "green",
+                            width: ms(126),
+                            height: ms(40),
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 12,
+                            marginBottom: ms(32),
+                            marginRight: ms(8),
+                          }}
+                        >
+                          <Text style={{ color: COLORS.WHITE }}>Simpan</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <View>
+                        <TouchableOpacity
+                          onPress={cancelInsertState}
+                          style={{
+                            alignSelf: "center",
+                            backgroundColor: "orange",
+                            width: ms(126),
+                            height: ms(40),
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 12,
+                            marginBottom: ms(32),
+                          }}
+                        >
+                          <Text style={{ color: COLORS.WHITE }}>Batalkan</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : (
+                    <View></View>
+                  )}
+                </View>
+              )}
             </Card>
             {flahPublish ? (
               <View>
@@ -1333,6 +1837,12 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
     backgroundColor: COLORS.WHITE,
     borderRadius: 10,
+  },
+  card2: {
+    margin: 16,
+    backgroundColor: COLORS.WHITE,
+    paddingHorizontal: 16,
+    paddingVertical: 21,
   },
   modalText: {
     paddingTop: 20,

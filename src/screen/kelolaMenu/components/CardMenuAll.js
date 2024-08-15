@@ -15,6 +15,7 @@ export default function CardMenuAll({
   isPublish,
   recipeBy,
   insertMneuToChart,
+  showModalSchedule,
 }) {
   return (
     <View>
@@ -127,6 +128,32 @@ export default function CardMenuAll({
                 +
               </Text>
             </View>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: COLORS.WHITE,
+                paddingHorizontal: ms(24),
+                paddingVertical: ms(12),
+                borderRadius: ms(8),
+
+                marginLeft: ms(8),
+                borderColor: COLORS.PRIMARY_DARK,
+                borderWidth: 1,
+              }}
+              onPress={() => showModalSchedule(menuId, namaMenu)}
+            >
+              <FontAwesome5
+                // onPress={showNotif}
+                style={{
+                  fontSize: 20,
+                  color: COLORS.PRIMARY_MEDIUM,
+
+                  color: COLORS.PRIMARY_DARK,
+                }}
+                name="calendar-alt"
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </Card>

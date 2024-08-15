@@ -156,7 +156,7 @@ export default function KelolaMenu({ navigation }) {
     setPageNumNyPulish(pageNumeNyPulish + 1);
     console.log(searchQuery, "page num");
     const body = {
-      pageSize: 5,
+      pageSize: 3,
       currentPage: pageNumeNyPulish,
       isPhoto: true,
       isVideo: false,
@@ -254,6 +254,11 @@ export default function KelolaMenu({ navigation }) {
     getMenuPagination(uid, 0, valueIsPublish);
   }, []);
 
+  useEffect(() => {
+    setPageNum(1);
+    setPageNumNyPulish(1);
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
@@ -288,21 +293,23 @@ export default function KelolaMenu({ navigation }) {
   }, [navigation]);
 
   const handleMomentumScrollEnd = _.debounce(() => {
+    setIsLoadingGet(true);
     console.log("Scroll momentum ended");
     sumAllData == dataMenu?.length || sumAllData <= dataMenu.length
       ? null
       : getMenuPagination(uid, 1, valueIsPublish);
     // Your custom logic here
-  }, 1000);
+  }, 500);
 
   const handleMomentumScrollEndNyPulish = _.debounce(() => {
     console.log("Scroll momentum ended");
+    setIsLoadingGet(true);
     sumAllDataNyPulish == dataMenuNyPublish?.length ||
     sumAllDataNyPulish <= dataMenuNyPublish?.length
       ? null
       : getMenuPaginationNyPulish(uid, 1, valueIsPublish);
     // Your custom logic here
-  }, 1000);
+  }, 500);
 
   const RenderFooter = () => {
     return isLoading ? (
@@ -475,10 +482,10 @@ export default function KelolaMenu({ navigation }) {
             </View> */}
           {searchState ? (
             <ScrollView
-              // onMomentumScrollEnd={() =>
-              //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
-              // }
-              onMomentumScrollEnd={() => handleMomentumScrollEnd()}
+            // onMomentumScrollEnd={() =>
+            //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
+            // }
+            // onMomentumScrollEnd={() => handleMomentumScrollEnd()}
             >
               <View>
                 <View style={styles.continerSearch}>
@@ -645,10 +652,10 @@ export default function KelolaMenu({ navigation }) {
               </View>
               {index === 0 ? (
                 <ScrollView
-                  // onMomentumScrollEnd={() =>
-                  //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
-                  // }
-                  onMomentumScrollEnd={() => handleMomentumScrollEnd()}
+                // onMomentumScrollEnd={() =>
+                //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
+                // }
+                // onMomentumScrollEnd={() => handleMomentumScrollEnd()}
                 >
                   <View>
                     <View style={styles.continerSearch}>
@@ -786,19 +793,30 @@ export default function KelolaMenu({ navigation }) {
                       <Text
                         style={{ fontWeight: "300", color: COLORS.GRAY_HARD }}
                       >
-                        Semua Menu Sudah di Tampilkan
+                        Semua Resep Sudah di Tampilkan
                       </Text>
                     </View>
                   ) : (
-                    <></>
+                    <>
+                      <View style={{ alignSelf: "center", marginTop: ms(8) }}>
+                        <TouchableOpacity
+                          style={styles.buttonSee}
+                          onPress={() => handleMomentumScrollEnd()}
+                        >
+                          <Text style={{ color: "white" }}>
+                            Tampilkan Lebih Banyak Resep
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </>
                   )}
                 </ScrollView>
               ) : (
                 <ScrollView
-                  // onMomentumScrollEnd={() =>
-                  //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
-                  // }
-                  onMomentumScrollEnd={() => handleMomentumScrollEndNyPulish()}
+                // onMomentumScrollEnd={() =>
+                //   sumAllData == dataMenu?.length ? null : getMenuPagination(uid, 1)
+                // }
+                // onMomentumScrollEnd={() => handleMomentumScrollEndNyPulish()}
                 >
                   <View>
                     <View style={styles.continerSearch}>
@@ -914,11 +932,22 @@ export default function KelolaMenu({ navigation }) {
                       <Text
                         style={{ fontWeight: "300", color: COLORS.GRAY_HARD }}
                       >
-                        Semua Menu Sudah di Tampilkan
+                        Semua Resep Sudah di Tampilkan
                       </Text>
                     </View>
                   ) : (
-                    <></>
+                    <>
+                      <View style={{ alignSelf: "center", marginTop: ms(8) }}>
+                        <TouchableOpacity
+                          style={styles.buttonSee}
+                          onPress={() => handleMomentumScrollEndNyPulish()}
+                        >
+                          <Text style={{ color: "white" }}>
+                            Tampilkan Lebih Banyak Resep
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </>
                   )}
                 </ScrollView>
               )}
@@ -1062,5 +1091,14 @@ const styles = StyleSheet.create({
   imgSubmit: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  buttonSee: {
+    backgroundColor: COLORS.PRIMARY_DARK,
+    borderWidth: 1,
+    borderColor: COLORS.PRIMARY_DARK,
+    paddingHorizontal: ms(16),
+    paddingVertical: ms(10),
+    borderRadius: 10,
+    marginRight: ms(12),
   },
 });
