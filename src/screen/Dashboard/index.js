@@ -631,8 +631,19 @@ export default function Dashboard({ navigation }) {
         // test for status you want, etc
 
         console.log(res.data.data, "<===res data member");
+        const newObject = {
+          memberId: 0,
+          userId: 0,
+          name: "-",
+          deviceId: "-",
+        };
 
-        setDdlMember(res.data.data);
+        // Add the new object to the existing data
+        const updatedData = [newObject, ...res.data.data];
+
+        console.log(res.data.data, "<===res data member");
+
+        setDdlMember(updatedData);
         // setDdlUom(res.data.masterUomsList);
         setIsLoadingGet(false);
         // console.log(res.data, "transit");

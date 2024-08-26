@@ -66,10 +66,19 @@ export default function MenuDelegation({ navigation }) {
       console.log(res, "<===res data member");
       if (res.status == 200) {
         // test for status you want, etc
+        const newObject = {
+          memberId: 0,
+          userId: 0,
+          name: "-",
+          deviceId: "-",
+        };
+
+        // Add the new object to the existing data
+        const updatedData = [newObject, ...res.data.data];
 
         console.log(res.data.data, "<===res data member");
 
-        setDdlMember(res.data.data);
+        setDdlMember(updatedData);
         // setDdlUom(res.data.masterUomsList);
         setIsLoadingGet(false);
         // console.log(res.data, "transit");
